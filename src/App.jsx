@@ -42,8 +42,15 @@ const INIT_USERS=[
   {id:2,username:"manager",password:"manager123",role:"manager",name:"Gestionnaire Principal",email:"manager@thunderfam.com",active:true,approved:true,investorId:null},
   {id:3,username:"investor1",password:"invest123",role:"investor",name:"Investisseur Principal",email:"investisseur@thunderfam.com",active:true,approved:true,investorId:1},
 ];
+const DEFAULT_CATEGORIES=[
+  "Transport de marchandise",
+  "Achat de marchandise",
+  "Vente de marchandise",
+  "Service informatique",
+  "Consultation informatique",
+];
 const INIT={
-  settings:{rates:{...DEFAULT_RATES},selectedCurrencies:["GBP"],adminPwd:"admin123",language:"fr",theme:"dark",ratesLastUpdated:null,dashboardWidgets:["capital","profit","monthly","investors","chart_line","chart_pie"]},
+  settings:{rates:{...DEFAULT_RATES},selectedCurrencies:["GBP"],adminPwd:"admin123",language:"fr",theme:"dark",ratesLastUpdated:null,dashboardWidgets:["capital","profit","monthly","investors","chart_line","chart_pie"],categories:[...DEFAULT_CATEGORIES]},
   users:[...INIT_USERS],pendingUsers:[],
   notifications:[
     {id:1,type:"info",msg:"Rapport Février 2026 disponible",date:"2026-02-14",read:false},
@@ -59,7 +66,7 @@ const INIT={
     {id:6,user:"admin",action:"Rapport fermé",target:"Décembre 2025",date:"2026-01-02 17:00",type:"lock"},
     {id:7,user:"admin",action:"Rapport Février 2026 ouvert",target:"Février 2026",date:"2026-02-01 09:00",type:"create"},
   ],
-  investors:[{id:1,name:"Investisseur Principal",initialInvestment:11470000,currentInvestment:16265340,cumulativeProfit:4795340,address:"Abidjan, Plateau, Bvd de la République",phone:"+225 07 00 00 00 00",representative:"John Doe",email:"investisseur@thunderfam.com",country:"Côte d'Ivoire",goal:8000000,goalLabel:"Profit cible 2026",sharedTokens:[]}],
+  investors:[{id:1,name:"Investisseur Principal",initialInvestment:11470000,currentInvestment:16265340,cumulativeProfit:4795340,address:"Abidjan, Plateau, Bvd de la République",phone:"+225 07 00 00 00 00",representative:"John Doe",email:"investisseur@thunderfam.com",country:"Côte d'Ivoire",goal:8000000,goalLabel:"Profit cible 2026",sharedTokens:[],logo:null,preferredCurrency:"GBP",investmentCategories:[{category:"Transport de marchandise",amount:8000000},{category:"Achat de marchandise",amount:3470000}]}],
   reports:[
     {id:"2025-10",label:"Oct–Nov 2025 (Caoutchouc)",investorId:1,openingInvestment:11470000,activities:[{id:1,date:"2025-10-01",category:"Transport de marchandise",description:"Rubber — Caoutchouc",invested:11470000,revenue:11835340,expenses:0,profit:365340,attachments:[]}],additionalExpenses:[],status:"closed",signatures:[],shareToken:null},
     {id:"2025-12",label:"Décembre 2025 (Engrais)",investorId:1,openingInvestment:11835340,activities:[{id:2,date:"2025-12-05",category:"Transport de marchandise",description:"1er Camion GHANA (Engrais)",invested:2500000,revenue:3500000,expenses:0,profit:1000000,attachments:[]},{id:3,date:"2025-12-10",category:"Transport de marchandise",description:"2e Camion GHANA (Engrais)",invested:2500000,revenue:3500000,expenses:0,profit:1000000,attachments:[]}],additionalExpenses:[],status:"closed",signatures:[],shareToken:null},
@@ -81,7 +88,8 @@ const T={
     users:{title:"Utilisateurs",pending:"En attente",approve:"Approuver",reject:"Rejeter",disable:"Désactiver",enable:"Activer",resetPwd:"MDP",newUser:"+ Utilisateur",role:"Rôle",status:"Statut",editUser:"Modifier"},
     analytics:{title:"Analyses & Graphiques",projection:"Simulateur de Rendement",compare:"Comparaison Périodes",charts:"Graphiques Interactifs",profitCurve:"Courbe de Profit",revenueVsExp:"Revenus vs Dépenses",expByCategory:"Dépenses par Catégorie",period1:"Période 1",period2:"Période 2",investExtra:"Investissement supplémentaire",estimatedProfit:"Profit estimé (6 mois)",projectionResult:"Résultat projection",baseRate:"Taux de rendement moyen",emailSummary:"Résumé Email",copyHTML:"Copier HTML"},
     audit:{title:"Journal d'Audit",action:"Action",user:"Utilisateur",target:"Cible",date:"Date",type:"Type",all:"Tous",filter:"Filtrer"},
-    settings:{title:"Paramètres",currencies:"Devises",allCurrencies:"Toutes",noCurrencies:"F CFA uniquement",rates:"Taux de Change",adminPwd:"Mot de passe Admin",language:"Langue",save:"Sauvegarder",autoRates:"Actualiser",ratesUpdated:"Taux mis à jour ✓",ratesFailed:"Erreur",theme:"Thème",dark:"Sombre",light:"Clair",dashWidgets:"Widgets Tableau de Bord"},
+    settings:{title:"Paramètres",currencies:"Devises",allCurrencies:"Toutes",noCurrencies:"F CFA uniquement",rates:"Taux de Change",adminPwd:"Mot de passe Admin",language:"Langue",save:"Sauvegarder",autoRates:"Actualiser",ratesUpdated:"Taux mis à jour ✓",ratesFailed:"Erreur",theme:"Thème",dark:"Sombre",light:"Clair",dashWidgets:"Widgets Tableau de Bord",categoriesMgmt:"Gestion des Catégories",addCategory:"+ Catégorie",deleteCategory:"Supprimer"},
+    contract:{title:"Contrat d'Investissement",generate:"Générer Contrat",download:"Télécharger Contrat",print:"Imprimer Contrat",selectCats:"Catégories d'investissement",amountPerCat:"Montant par catégorie (F CFA)",displayCurrency:"Devise d'affichage du contrat",investorLogo:"Logo Investisseur",uploadLogo:"Chargez un logo",removeLogo:"Supprimer logo",between:"Entre",and:"et",signedAt:"Fait à Abidjan, le",article1:"OBJET DU CONTRAT",article2:"MONTANTS D'INVESTISSEMENT",article3:"DURÉE ET CONDITIONS",article4:"CONFIDENTIALITÉ",article5:"SIGNATURES",contractBody1:"Le présent contrat a pour objet de définir les termes et conditions de l'investissement réalisé par l'Investisseur auprès de Thunderfam Group Limited, Côte d'Ivoire, pour les activités listées ci-dessous.",contractBody2:"Les parties conviennent que l'investissement est soumis aux conditions du marché. Les rendements passés ne garantissent pas les rendements futurs. Toute modification doit faire l'objet d'un avenant signé par les deux parties.",contractBody3:"Toutes les informations échangées dans le cadre de ce contrat sont strictement confidentielles et ne peuvent être divulguées à des tiers sans accord écrit préalable des deux parties."},
     categories:["Transport de marchandise","Achat de marchandise","Vente de marchandise","Service informatique","Consultation informatique","Transport tuiles","Transport engrais"],
     lock:{title:"Rapport Verrouillé",msg:"Entrez le mot de passe pour modifier.",password:"Mot de passe",confirm:"Confirmer",cancel:"Annuler",wrong:"Mot de passe incorrect."},
     confirm:"Confirmer",total:"Total",save:"Sauvegarder",cancel:"Annuler",accessDenied:"Accès refusé",readOnly:"Lecture seule",notifications:"Notifications",markAllRead:"Tout lire",share:"Partager",shareLink:"Lien de partage",copyLink:"Copier le lien",linkExpires:"Expire dans 7 jours",
@@ -97,7 +105,8 @@ const T={
     users:{title:"Users",pending:"Pending",approve:"Approve",reject:"Reject",disable:"Disable",enable:"Enable",resetPwd:"PWD",newUser:"+ User",role:"Role",status:"Status",editUser:"Edit User"},
     analytics:{title:"Analytics & Charts",projection:"Yield Simulator",compare:"Period Comparison",charts:"Interactive Charts",profitCurve:"Profit Curve",revenueVsExp:"Revenue vs Expenses",expByCategory:"Expenses by Category",period1:"Period 1",period2:"Period 2",investExtra:"Extra Investment",estimatedProfit:"Estimated profit (6 months)",projectionResult:"Projection Result",baseRate:"Average yield rate",emailSummary:"Email Summary",copyHTML:"Copy HTML"},
     audit:{title:"Audit Log",action:"Action",user:"User",target:"Target",date:"Date",type:"Type",all:"All",filter:"Filter"},
-    settings:{title:"Settings",currencies:"Currencies",allCurrencies:"All",noCurrencies:"F CFA only",rates:"Exchange Rates",adminPwd:"Admin Password",language:"Language",save:"Save",autoRates:"Refresh",ratesUpdated:"Rates updated ✓",ratesFailed:"Failed",theme:"Theme",dark:"Dark",light:"Light",dashWidgets:"Dashboard Widgets"},
+    settings:{title:"Settings",currencies:"Currencies",allCurrencies:"All",noCurrencies:"F CFA only",rates:"Exchange Rates",adminPwd:"Admin Password",language:"Language",save:"Save",autoRates:"Refresh",ratesUpdated:"Rates updated ✓",ratesFailed:"Failed",theme:"Theme",dark:"Dark",light:"Light",dashWidgets:"Dashboard Widgets",categoriesMgmt:"Category Management",addCategory:"+ Category",deleteCategory:"Delete"},
+    contract:{title:"Investment Contract",generate:"Generate Contract",download:"Download Contract",print:"Print Contract",selectCats:"Investment Categories",amountPerCat:"Amount per category (F CFA)",displayCurrency:"Contract display currency",investorLogo:"Investor Logo",uploadLogo:"Upload a logo",removeLogo:"Remove logo",between:"Between",and:"and",signedAt:"Signed in Abidjan, on",article1:"CONTRACT PURPOSE",article2:"INVESTMENT AMOUNTS",article3:"DURATION & CONDITIONS",article4:"CONFIDENTIALITY",article5:"SIGNATURES",contractBody1:"This contract defines the terms and conditions of the investment made by the Investor with Thunderfam Group Limited, Côte d'Ivoire, for the activities listed below.",contractBody2:"The parties agree that the investment is subject to market conditions. Past returns do not guarantee future returns. Any modification must be covered by an amendment signed by both parties.",contractBody3:"All information exchanged under this contract is strictly confidential and may not be disclosed to third parties without prior written agreement from both parties."},
     categories:["Goods Transport","Goods Purchase","Goods Sale","IT Service","IT Consulting","Tile Transport","Fertilizer Transport"],
     lock:{title:"Locked Report",msg:"Enter password to modify.",password:"Password",confirm:"Confirm",cancel:"Cancel",wrong:"Incorrect password."},
     confirm:"Confirm",total:"Total",save:"Save",cancel:"Cancel",accessDenied:"Access Denied",readOnly:"Read-only",notifications:"Notifications",markAllRead:"Mark all read",share:"Share",shareLink:"Share Link",copyLink:"Copy link",linkExpires:"Expires in 7 days",
@@ -454,6 +463,208 @@ function doPrint(report,calc,investors,settings){const html=buildReportHTML(repo
 function doDownloadPDF(report,calc,investors,settings){const html=buildReportHTML(report,calc,investors,settings);const blob=new Blob([html],{type:"text/html;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`Rapport_${report.label.replace(/[^a-zA-Z0-9]/g,"_")}.html`;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),2000);}
 function doCertificate(investor,reports,settings){const html=buildCertificateHTML(investor,reports,settings);const w=window.open("","_blank","width=900,height=700");if(!w){alert("Autorisez les popups.");return;}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),800);}
 
+// ── CONTRACT BUILDER ──────────────────────────────────────────────────────────────
+function buildContractHTML(investor,settings,lang="fr"){
+  const t=T[lang].contract;
+  const tc=T[lang];
+  const today=new Date().toLocaleDateString("fr-FR",{year:"numeric",month:"long",day:"numeric"});
+  const refNum=`TF-CONT-${investor.id}-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`;
+  const cats=investor.investmentCategories||[];
+  const prefCur=investor.preferredCurrency;
+  const curObj=ALL_CURRENCIES.find(c=>c.code===prefCur);
+  const rate=(settings.rates||{})[prefCur]||DEFAULT_RATES[prefCur]||1;
+  const fmtAmt=(n)=>{
+    const fcfa=`<span style="font-weight:700">${fmtNum(n)} F CFA</span>`;
+    if(curObj&&prefCur){const conv=cvt(n,rate,curObj.sym);return`${fcfa} <span style="color:#888;font-size:11px">(${conv})</span>`;}
+    return fcfa;
+  };
+  const totalInv=cats.reduce((s,c)=>s+(c.amount||0),0);
+  const logoBlock=investor.logo?`<img src="${investor.logo}" alt="Logo Investisseur" style="max-height:60px;max-width:140px;object-fit:contain;border:1px solid #eee;border-radius:4px;padding:4px;"/>`:`<div style="width:120px;height:50px;border:1px dashed #ccc;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:9px;text-transform:uppercase;letter-spacing:.06em">Logo Investisseur</div>`;
+  const tfLogoSVG=`<svg width="52" height="52" viewBox="0 0 100 100"><circle cx="50" cy="50" r="48" fill="#1c1e26"/><path d="M50 2 A48 48 0 0 1 98 50 L50 50 Z" fill="#4285F4"/><path d="M98 50 A48 48 0 0 1 50 98 L50 50 Z" fill="#34A853"/><path d="M50 98 A48 48 0 0 1 2 50 L50 50 Z" fill="#FBBC05"/><path d="M2 50 A48 48 0 0 1 50 2 L50 50 Z" fill="#EA4335"/><path d="M55 16 L36 52 L50 52 L44 84 L64 46 L50 46 Z" fill="white"/></svg>`;
+  const catsRows=cats.map((c,i)=>`
+    <tr>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;font-size:12px;color:#1a1a2e;">${i+1}. ${c.category}</td>
+      <td style="padding:9px 12px;border-bottom:1px solid #eee;text-align:right;font-size:12px;font-weight:700;color:#1a1a2e;">${fmtAmt(c.amount||0)}</td>
+    </tr>`).join("");
+  return`<!DOCTYPE html><html lang="${lang}"><head><meta charset="utf-8"/>
+  <title>Contrat — ${investor.name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@300;400;700&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Lato',sans-serif;background:#f0f0f0;display:flex;justify-content:center;padding:30px 20px;}
+    .page{background:white;width:800px;max-width:100%;padding:0;border:1px solid #ccc;box-shadow:0 8px 32px rgba(0,0,0,0.15);}
+    .header-band{background:#1a1a2e;padding:24px 36px;display:flex;justify-content:space-between;align-items:center;}
+    .brand-txt{font-size:22px;font-weight:900;letter-spacing:-0.5px;}
+    .brand-txt .b{color:#4285F4;}.brand-txt .r{color:#EA4335;}.brand-txt .y{color:#FBBC05;}.brand-txt .g{color:#34A853;}
+    .brand-sub{color:rgba(255,255,255,0.55);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-top:3px;}
+    .ref-badge{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:6px 12px;color:rgba(255,255,255,0.7);font-size:9px;letter-spacing:.1em;text-align:right;}
+    .title-block{background:linear-gradient(135deg,#f8f6f0,#fff8e8);padding:28px 36px;text-align:center;border-bottom:3px solid #c9a84c;}
+    .contract-title{font-family:'Playfair Display',serif;font-size:28px;color:#1a1a2e;letter-spacing:1.5px;margin-bottom:6px;}
+    .contract-sub{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#999;}
+    .parties-block{padding:24px 36px;background:#fafafa;border-bottom:1px solid #e5e5e5;}
+    .parties-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;}
+    .party-box{background:white;border:1px solid #e5e5e5;border-radius:8px;padding:16px;border-top:3px solid #c9a84c;}
+    .party-label{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#999;font-weight:700;margin-bottom:6px;}
+    .party-name{font-family:'Playfair Display',serif;font-size:16px;color:#1a1a2e;margin-bottom:4px;}
+    .party-detail{font-size:10px;color:#777;line-height:1.6;}
+    .connector{text-align:center;font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+    .body{padding:28px 36px;}
+    .article{margin-bottom:22px;}
+    .article-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#c9a84c;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #f0e8d0;display:flex;align-items:center;gap:8px;}
+    .article-num{background:#c9a84c;color:white;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+    .article-body{font-size:12px;color:#444;line-height:1.7;}
+    .cat-table{width:100%;border-collapse:collapse;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;margin-top:10px;}
+    .cat-table thead tr{background:#1a1a2e;}
+    .cat-table th{padding:10px 12px;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;text-align:left;}
+    .cat-table th:last-child{text-align:right;}
+    .total-row{background:#f8f6f0;font-weight:700;}
+    .total-row td{padding:10px 12px;font-size:13px;color:#1a1a2e;border-top:2px solid #c9a84c;}
+    .total-row td:last-child{text-align:right;color:#c9a84c;}
+    .sigs{padding:24px 36px;border-top:2px solid #e5e5e5;display:flex;justify-content:space-between;gap:30px;}
+    .sig-col{flex:1;text-align:center;}
+    .sig-line{border-top:1px solid #333;margin:50px auto 8px;width:90%;}
+    .sig-name{font-weight:700;font-size:11px;color:#1a1a2e;}
+    .sig-role{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+    .logos-row{display:flex;justify-content:space-between;align-items:center;padding:12px 36px;border-top:1px solid #eee;background:#fafafa;}
+    .footer-txt{padding:10px 36px;background:#1a1a2e;text-align:center;font-size:8px;color:rgba(255,255,255,0.4);letter-spacing:.08em;}
+    .gold{color:#c9a84c;}
+    @media print{body{background:white;padding:0;}.page{box-shadow:none;border:none;}@page{margin:0.5cm;}}
+  </style>
+  </head><body>
+  <div class="page">
+    <!-- Header -->
+    <div class="header-band">
+      <div style="display:flex;align-items:center;gap:14px;">
+        ${tfLogoSVG}
+        <div>
+          <div class="brand-txt"><span class="b">Thunder</span><span class="r">f</span><span class="y">a</span><span class="g">m</span> <span style="color:white;">Group</span></div>
+          <div class="brand-sub">Limited — Côte d'Ivoire</div>
+        </div>
+      </div>
+      <div class="ref-badge">Réf : ${refNum}<br/>Confidentiel</div>
+    </div>
+
+    <!-- Title -->
+    <div class="title-block">
+      <div class="contract-title">${t.title.toUpperCase()}</div>
+      <div class="contract-sub">Investment Agreement • Accord d'Investissement</div>
+    </div>
+
+    <!-- Parties -->
+    <div class="parties-block">
+      <div class="parties-grid">
+        <div class="party-box">
+          <div class="party-label">Partie A — Gestionnaire</div>
+          <div class="party-name">Thunderfam Group</div>
+          <div class="party-detail">Limited — Côte d'Ivoire<br/>Abidjan, Plateau<br/>contact@thunderfam.com</div>
+        </div>
+        <div class="connector">⟵ ${t.and} ⟶</div>
+        <div class="party-box" style="border-top-color:#4285F4;">
+          <div class="party-label">Partie B — Investisseur</div>
+          <div class="party-name">${investor.name}</div>
+          <div class="party-detail">${investor.representative||""}<br/>${investor.address||""}<br/>${investor.email||""}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+
+      <!-- Art. 1 -->
+      <div class="article">
+        <div class="article-title"><span class="article-num">1</span>${t.article1}</div>
+        <div class="article-body">${t.contractBody1}</div>
+      </div>
+
+      <!-- Art. 2 — Categories table -->
+      <div class="article">
+        <div class="article-title"><span class="article-num">2</span>${t.article2}</div>
+        ${cats.length>0?`
+        <table class="cat-table">
+          <thead><tr><th>Catégorie d'Activité</th><th style="text-align:right">Montant Investi</th></tr></thead>
+          <tbody>${catsRows}</tbody>
+          <tr class="total-row">
+            <td>Total Investissement Initial</td>
+            <td style="text-align:right">${fmtAmt(totalInv)}</td>
+          </tr>
+        </table>
+        <div style="margin-top:10px;padding:10px 14px;background:#f8f6f0;border-radius:6px;border-left:3px solid #c9a84c;font-size:11px;color:#555;">
+          ${curObj?`Devise de référence secondaire : <strong style="color:#c9a84c">${curObj.sym} ${curObj.name} (${curObj.code})</strong> — Taux : 1 ${curObj.sym} = ${fmtNum(rate)} F CFA`:"Devise de référence : F CFA uniquement"}
+        </div>
+        `:`<p style="font-size:12px;color:#777;font-style:italic">Aucune catégorie d'investissement définie.</p>`}
+      </div>
+
+      <!-- Art. 3 -->
+      <div class="article">
+        <div class="article-title"><span class="article-num">3</span>${t.article3}</div>
+        <div class="article-body">${t.contractBody2}</div>
+      </div>
+
+      <!-- Art. 4 -->
+      <div class="article">
+        <div class="article-title"><span class="article-num">4</span>${t.article4}</div>
+        <div class="article-body">${t.contractBody3}</div>
+      </div>
+
+      <!-- Date -->
+      <div style="text-align:center;margin:18px 0;font-size:12px;color:#666;">${t.signedAt} <strong>${today}</strong></div>
+    </div>
+
+    <!-- Logos row -->
+    <div class="logos-row">
+      <div style="display:flex;align-items:center;gap:10px;">
+        ${tfLogoSVG}
+        <div style="font-size:10px;color:#888;">Thunderfam Group Limited</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-direction:column;align-items:flex-end;">
+        ${logoBlock}
+        <div style="font-size:10px;color:#888;margin-top:4px;">${investor.name}</div>
+      </div>
+    </div>
+
+    <!-- Signatures -->
+    <div class="sigs">
+      <div class="sig-col">
+        <div class="sig-line"></div>
+        <div class="sig-name">Thunderfam Group Limited</div>
+        <div class="sig-role">Direction Générale</div>
+      </div>
+      <div class="sig-col">
+        <div class="sig-line"></div>
+        <div class="sig-name">${investor.representative||investor.name}</div>
+        <div class="sig-role">Investisseur</div>
+      </div>
+      <div class="sig-col">
+        <div class="sig-line"></div>
+        <div class="sig-name">Validation Juridique</div>
+        <div class="sig-role">Compliance Officer</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-txt">
+      ${refNum} — Thunderfam Group Limited, Abidjan, Côte d'Ivoire — Document généré le ${new Date().toLocaleString("fr-FR")} — CONFIDENTIEL
+    </div>
+  </div>
+  </body></html>`;
+}
+function doContract(investor,settings,lang){
+  const html=buildContractHTML(investor,settings,lang);
+  const w=window.open("","_blank","width=900,height=750");
+  if(!w){alert("Autorisez les popups.");return;}
+  w.document.open();w.document.write(html);w.document.close();w.focus();
+  setTimeout(()=>w.print(),800);
+}
+function downloadContract(investor,settings,lang){
+  const html=buildContractHTML(investor,settings,lang);
+  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`Contrat_${investor.name.replace(/\s+/g,"_")}.html`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+
 // ── LOGIN SCREEN ────────────────────────────────────────────────────────────────
 function LoginScreen({data,setData,onLogin,lang,setLang}){
   const C=_C;
@@ -802,7 +1013,7 @@ function Reports({data,setData,session,t}){
     }else setLockErr(t.lock.wrong);
   };
   const startEditAct=a=>{setActDraft({...a});setEditActId(a.id);};
-  const startAddAct=()=>{setActDraft({id:"new",date:"",category:t.categories[0],description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[]});setEditActId("new");};
+  const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||t.categories)[0],description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[]});setEditActId("new");};
   const saveAct=()=>{
     const profit=(actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0);
     setData(d=>({...d,reports:d.reports.map(r=>{if(r.id!==selId)return r;const acts=editActId==="new"?[...r.activities,{...actDraft,profit,id:Date.now()}]:r.activities.map(a=>a.id===editActId?{...actDraft,profit}:a);return{...r,activities:acts};})}));
@@ -930,7 +1141,7 @@ function Reports({data,setData,session,t}){
           <div style={{background:C.surface,borderRadius:8,padding:12,marginBottom:10,border:`1px solid ${C.blue}44`}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr 2fr 1fr 1fr 1fr",gap:6,marginBottom:8}}>
               <EditCell value={actDraft.date}        onChange={v=>setActDraft(d=>({...d,date:v}))}        type="date"/>
-              <EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={t.categories}/>
+              <EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={data.settings.categories||t.categories}/>
               <EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/>
               <EditCell value={actDraft.invested}    onChange={v=>setActDraft(d=>({...d,invested:v}))}    type="number"/>
               <EditCell value={actDraft.revenue}     onChange={v=>setActDraft(d=>({...d,revenue:v}))}     type="number"/>
@@ -949,7 +1160,7 @@ function Reports({data,setData,session,t}){
               <tr key={a.id} style={{borderBottom:`1px solid ${C.border}`,background:editing?C.surface+"88":"transparent",verticalAlign:"top"}}>
                 {editing?(<>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.date}        onChange={v=>setActDraft(d=>({...d,date:v}))}        type="date"/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={t.categories}/></td>
+                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={data.settings.categories||t.categories}/></td>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.invested}    onChange={v=>setActDraft(d=>({...d,invested:v}))}    type="number" style={{textAlign:"right"}}/></td>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.revenue}     onChange={v=>setActDraft(d=>({...d,revenue:v}))}     type="number" style={{textAlign:"right"}}/></td>
@@ -1049,7 +1260,7 @@ function Reports({data,setData,session,t}){
 }
 
 // ── INVESTORS PAGE ───────────────────────────────────────────────────────────────
-function Investors({data,setData,session,t}){
+function Investors({data,setData,session,t,lang}){
   const C=_C;const s=data.settings;
   const [editId,setEditId]=useState(null);const [draft,setDraft]=useState(null);
   const [showAdd,setShowAdd]=useState(false);const [addDraft,setAddDraft]=useState(null);
@@ -1057,17 +1268,90 @@ function Investors({data,setData,session,t}){
   const invColors=[C.blue,C.green,C.yellow,C.red];
   const visibleInvestors=session.role==="investor"?data.investors.filter(i=>i.id===session.investorId):data.investors;
   const saveEdit=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===editId?draft:i)}));addAudit(setData,session,"Investisseur modifié",draft.name,"update");setEditId(null);setDraft(null);};
-  const saveAdd=()=>{const ni={...addDraft,currentInvestment:addDraft.initialInvestment,id:Date.now(),goal:0,goalLabel:"",sharedTokens:[]};setData(d=>({...d,investors:[...d.investors,ni]}));addAudit(setData,session,"Investisseur créé",addDraft.name,"create");setShowAdd(false);setAddDraft(null);};
+  const saveAdd=()=>{const totalCats=(addDraft.investmentCategories||[]).reduce((s,c)=>s+(c.amount||0),0);const ni={...addDraft,initialInvestment:totalCats||addDraft.initialInvestment||0,currentInvestment:totalCats||addDraft.initialInvestment||0,id:Date.now(),goal:0,goalLabel:"",sharedTokens:[]};setData(d=>({...d,investors:[...d.investors,ni]}));addAudit(setData,session,"Investisseur créé",addDraft.name,"create");setShowAdd(false);setAddDraft(null);};
   const saveGoal=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===goalModal?{...i,...goalDraft}:i)}));setGoalModal(null);};
   const InfoRow=({icon,label,value})=>(<div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"5px 0",borderBottom:`1px solid ${C.border}`}}><Icon name={icon} size={12} color={C.muted}/><div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700}}>{label}</div><div style={{color:C.dim,fontSize:12,marginTop:1}}>{value||"—"}</div></div></div>);
-  const InvestorForm=({d,setD,onSave,onCancel,saveLabel})=>(<>
-    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-      {[["name",t.investor.name],["representative",t.investor.representative],["email",t.investor.email],["phone",t.investor.phone],["country",t.investor.country]].map(([k,l])=>(<div key={k}><Field label={l} value={d[k]} onChange={v=>setD(x=>({...x,[k]:v}))}/></div>))}
-      <Field label={`${t.investor.initial} (F CFA)`} value={d.initialInvestment} onChange={v=>setD(x=>({...x,initialInvestment:parseFloat(v)||0}))} type="number"/>
-    </div>
-    <Field label={t.investor.address} value={d.address} onChange={v=>setD(x=>({...x,address:v}))}/>
-    <div style={{display:"flex",gap:8,marginTop:8}}><Btn onClick={onSave} icon="save">{saveLabel}</Btn><Btn onClick={onCancel} variant="ghost">{t.cancel}</Btn></div>
-  </>);
+  const InvestorForm=({d,setD,onSave,onCancel,saveLabel,settingsData})=>{
+    const C=_C;
+    const cats=settingsData?.categories||DEFAULT_CATEGORIES;
+    const addCat=()=>setD(x=>({...x,investmentCategories:[...(x.investmentCategories||[]),{category:cats[0],amount:0}]}));
+    const removeCat=i=>setD(x=>({...x,investmentCategories:(x.investmentCategories||[]).filter((_,j)=>j!==i)}));
+    const updateCat=(i,field,val)=>setD(x=>({...x,investmentCategories:(x.investmentCategories||[]).map((c,j)=>j===i?{...c,[field]:field==="amount"?parseFloat(val)||0:val}:c)}));
+    const totalCats=(d.investmentCategories||[]).reduce((s,c)=>s+(c.amount||0),0);
+    const handleLogoUpload=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setD(x=>({...x,logo:ev.target.result}));r.readAsDataURL(f);};
+    const prefCur=d.preferredCurrency||"";
+    const curObj=ALL_CURRENCIES.find(c=>c.code===prefCur);
+    const rate=(settingsData?.rates||{})[prefCur]||DEFAULT_RATES[prefCur]||1;
+    return(<>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {[["name","Nom complet"],["representative","Représentant"],["email","Email"],["phone","Téléphone"],["country","Pays"]].map(([k,l])=>(<div key={k}><Field label={l} value={d[k]} onChange={v=>setD(x=>({...x,[k]:v}))}/></div>))}
+        <div>
+          <div style={{color:C.muted,fontSize:10,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>Investissement Initial (calculé)</div>
+          <div style={{background:C.surface,border:`1px solid ${C.border2}`,borderRadius:7,padding:"8px 12px",color:C.yellow,fontWeight:700,fontSize:13}}>{fmtNum(totalCats||d.initialInvestment||0)} F CFA</div>
+        </div>
+      </div>
+      <Field label="Adresse" value={d.address} onChange={v=>setD(x=>({...x,address:v}))}/>
+
+      {/* Logo upload */}
+      <div style={{marginBottom:14}}>
+        <div style={{color:C.muted,fontSize:10,marginBottom:8,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>Logo de l'Investisseur</div>
+        <div style={{display:"flex",alignItems:"center",gap:12}}>
+          {d.logo?(<><img src={d.logo} alt="logo" style={{height:52,maxWidth:120,objectFit:"contain",border:`1px solid ${C.border2}`,borderRadius:6,padding:4,background:"#fff"}}/><Btn onClick={()=>setD(x=>({...x,logo:null}))} variant="red" small icon="trash">Supprimer</Btn></>):(
+            <label style={{display:"inline-flex",alignItems:"center",gap:7,padding:"8px 14px",background:"transparent",border:`1px dashed ${C.border2}`,borderRadius:7,cursor:"pointer",color:C.muted,fontSize:12}}>
+              <Icon name="paperclip" size={13} color={C.muted}/>Charger un logo (PNG, JPG, SVG)
+              <input type="file" accept="image/*" style={{display:"none"}} onChange={handleLogoUpload}/>
+            </label>
+          )}
+        </div>
+      </div>
+
+      {/* Preferred currency */}
+      <div style={{marginBottom:14}}>
+        <div style={{color:C.muted,fontSize:10,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>Devise préférée (affichée dans les rapports & contrat)</div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          <button onClick={()=>setD(x=>({...x,preferredCurrency:""}))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${!prefCur?C.blue:C.border}`,background:!prefCur?`${C.blue}22`:"transparent",color:!prefCur?C.blue:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:!prefCur?700:400}}>F CFA seulement</button>
+          {ALL_CURRENCIES.map(cur=>(<button key={cur.code} onClick={()=>setD(x=>({...x,preferredCurrency:cur.code}))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${prefCur===cur.code?cur.color:C.border}`,background:prefCur===cur.code?cur.color+"22":"transparent",color:prefCur===cur.code?cur.color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:prefCur===cur.code?700:400,display:"flex",alignItems:"center",gap:5}}>{prefCur===cur.code&&<Icon name="check" size={11} color={cur.color}/>}{cur.sym} {cur.name}</button>))}
+        </div>
+        {curObj&&<div style={{color:C.muted,fontSize:10,marginTop:5}}>Taux actuel : 1 {curObj.sym} = <span style={{color:curObj.color,fontWeight:700}}>{fmtNum(rate)} F CFA</span></div>}
+      </div>
+
+      {/* Investment categories */}
+      <div style={{marginBottom:14}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{color:C.muted,fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>Catégories d'investissement & montants</div>
+          <Btn onClick={addCat} variant="secondary" small icon="plus">Ajouter</Btn>
+        </div>
+        {(d.investmentCategories||[]).length===0&&<div style={{color:C.muted,fontSize:11,fontStyle:"italic",padding:"8px 0"}}>Aucune catégorie — cliquez sur Ajouter</div>}
+        {(d.investmentCategories||[]).map((c,i)=>(
+          <div key={i} style={{display:"flex",gap:8,alignItems:"flex-end",marginBottom:8,background:C.surface,padding:"8px 12px",borderRadius:8,border:`1px solid ${C.border}`}}>
+            <div style={{flex:2}}>
+              <div style={{color:C.muted,fontSize:9,marginBottom:3,textTransform:"uppercase",fontWeight:700}}>Catégorie</div>
+              <select value={c.category} onChange={e=>updateCat(i,"category",e.target.value)} style={{width:"100%",background:C.bg,border:`1px solid ${C.border2}`,borderRadius:6,padding:"7px 10px",color:C.text,fontSize:12,outline:"none"}}>
+                {cats.map(cat=><option key={cat} value={cat}>{cat}</option>)}
+              </select>
+            </div>
+            <div style={{flex:1}}>
+              <div style={{color:C.muted,fontSize:9,marginBottom:3,textTransform:"uppercase",fontWeight:700}}>Montant (F CFA)</div>
+              <input type="number" value={c.amount} onChange={e=>updateCat(i,"amount",e.target.value)} style={{width:"100%",background:C.bg,border:`1px solid ${C.border2}`,borderRadius:6,padding:"7px 10px",color:C.yellow,fontSize:12,fontWeight:700,outline:"none",textAlign:"right"}}/>
+            </div>
+            {curObj&&c.amount>0&&<div style={{flexShrink:0,fontSize:10,color:curObj.color,fontWeight:700,paddingBottom:8,whiteSpace:"nowrap"}}>{cvt(c.amount,rate,curObj.sym)}</div>}
+            <button onClick={()=>removeCat(i)} style={{background:"rgba(127,29,29,0.3)",border:"none",borderRadius:6,padding:"7px 8px",cursor:"pointer",flexShrink:0}}><Icon name="trash" size={12} color="#fca5a5"/></button>
+          </div>
+        ))}
+        {(d.investmentCategories||[]).length>0&&(
+          <div style={{display:"flex",justifyContent:"space-between",padding:"8px 12px",background:C.bg,borderRadius:7,border:`1px solid ${C.border2}`}}>
+            <span style={{color:C.muted,fontSize:12,fontWeight:700}}>Total</span>
+            <div style={{textAlign:"right"}}>
+              <div style={{color:C.yellow,fontSize:13,fontWeight:800}}>{fmtNum(totalCats)} F CFA</div>
+              {curObj&&totalCats>0&&<div style={{color:curObj.color,fontSize:12,fontWeight:700}}>{cvt(totalCats,rate,curObj.sym)}</div>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div style={{display:"flex",gap:8,marginTop:8}}><Btn onClick={()=>{if(totalCats>0)setD(x=>({...x,initialInvestment:totalCats,currentInvestment:totalCats}));onSave();}} icon="save">{saveLabel}</Btn><Btn onClick={onCancel} variant="ghost">Annuler</Btn></div>
+    </>);
+  };
 
   // Consolidated view (admin)
   const totalCapital=data.investors.reduce((s,i)=>s+i.currentInvestment,0);
@@ -1076,7 +1360,7 @@ function Investors({data,setData,session,t}){
   return(<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
       <div><h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{t.nav.investors}</h2><div style={{color:C.muted,fontSize:12,marginTop:2}}>Portefeuilles & objectifs</div></div>
-      {session.role==="admin"&&<Btn onClick={()=>{setAddDraft({id:Date.now(),name:"",initialInvestment:0,currentInvestment:0,cumulativeProfit:0,address:"",phone:"",representative:"",email:"",country:"",goal:0,goalLabel:"",sharedTokens:[]});setShowAdd(true);}} variant="secondary" icon="plus">{t.investor.add}</Btn>}
+      {session.role==="admin"&&<Btn onClick={()=>{setAddDraft({id:Date.now(),name:"",initialInvestment:0,currentInvestment:0,cumulativeProfit:0,address:"",phone:"",representative:"",email:"",country:"",goal:0,goalLabel:"",sharedTokens:[],logo:null,preferredCurrency:"GBP",investmentCategories:[]});setShowAdd(true);}} variant="secondary" icon="plus">{t.investor.add}</Btn>}
     </div>
 
     {/* Consolidated view (admin only) */}
@@ -1164,14 +1448,18 @@ function Investors({data,setData,session,t}){
             );})}
           </div>
 
-          {/* Certificate button */}
-          {can(session,"print")&&<div style={{marginTop:14}}><Btn onClick={()=>doCertificate(inv,invReports,s)} variant="orange" icon="certificate" small>{t.report.myCerts}</Btn></div>}
+          {/* Certificate + Contract buttons */}
+          {can(session,"print")&&<div style={{marginTop:14,display:"flex",gap:8,flexWrap:"wrap"}}>
+            <Btn onClick={()=>doCertificate(inv,invReports,s)} variant="orange" icon="certificate" small>{t.report.myCerts}</Btn>
+            <Btn onClick={()=>doContract(inv,s,lang)} variant="teal" icon="pen" small>{t.contract.print}</Btn>
+            <Btn onClick={()=>downloadContract(inv,s,lang)} variant="ghost" icon="download" small>{t.contract.download}</Btn>
+          </div>}
         </Card>);
       })}
     </div>
 
-    {editId!==null&&draft&&<Modal title={t.investor.editInfo} icon="investors" wide onClose={()=>{setEditId(null);setDraft(null);}}><InvestorForm d={draft} setD={setDraft} onSave={saveEdit} onCancel={()=>{setEditId(null);setDraft(null);}} saveLabel={t.save}/></Modal>}
-    {showAdd&&addDraft&&<Modal title={t.investor.add} icon="investors" wide onClose={()=>{setShowAdd(false);setAddDraft(null);}}><InvestorForm d={addDraft} setD={setAddDraft} onSave={saveAdd} onCancel={()=>{setShowAdd(false);setAddDraft(null);}} saveLabel={t.confirm}/></Modal>}
+    {editId!==null&&draft&&<Modal title={t.investor.editInfo} icon="investors" wide onClose={()=>{setEditId(null);setDraft(null);}}><InvestorForm d={draft} setD={setDraft} onSave={saveEdit} onCancel={()=>{setEditId(null);setDraft(null);}} saveLabel={t.save} settingsData={data.settings}/></Modal>}
+    {showAdd&&addDraft&&<Modal title={t.investor.add} icon="investors" wide onClose={()=>{setShowAdd(false);setAddDraft(null);}}><InvestorForm d={addDraft} setD={setAddDraft} onSave={saveAdd} onCancel={()=>{setShowAdd(false);setAddDraft(null);}} saveLabel={t.confirm} settingsData={data.settings}/></Modal>}
     {goalModal!==null&&<Modal title={t.investor.setGoal} icon="target" iconColor={C.green} onClose={()=>setGoalModal(null)}>
       <Field label="Montant objectif (F CFA)" value={goalDraft.goal} onChange={v=>setGoalDraft(g=>({...g,goal:parseFloat(v)||0}))} type="number"/>
       <Field label="Libellé de l'objectif" value={goalDraft.goalLabel} onChange={v=>setGoalDraft(g=>({...g,goalLabel:v}))} hint="Ex: Profit cible 2026"/>
@@ -1321,6 +1609,21 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
     <div style={{marginBottom:20}}><h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{t.settings.title}</h2><div style={{color:C.muted,fontSize:12,marginTop:2}}>Configuration système — Accès Admin</div></div>
     <div style={{maxWidth:640}}>
 
+      {/* Category Management */}
+      <div style={cs}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="activity" size={13} color={C.purple}/><span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.categoriesMgmt}</span></div>
+        <div style={{color:C.muted,fontSize:11,marginBottom:12}}>Ces catégories sont utilisées dans les activités des rapports et dans les contrats d'investissement.</div>
+        {(s.categories||DEFAULT_CATEGORIES).map((cat,i)=>(
+          <div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+            <input value={cat} onChange={e=>{const newCats=[...(s.categories||DEFAULT_CATEGORIES)];newCats[i]=e.target.value;setData(d=>({...d,settings:{...d.settings,categories:newCats}}));}} style={{flex:1,background:C.surface,border:`1px solid ${C.border2}`,borderRadius:6,padding:"7px 10px",color:C.text,fontSize:12,outline:"none"}}/>
+            <Btn onClick={()=>{const newCats=(s.categories||DEFAULT_CATEGORIES).filter((_,j)=>j!==i);setData(d=>({...d,settings:{...d.settings,categories:newCats}}));}} variant="red" small icon="trash"/>
+          </div>
+        ))}
+        <div style={{marginTop:8}}>
+          <Btn onClick={()=>setData(d=>({...d,settings:{...d.settings,categories:[...(d.settings.categories||DEFAULT_CATEGORIES),"Nouvelle catégorie"]}}))} variant="secondary" icon="plus" small>{t.settings.addCategory}</Btn>
+        </div>
+      </div>
+
       {/* Theme */}
       <div style={cs}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name={theme==="dark"?"moon":"sun"} size={13} color={C.yellow}/><span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.theme}</span></div>
@@ -1432,7 +1735,7 @@ export default function App(){
     dashboard: <Dashboard  data={data} session={session} t={t}/>,
     analytics: <Analytics  data={data} session={session} t={t}/>,
     reports:   <Reports    data={data} setData={setData} session={session} t={t}/>,
-    investors: <Investors  data={data} setData={setData} session={session} t={t}/>,
+    investors: <Investors  data={data} setData={setData} session={session} t={t} lang={lang}/>,
     users:     can(session,"manage_users")?<UsersPanel data={data} setData={setData} session={session} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     audit:     can(session,"view_audit")?<AuditLog data={data} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     settings:  <Settings   data={data} setData={setData} session={session} t={t} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>,
