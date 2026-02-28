@@ -334,7 +334,7 @@ function Modal({title,icon,iconColor,children,onClose,wide,extraWide}){
           {icon&&<div style={{width:28,height:28,borderRadius:8,background:(iconColor||C.blue)+"22",display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name={icon} size={14} color={iconColor||C.blue}/></div>}
           <span style={{color:C.text,fontSize:15,fontWeight:700}}>{title}</span>
         </div>
-        <button onClick={onClose} style={{background:C.surface,border:`1px solid ${C.border}`,color:C.muted,cursor:"pointer",borderRadius:7,width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="close" size={11} color={C.muted}/></button>
+        <button onClick={onClose} style={{background:C.surface,border:`1px solid ${C.border}44`,color:C.muted,cursor:"pointer",borderRadius:7,width:26,height:26,display:"flex",alignItems:"center",justifyContent:"center"}}><Icon name="close" size={11} color={C.muted}/></button>
       </div>{children}
     </Card>
   </div>);
@@ -367,7 +367,7 @@ function Btn({children,onClick,variant="primary",icon,style={},small,disabled}){
     yellow:{background:C.yellow,color:"#111",border:"none"},
     red:{background:"rgba(127,29,29,0.35)",color:"#fca5a5",border:"1px solid rgba(239,68,68,0.35)"},
     secondary:{background:"transparent",color:C.blue,border:`1px solid ${C.blue}55`},
-    ghost:{background:"transparent",color:C.dim,border:`1px solid ${C.border}`},
+    ghost:{background:"transparent",color:C.dim,border:`1px solid ${C.border}44`},
     orange:{background:"rgba(251,191,36,0.15)",color:"#fbbf24",border:"1px solid rgba(251,191,36,0.35)"},
     teal:{background:"rgba(20,184,166,0.15)",color:"#2dd4bf",border:"1px solid rgba(20,184,166,0.35)"},
     purple:{background:"rgba(156,39,176,0.2)",color:"#ce93d8",border:"1px solid rgba(156,39,176,0.4)"},
@@ -387,7 +387,7 @@ function ConfirmModal({open,title,message,itemName,itemType,onConfirm,onCancel,l
   if(!open)return null;
   return(
     <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.65)",backdropFilter:"blur(4px)"}} onClick={onCancel}>
-      <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:16,padding:"28px 32px",maxWidth:440,width:"90%",boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}} onClick={e=>e.stopPropagation()}>
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:16,padding:"28px 32px",maxWidth:440,width:"90%",boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:52,height:52,borderRadius:13,background:`${C.red}18`,border:`1px solid ${C.red}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,margin:"0 auto 18px"}}>&#128465;</div>
         <div style={{color:C.text,fontWeight:800,fontSize:17,textAlign:"center",marginBottom:8}}>{title}</div>
         <div style={{color:C.muted,fontSize:13,textAlign:"center",marginBottom:16,lineHeight:1.5}}>{message}</div>
@@ -401,7 +401,7 @@ function ConfirmModal({open,title,message,itemName,itemType,onConfirm,onCancel,l
           {lang==="fr"?"Attention : cette action est irreversible.":"Warning: this action cannot be undone."}
         </div>
         <div style={{display:"flex",gap:10}}>
-          <button onClick={onCancel} style={{flex:1,padding:"10px",borderRadius:9,border:`1px solid ${C.border}`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+          <button onClick={onCancel} style={{flex:1,padding:"10px",borderRadius:9,border:`1px solid ${C.border}44`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600}}>{lang==="fr"?"Annuler":"Cancel"}</button>
           <button onClick={onConfirm} style={{flex:1,padding:"10px",borderRadius:9,border:"none",background:C.red,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
             <Icon name="trash" size={13} color="#fff"/>{lang==="fr"?"Supprimer":"Delete permanently"}
           </button>
@@ -453,6 +453,35 @@ function ProgressBar({value,max,color,label,showPct=true}){
 }
 
 // ── PRINT / PDF / CERTIFICATE ───────────────────────────────────────────────────
+// ── Shared print header builder ──────────────────────────────────────────────────
+function buildPrintHeader(catLine1="",catLine2="",dateStr=""){
+  const d=dateStr||new Date().toLocaleDateString("fr-FR",{year:"numeric",month:"long",day:"numeric"});
+  return`<div style="background:#1a1a2e;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <svg width="46" height="46" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <circle cx="50" cy="50" r="48" fill="#1c1e26"/>
+        <path d="M50 2 A48 48 0 0 1 98 50 L50 50 Z" fill="#4285F4"/>
+        <path d="M98 50 A48 48 0 0 1 50 98 L50 50 Z" fill="#34A853"/>
+        <path d="M50 98 A48 48 0 0 1 2 50 L50 50 Z" fill="#FBBC05"/>
+        <path d="M2 50 A48 48 0 0 1 50 2 L50 50 Z" fill="#EA4335"/>
+        <path d="M55 16 L36 52 L50 52 L44 84 L64 46 L50 46 Z" fill="white"/>
+      </svg>
+      <div>
+        <div style="font-size:22px;font-weight:900;letter-spacing:-0.5px;line-height:1.1;font-family:'Segoe UI',Arial,sans-serif;">
+          <span style="color:#4285F4;font-weight:900">T</span><span style="color:#4285F4;font-weight:900">h</span><span style="color:#EA4335;font-weight:900">u</span><span style="color:#EA4335;font-weight:900">n</span><span style="color:#FBBC05;font-weight:900">d</span><span style="color:#FBBC05;font-weight:900">e</span><span style="color:#FBBC05;font-weight:900">r</span><span style="color:#34A853;font-weight:900">f</span><span style="color:#34A853;font-weight:900">a</span><span style="color:#34A853;font-weight:900">m</span> <span style="color:#ffffff;font-weight:700">Investment</span>
+        </div>
+        <div style="color:rgba(255,255,255,0.45);font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-top:4px;font-family:'Segoe UI',Arial,sans-serif;">IN — CÔTE D'IVOIRE</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 18px;text-align:right;font-family:'Segoe UI',Arial,sans-serif;">
+      ${catLine1?`<div style="color:#ffffff;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">${catLine1}</div>`:""}
+      ${catLine2?`<div style="color:rgba(255,255,255,0.75);font-size:11px;margin-bottom:4px;">${catLine2}</div>`:""}
+      <div style="color:rgba(255,255,255,0.5);font-size:10px;">Généré le ${d}</div>
+    </div>
+  </div>`;
+}
+const TF_HEADER_CSS=``;
+
 function buildReportHTML(report,calc,investors,settings,lang="fr"){
   const tp=T[lang].print;const tl=T[lang].investor;const locale=lang==="fr"?"fr-FR":"en-GB";
   const C=_C;const inv=investors.find(i=>i.id===report.investorId)||{};
@@ -460,8 +489,8 @@ function buildReportHTML(report,calc,investors,settings,lang="fr"){
   const actRows=report.activities.map(a=>`<tr><td>${a.date}</td><td class="cat">${a.category}</td><td>${a.description}</td><td class="num">${cellHTML(a.invested)}</td><td class="num">${cellHTML(a.revenue,"blue")}</td><td class="num">${cellHTML(a.expenses,"red")}</td><td class="num">${cellHTML(a.profit,"green")}</td></tr>`).join("");
   const expRows=report.additionalExpenses.map(e=>`<tr><td colspan="5">${e.label}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`).join("");
   const sigBlock=report.signatures?.length?`<div style="margin-top:16px;padding:12px;background:#f0f4ff;border-radius:8px;border:1px solid #c7d7ff"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin-bottom:8px">${tp.signatures}</div>${report.signatures.map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:10px"><span>✅ ${s.name}</span><span style="color:#888">${s.date}</span></div>`).join("")}</div>`:"";
-  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.header-band{background:#1a1a2e;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}.brand-txt{font-size:20px;font-weight:900;letter-spacing:-0.5px;}.brand-txt .b{color:#4285F4;}.brand-txt .r{color:#EA4335;}.brand-txt .y{color:#FBBC05;}.brand-txt .g{color:#34A853;}.brand-sub{color:rgba(255,255,255,0.55);font-size:8px;letter-spacing:.12em;text-transform:uppercase;margin-top:3px;}.rep-badge{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.18);border-radius:6px;padding:8px 14px;color:rgba(255,255,255,0.9);font-size:9px;text-align:right;line-height:1.6;}.rep-badge strong{font-size:12px;color:#fff;display:block;font-weight:800;letter-spacing:.04em;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
-<div class="header-band"><div style="display:flex;align-items:center;gap:12px;"><svg width="44" height="44" viewBox="0 0 100 100" style="flex-shrink:0"><circle cx="50" cy="50" r="48" fill="#1c1e26"/><path d="M50 2 A48 48 0 0 1 98 50 L50 50 Z" fill="#4285F4"/><path d="M98 50 A48 48 0 0 1 50 98 L50 50 Z" fill="#34A853"/><path d="M50 98 A48 48 0 0 1 2 50 L50 50 Z" fill="#FBBC05"/><path d="M2 50 A48 48 0 0 1 50 2 L50 50 Z" fill="#EA4335"/><path d="M55 16 L36 52 L50 52 L44 84 L64 46 L50 46 Z" fill="white"/></svg><div><div class="brand-txt"><span class="b">Th</span><span class="r">un</span><span class="y">der</span><span class="g">fam</span> <span style="color:white;">Investment</span></div><div class="brand-sub">IN — CÔTE D'IVOIRE</div></div></div><div class="rep-badge"><strong>${tp.reportTitle}</strong>${report.label}<br/>${tp.generatedOn} ${fmtDate()}</div></div>
+  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
+${buildPrintHeader(lang==="fr"?"Rapport Financier Mensuel":"Monthly Financial Report",report.label)}
 <div class="inv-box"><div><span class="lbl">${tp.investorLabel}</span>${inv.name||"—"}</div><div><span class="lbl">${tp.representativeLabel}</span>${inv.representative||"—"}</div><div><span class="lbl">Email</span>${inv.email||"—"}</div><div><span class="lbl">${tp.phoneLabel}</span>${inv.phone||"—"}</div><div><span class="lbl">${tp.addressLabel}</span>${inv.address||"—"}</div><div><span class="lbl">${tp.countryLabel}</span>${inv.country||"—"}</div></div>
 <div class="kpi"><div class="kpi-card k1"><div class="kpi-lbl">${tp.openingCapital}</div>${cellHTML(report.openingInvestment)}</div><div class="kpi-card k2"><div class="kpi-lbl">${tp.totalRevenue}</div>${cellHTML(calc.totalRevenue,"blue")}</div><div class="kpi-card k3"><div class="kpi-lbl">${tp.totalExpenses}</div>${cellHTML(calc.totalExpenses,"red")}</div><div class="kpi-card k4"><div class="kpi-lbl">${tp.netProfit}</div>${cellHTML(calc.netProfit,"green")}</div><div class="kpi-card k5"><div class="kpi-lbl">${tp.newCapital}</div>${cellHTML(calc.newInvestment)}</div></div>
 <div class="sec-title" style="color:#4285F4">${tp.activities}</div>
@@ -809,7 +838,7 @@ Date demande      : ${fmtDateTime()}
           <div style={{color:C.muted,fontSize:10,letterSpacing:"0.12em",textTransform:"uppercase",marginTop:3}}>IN — Côte d'Ivoire</div>
         </div>
 
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:22,boxShadow:"0 24px 60px rgba(0,0,0,0.5)"}}>
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:22,boxShadow:"0 24px 60px rgba(0,0,0,0.5)"}}>
           <div style={{display:"flex",gap:4,background:C.surface,borderRadius:9,padding:4,marginBottom:20}}>
             {[["login",t.login.title],["register",t.register.title]].map(([k,label])=>(
               <button key={k} onClick={()=>{setTab(k);setErr("");setRegDone(false);}} style={{flex:1,padding:"7px",borderRadius:7,border:"none",background:tab===k?C.blue:"transparent",color:tab===k?"#fff":C.muted,cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:12}}>{label}</button>
@@ -821,10 +850,10 @@ Date demande      : ${fmtDateTime()}
             <div style={{marginBottom:16,position:"relative"}}><label style={lbl}>{t.login.password} *</label><input type={showPw?"text":"password"} value={pw} onChange={e=>setPw(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doLogin()} style={inp}/><button onClick={()=>setShowPw(v=>!v)} style={{position:"absolute",right:10,bottom:8,background:"none",border:"none",cursor:"pointer"}}><Icon name="eye" size={15} color={C.muted}/></button></div>
             {err&&<div style={{background:"rgba(127,29,29,0.3)",border:"1px solid rgba(239,68,68,0.3)",color:"#fca5a5",borderRadius:7,padding:"8px 12px",marginBottom:12,fontSize:12}}>{err}</div>}
             <button onClick={doLogin} style={{width:"100%",padding:"11px",background:C.blue,color:"#fff",border:"none",borderRadius:9,cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:14}}>🔓 {t.login.btn}</button>
-            <div style={{marginTop:16,padding:10,background:C.surface,borderRadius:8,border:`1px solid ${C.border}`}}>
+            <div style={{marginTop:16,padding:10,background:C.surface,borderRadius:8,border:`1px solid ${C.border}44`}}>
               <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>{t.demoAccounts}</div>
               {[["admin","admin123","admin",C.red],["manager","manager123","manager",C.blue],["investor1","invest123","investor",C.green]].map(([u,p,r,col])=>(
-                <div key={u} onClick={()=>{setUn(u);setPw(p);}} style={{display:"flex",justifyContent:"space-between",padding:"5px 8px",borderRadius:6,cursor:"pointer",background:"rgba(255,255,255,0.03)",marginBottom:3,border:`1px solid ${C.border}`}}>
+                <div key={u} onClick={()=>{setUn(u);setPw(p);}} style={{display:"flex",justifyContent:"space-between",padding:"5px 8px",borderRadius:6,cursor:"pointer",background:"rgba(255,255,255,0.03)",marginBottom:3,border:`1px solid ${C.border}44`}}>
                   <span style={{color:C.dim,fontSize:11}}><span style={{color:col,fontWeight:700}}>{u}</span> / {p}</span>
                   <RoleBadge role={r} lang={lang}/>
                 </div>
@@ -868,7 +897,7 @@ Date demande      : ${fmtDateTime()}
                       <input type={showRegPw?"text":"password"} value={reg.password} onChange={e=>setReg(r=>({...r,password:e.target.value}))} style={{...inp,padding:"8px 36px 8px 12px",fontSize:12,borderColor:reg.password?(pwValid?"#34A853":"rgba(255,255,255,0.12)"):"rgba(255,255,255,0.12)"}}/>
                       <button type="button" onClick={()=>setShowRegPw(v=>!v)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:2}}><Icon name="eye" size={14} color={C.muted}/></button>
                     </div>
-                    {reg.password.length>0&&<div style={{marginTop:6,padding:"8px 10px",background:C.surface,borderRadius:7,border:`1px solid ${C.border}`,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"3px 12px"}}>
+                    {reg.password.length>0&&<div style={{marginTop:6,padding:"8px 10px",background:C.surface,borderRadius:7,border:`1px solid ${C.border}44`,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"3px 12px"}}>
                       {[[pwChecks.len,lang==="fr"?"≥ 10 caractères":"≥ 10 chars"],[pwChecks.alpha,lang==="fr"?"Lettre a-z":"Letter a-z"],[pwChecks.num,lang==="fr"?"Chiffre 0-9":"Digit 0-9"],[pwChecks.symbol,lang==="fr"?"Symbole !@#":"Symbol !@#"]].map(([ok,label],i)=>(
                         <div key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:10}}>
                           <span style={{color:ok?"#34A853":"#EA4335",fontSize:12}}>{ok?"✓":"✗"}</span>
@@ -1096,7 +1125,7 @@ function Analytics({data,session,t,lang}){
             </div>
           )}
           {[[t.report.netProfit,cA.netProfit,cB.netProfit,C.yellow],[t.report.totalRevenue,cA.totalRevenue,cB.totalRevenue,C.blue],[t.report.totalExpenses,cA.totalExpenses,cB.totalExpenses,C.red],[t.analytics.capitalEvolution,cA.newInvestment,cB.newInvestment,C.green]].map(([label,vA,vB,col])=>(
-            <div key={label} style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",padding:"7px 0",borderBottom:`1px solid ${C.border}`,fontSize:11}}>
+            <div key={label} style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",padding:"7px 0",borderBottom:`1px solid ${C.border}44`,fontSize:11}}>
               <div style={{textAlign:"right",color:col,fontWeight:700}}>{fmtNum(vA)}</div>
               <div style={{textAlign:"center",color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em"}}>{label}</div>
               <div style={{textAlign:"left",color:col,fontWeight:700}}>{fmtNum(vB)}</div>
@@ -1203,9 +1232,9 @@ function Dashboard({data,session,t}){
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="activity" size={13} color={C.yellow}/><span style={{color:C.text,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.dashboard.recentActivity}</span></div>
       <div style={{overflowX:"auto"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr>{[t.activity.date,t.activity.description,t.activity.invested,t.activity.revenue,t.activity.profit].map((h,i)=><th key={i} style={{color:C.muted,fontWeight:700,padding:"6px 10px",textAlign:i>1?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}`}}>{h}</th>)}</tr></thead>
+          <thead><tr>{[t.activity.date,t.activity.description,t.activity.invested,t.activity.revenue,t.activity.profit].map((h,i)=><th key={i} style={{color:C.muted,fontWeight:700,padding:"6px 10px",textAlign:i>1?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`}}>{h}</th>)}</tr></thead>
           <tbody>{myReports.flatMap(r=>r.activities).slice(-6).reverse().map(a=>(
-            <tr key={a.id} style={{borderBottom:`1px solid ${C.border}`}}>
+            <tr key={a.id} style={{borderBottom:`1px solid ${C.border}44`}}>
               <td style={{padding:"7px 10px",color:C.muted,verticalAlign:"top"}}>{a.date}</td>
               <td style={{padding:"7px 10px",color:C.text,verticalAlign:"top"}}>{a.description}{a.attachments?.length>0&&<span style={{marginLeft:6,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}</td>
               <td style={{padding:"7px 10px",verticalAlign:"top"}}><Amt n={a.invested} settings={s} color={C.muted} size={11}/></td>
@@ -1222,7 +1251,7 @@ function Dashboard({data,session,t}){
       <Card accent={C.yellow} style={{padding:14,marginTop:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}><Icon name="bell" size={13} color={C.yellow}/><span style={{color:C.yellow,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.notifications}</span></div>
         {data.notifications.filter(n=>!n.read).slice(0,3).map(n=>(
-          <div key={n.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:7,background:C.surface,marginBottom:6,border:`1px solid ${C.border}`}}>
+          <div key={n.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:7,background:C.surface,marginBottom:6,border:`1px solid ${C.border}44`}}>
             <div style={{width:8,height:8,borderRadius:"50%",background:n.type==="success"?C.green:n.type==="warning"?C.yellow:C.blue,flexShrink:0}}/>
             <span style={{color:C.dim,fontSize:12,flex:1}}>{n.msg}</span>
             <span style={{color:C.muted,fontSize:10}}>{n.date}</span>
@@ -1290,7 +1319,7 @@ function Reports({data,setData,session,t,lang}){
   const attachToActivity=async(actId)=>{const inp=document.createElement("input");inp.type="file";inp.accept="image/*,.pdf";inp.onchange=async e=>{const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=ev=>{setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,activities:r.activities.map(a=>a.id!==actId?a:{...a,attachments:[...(a.attachments||[]),{name:f.name,data:ev.target.result,type:f.type,size:f.size}]})})}));addAudit(setData,session,"Document joint",f.name,"create");};reader.readAsDataURL(f);};inp.click();};
 
   const tabColors=[C.blue,C.red,C.yellow,C.green];
-  const TH=({children,right=false})=><th style={{color:C.muted,fontWeight:700,padding:"6px 8px",textAlign:right?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap"}}>{children}</th>;
+  const TH=({children,right=false})=><th style={{color:C.muted,fontWeight:700,padding:"6px 8px",textAlign:right?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{children}</th>;
 
   return(<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
@@ -1304,7 +1333,7 @@ function Reports({data,setData,session,t,lang}){
     {visibleReports.length===0&&<div style={{textAlign:"center",padding:40,color:C.muted}}>{t.report.noReports}</div>}
 
     {visibleReports.length>0&&(
-      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14,background:C.surface,padding:5,borderRadius:10,border:`1px solid ${C.border}`}}>
+      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14,background:C.surface,padding:5,borderRadius:10,border:`1px solid ${C.border}44`}}>
         {visibleReports.map((r,i)=>{const col=tabColors[i%4];const active=selId===r.id;const lc=calcReport(r);return(
           <button key={r.id} onClick={()=>setSelId(r.id)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:active?col+"20":"transparent",color:active?col:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:active?700:400,borderLeft:active?`3px solid ${col}`:"3px solid transparent",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
             <span>{r.label}</span>
@@ -1323,7 +1352,7 @@ function Reports({data,setData,session,t,lang}){
       </div>
 
       {/* Actions bar */}
-      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:12,background:C.surface,padding:"10px 14px",borderRadius:9,border:`1px solid ${C.border}`}}>
+      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:12,background:C.surface,padding:"10px 14px",borderRadius:9,border:`1px solid ${C.border}44`}}>
         <Badge closed={locked}/>
         {report.signatures?.length>0&&<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 9px",borderRadius:20,background:`${C.green}22`,color:C.green,border:`1px solid ${C.green}44`,fontSize:10,fontWeight:700}}>✅ {report.signatures.length} {t.report.signed.toLowerCase()}</span>}
         {can(session,"close_report")&&(locked?<Btn onClick={()=>askLock("unlock")} variant="ghost" icon="unlock" small>{t.report.unlock}</Btn>:<Btn onClick={()=>askLock("close")} variant="red" icon="lock" small>{t.report.closeReport}</Btn>)}
@@ -1352,7 +1381,7 @@ function Reports({data,setData,session,t,lang}){
             {report.activities.map((a,i)=>(
               <div key={a.id} style={{position:"relative",marginBottom:14}}>
                 <div style={{position:"absolute",left:-20,top:3,width:12,height:12,borderRadius:"50%",background:tabColors[i%4],border:`2px solid ${C.card}`,boxShadow:`0 0 0 2px ${tabColors[i%4]}44`}}/>
-                <div style={{background:C.surface,borderRadius:8,padding:"10px 14px",border:`1px solid ${C.border}`}}>
+                <div style={{background:C.surface,borderRadius:8,padding:"10px 14px",border:`1px solid ${C.border}44`}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
                     <span style={{color:C.text,fontWeight:600,fontSize:12}}>{a.description}</span>
                     <span style={{color:C.muted,fontSize:10}}>{a.date}</span>
@@ -1404,7 +1433,7 @@ function Reports({data,setData,session,t,lang}){
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
             <thead><tr><TH>{t.activity.date}</TH><TH>{t.activity.category}</TH><TH>{t.activity.description}</TH><TH right>{t.activity.invested}</TH><TH right>{t.activity.revenue}</TH><TH right>{t.activity.expenses}</TH><TH right>{t.activity.profit}</TH><TH/></tr></thead>
             <tbody>{report.activities.map(a=>{const editing=editActId===a.id&&actDraft;return(
-              <tr key={a.id} style={{borderBottom:`1px solid ${C.border}`,background:editing?C.surface+"88":"transparent",verticalAlign:"top"}}>
+              <tr key={a.id} style={{borderBottom:`1px solid ${C.border}44`,background:editing?C.surface+"88":"transparent",verticalAlign:"top"}}>
                 {editing?(<>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.date}        onChange={v=>setActDraft(d=>({...d,date:v}))}        type="date"/></td>
                   <td style={{padding:"4px 5px"}}><EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
@@ -1456,7 +1485,7 @@ function Reports({data,setData,session,t,lang}){
           </div>
         )}
         {report.additionalExpenses.map(e=>{const editing=editExpId===e.id&&expDraft;return(
-          <div key={e.id} style={{display:"flex",alignItems:"flex-start",padding:"8px 0",borderBottom:`1px solid ${C.border}`,gap:8}}>
+          <div key={e.id} style={{display:"flex",alignItems:"flex-start",padding:"8px 0",borderBottom:`1px solid ${C.border}44`,gap:8}}>
             {editing?(<><div style={{flex:2}}><EditCell value={expDraft.label} onChange={v=>setExpDraft(d=>({...d,label:v}))}/></div><div style={{flex:1}}><EditCell value={expDraft.amount} onChange={v=>setExpDraft(d=>({...d,amount:parseFloat(v)||0}))} type="number" style={{textAlign:"right"}}/></div><Btn onClick={saveExp} variant="green" small><Icon name="check" size={11} color="#fff"/></Btn><Btn onClick={()=>{setEditExpId(null);setExpDraft(null);}} variant="ghost" small><Icon name="close" size={11} color={C.muted}/></Btn></>):(<><span style={{flex:2,color:C.dim,fontSize:13,paddingTop:4}}>{e.label}</span><div style={{flex:1}}><Amt n={e.amount} settings={s} color={C.red} size={12}/></div>{can(session,"edit_expense")&&!locked&&<div style={{display:"flex",gap:3,flexShrink:0}}><Btn onClick={()=>startEditExp(e)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_expense")&&<Btn onClick={()=>delExp(e.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</div>}</>)}
           </div>
         );})}
@@ -1485,7 +1514,7 @@ function Reports({data,setData,session,t,lang}){
           {can(session,"print")&&<Btn onClick={()=>doCertificate(data.investors.find(i=>i.id===report.investorId)||data.investors[0],data.reports.filter(r=>r.investorId===report.investorId),s,lang)} variant="orange" icon="certificate" small>{t.report.myCerts}</Btn>}
         </div>
         {[[t.report.openingCapital,report.openingInvestment,C.muted],[t.report.totalRevenue,calc.totalRevenue,C.blue],[t.report.totalExpenses,calc.totalExpenses,C.red],[t.report.netProfit,calc.netProfit,C.green],[t.report.newInvestment,calc.newInvestment,C.yellow]].map(([label,val,color])=>(
-          <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"9px 0",borderBottom:`1px solid ${C.border}`}}>
+          <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"9px 0",borderBottom:`1px solid ${C.border}44`}}>
             <span style={{color:C.muted,fontSize:13,paddingTop:4}}>{label}</span>
             <Amt n={Math.abs(val)} settings={s} color={color} size={14}/>
           </div>
@@ -1517,7 +1546,7 @@ function Investors({data,setData,session,t,lang}){
   const saveEdit=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===editId?draft:i)}));addAudit(setData,session,"Investisseur modifié",draft.name,"update");setEditId(null);setDraft(null);};
   const saveAdd=()=>{const totalCats=(addDraft.investmentCategories||[]).reduce((s,c)=>s+(c.amount||0),0);const ni={...addDraft,initialInvestment:totalCats||addDraft.initialInvestment||0,currentInvestment:totalCats||addDraft.initialInvestment||0,id:Date.now(),goal:0,goalLabel:"",sharedTokens:[]};setData(d=>({...d,investors:[...d.investors,ni]}));addAudit(setData,session,"Investisseur créé",addDraft.name,"create");setShowAdd(false);setAddDraft(null);};
   const saveGoal=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===goalModal?{...i,...goalDraft}:i)}));setGoalModal(null);};
-  const InfoRow=({icon,label,value})=>(<div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"5px 0",borderBottom:`1px solid ${C.border}`}}><Icon name={icon} size={12} color={C.muted}/><div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700}}>{label}</div><div style={{color:C.dim,fontSize:12,marginTop:1}}>{value||"—"}</div></div></div>);
+  const InfoRow=({icon,label,value})=>(<div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"5px 0",borderBottom:`1px solid ${C.border}44`}}><Icon name={icon} size={12} color={C.muted}/><div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700}}>{label}</div><div style={{color:C.dim,fontSize:12,marginTop:1}}>{value||"—"}</div></div></div>);
   const InvestorForm=({d,setD,onSave,onCancel,saveLabel,settingsData})=>{
     const C=_C;
     const cats=settingsData?.categories||DEFAULT_CATEGORIES;
@@ -1570,7 +1599,7 @@ function Investors({data,setData,session,t,lang}){
         </div>
         {(d.investmentCategories||[]).length===0&&<div style={{color:C.muted,fontSize:11,fontStyle:"italic",padding:"8px 0"}}>{t.investor.noCats}</div>}
         {(d.investmentCategories||[]).map((c,i)=>(
-          <div key={i} style={{display:"flex",gap:8,alignItems:"flex-end",marginBottom:8,background:C.surface,padding:"8px 12px",borderRadius:8,border:`1px solid ${C.border}`}}>
+          <div key={i} style={{display:"flex",gap:8,alignItems:"flex-end",marginBottom:8,background:C.surface,padding:"8px 12px",borderRadius:8,border:`1px solid ${C.border}44`}}>
             <div style={{flex:2}}>
               <div style={{color:C.muted,fontSize:9,marginBottom:3,textTransform:"uppercase",fontWeight:700}}>{t.activity.category}</div>
               <select value={c.category} onChange={e=>updateCat(i,"category",e.target.value)} style={{width:"100%",background:C.bg,border:`1px solid ${C.border2}`,borderRadius:6,padding:"7px 10px",color:C.text,fontSize:12,outline:"none"}}>
@@ -1658,7 +1687,7 @@ function Investors({data,setData,session,t,lang}){
 
           {/* Financial rows */}
           {[[t.investor.initial,inv.initialInvestment,C.muted],[t.investor.current,inv.currentInvestment,col],[t.investor.profit,inv.cumulativeProfit,C.green]].map(([label,val,color])=>(
-            <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderBottom:`1px solid ${C.border}`}}>
+            <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderBottom:`1px solid ${C.border}44`}}>
               <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",fontWeight:700,paddingTop:3}}>{label}</span>
               <Amt n={val} settings={s} color={color} size={11}/>
             </div>
@@ -1688,7 +1717,7 @@ function Investors({data,setData,session,t,lang}){
           <div style={{marginTop:12}}>
             <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700,marginBottom:6}}>{t.investor.history}</div>
             {invReports.map((r,ri)=>{const c=calcReport(r);const rc=invColors[ri%4];return(
-              <div key={r.id} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:11,borderBottom:`1px solid ${C.border}`}}>
+              <div key={r.id} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:11,borderBottom:`1px solid ${C.border}44`}}>
                 <span style={{color:C.muted,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"55%"}}>{r.label.substring(0,22)}</span>
                 <span style={{color:rc,fontWeight:700}}>+{fmtNum(c.netProfit)} F</span>
               </div>
@@ -1742,7 +1771,7 @@ function AuditLog({data,t}){
           <div key={log.id} style={{position:"relative",marginBottom:10,paddingLeft:16}}>
             <div style={{position:"absolute",left:-17,top:10,width:12,height:12,borderRadius:"50%",background:col,border:`2px solid ${C.card}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
             </div>
-            <div style={{background:C.surface,borderRadius:8,padding:"10px 14px",border:`1px solid ${C.border}`}}>
+            <div style={{background:C.surface,borderRadius:8,padding:"10px 14px",border:`1px solid ${C.border}44`}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <div style={{width:22,height:22,borderRadius:6,background:col+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Icon name={ico} size={11} color={col}/></div>
@@ -1780,7 +1809,7 @@ function UsersPanel({data,setData,session,t}){
   const saveEdit=()=>{setData(d=>({...d,users:d.users.map(u=>u.id===editUser.id?editUser:u)}));addAudit(setData,session,"Utilisateur modifié",editUser.name,"update");setEditUser(null);};
   const doResetPwd=()=>{if(!newPwd)return;setData(d=>({...d,users:d.users.map(u=>u.id===showResetPwd.id?{...u,password:newPwd}:u)}));addAudit(setData,session,"Mot de passe réinitialisé",showResetPwd.name,"update");setShowResetPwd(null);setNewPwd("");};
   const createUser=()=>{if(!newUser.username||!newUser.password)return;setData(d=>({...d,users:[...d.users,{...newUser,id:Date.now(),active:true,approved:true}]}));setNewUser(null);};
-  const TH=({children,right=false})=><th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:right?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}`}}>{children}</th>;
+  const TH=({children,right=false})=><th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:right?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`}}>{children}</th>;
   return(<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
       <div><h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{t.users.title}</h2><div style={{color:C.muted,fontSize:12,marginTop:2}}>{t.users.subtitle}</div></div>
@@ -1790,7 +1819,7 @@ function UsersPanel({data,setData,session,t}){
       <Card accent={C.yellow} style={{padding:16,marginBottom:14}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><div style={{width:8,height:8,borderRadius:"50%",background:C.yellow,boxShadow:`0 0 6px ${C.yellow}`}}/><span style={{color:C.yellow,fontSize:12,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.users.pending} ({data.pendingUsers.length})</span></div>
         {data.pendingUsers.map(u=>(
-          <div key={u.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 12px",background:C.surface,borderRadius:8,border:`1px solid ${C.border}`,marginBottom:6}}>
+          <div key={u.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 12px",background:C.surface,borderRadius:8,border:`1px solid ${C.border}44`,marginBottom:6}}>
             <div><div style={{color:C.text,fontWeight:700,fontSize:13}}>{u.name}</div><div style={{color:C.muted,fontSize:11}}>{u.email} · @{u.username}</div>{u.investorData&&<div style={{color:C.yellow,fontSize:11,marginTop:2}}>Invest.: {fmtNum(u.investorData.initialInvestment)} F CFA</div>}</div>
             <div style={{display:"flex",gap:6}}><Btn onClick={()=>approveUser(u)} variant="green" icon="check" small>{t.users.approve}</Btn><Btn onClick={()=>rejectUser(u.id)} variant="red" icon="close" small>{t.users.reject}</Btn></div>
           </div>
@@ -1801,7 +1830,7 @@ function UsersPanel({data,setData,session,t}){
       <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
         <thead><tr style={{background:C.surface}}><TH>{t.users.userCol}</TH><TH>{t.users.emailCol}</TH><TH>{t.users.role}</TH><TH>{t.users.status}</TH><TH right>{t.users.actions}</TH></tr></thead>
         <tbody>{data.users.map(u=>(
-          <tr key={u.id} style={{borderBottom:`1px solid ${C.border}`,opacity:u.active?1:0.5}}>
+          <tr key={u.id} style={{borderBottom:`1px solid ${C.border}44`,opacity:u.active?1:0.5}}>
             <td style={{padding:"10px"}}><div style={{color:C.text,fontWeight:600}}>{u.name}</div><div style={{color:C.muted,fontSize:10}}>@{u.username}</div></td>
             <td style={{padding:"10px",color:C.dim,fontSize:11}}>{u.email}</td>
             <td style={{padding:"10px"}}><RoleBadge role={u.role} lang={lang}/></td>
@@ -1856,7 +1885,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
   const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime()}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
-  const cs={background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:20,marginBottom:12};
+  const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   if(!canEdit){
     return(<div>
       <h2 style={{color:C.text,fontSize:20,fontWeight:800,marginBottom:18}}>{t.settings.title}</h2>
@@ -1954,7 +1983,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <div style={{color:C.muted,fontSize:11,marginBottom:10}}>{t.settings.currenciesDesc}</div>
           <div style={{display:"flex",gap:8,marginBottom:10,flexWrap:"wrap"}}>
             <button onClick={()=>setSelected(allSelected?[]:ALL_CURRENCIES.map(c=>c.code))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${allSelected?C.blue:C.border}`,background:allSelected?`${C.blue}22`:"transparent",color:allSelected?C.blue:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:allSelected?700:400,display:"flex",alignItems:"center",gap:5}}><Icon name="check" size={12} color={allSelected?C.blue:C.muted}/>{t.settings.allCurrencies}</button>
-            <button onClick={()=>setSelected([])} style={{padding:"6px 14px",borderRadius:7,border:`1px solid ${C.border}`,background:"transparent",color:selected.length===0?C.text:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{t.settings.noCurrencies}</button>
+            <button onClick={()=>setSelected([])} style={{padding:"6px 14px",borderRadius:7,border:`1px solid ${C.border}44`,background:"transparent",color:selected.length===0?C.text:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{t.settings.noCurrencies}</button>
           </div>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
             {ALL_CURRENCIES.map(cur=>{const on=selected.includes(cur.code);return(
@@ -2025,6 +2054,8 @@ const fmtQty=(kg,unit)=>kg>=1000?`${kg/1000} ${unit==="L"?"000 L":"tonne"}${kg>=
 
 const MERCHANDISE_TYPES_FR=["Produits agricoles","Matériel agricole","Produits d'entretien agricole","Produits alimentaires","Produits cosmétiques","Matériel informatique","Matériel mécanique","Véhicule","Matériel industriel"];
 const MERCHANDISE_TYPES_EN=["Agricultural products","Agricultural equipment","Agricultural maintenance products","Food products","Cosmetic products","IT equipment","Mechanical equipment","Vehicle","Industrial equipment"];
+const TRANSPORT_TYPES_FR=["Produits agricoles","Produits d'entretien agricole","Matériel agricole","Matériaux de construction","Matériel de construction","Véhicules"];
+const TRANSPORT_TYPES_EN=["Agricultural products","Agricultural maintenance products","Agricultural equipment","Construction materials","Construction equipment","Vehicles"];
 const PERMANENT_CATEGORIES_EN=[
   "Merchandise transport","Merchandise purchase","Merchandise sale",
   "IT expertise: consulting, installation, maintenance, software & app development",
@@ -2038,9 +2069,43 @@ const PERMANENT_CATEGORIES_EN=[
   "Borrowing from financial institutions with the option to pledge company assets as collateral",
   "All financial, commercial, industrial, movable and immovable operations related to the corporate purpose",
 ];
-const CATEGORY_CONFIG_FR={"Achat de marchandise":{icon:"🛒",color:"#4285F4",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:MERCHANDISE_TYPES_FR,optionsEn:MERCHANDISE_TYPES_EN}};
-const CATEGORY_CONFIG_EN={"Merchandise purchase":{icon:"🛒",color:"#4285F4",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:MERCHANDISE_TYPES_FR,optionsEn:MERCHANDISE_TYPES_EN}};
+const CATEGORY_CONFIG_FR={
+  "Transport de marchandise":{icon:"🚚",color:"#FBBC05",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:TRANSPORT_TYPES_FR,optionsEn:TRANSPORT_TYPES_EN},
+  "Achat de marchandise":{icon:"🛒",color:"#4285F4",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:MERCHANDISE_TYPES_FR,optionsEn:MERCHANDISE_TYPES_EN}
+};
+const CATEGORY_CONFIG_EN={
+  "Merchandise transport":{icon:"🚚",color:"#FBBC05",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:TRANSPORT_TYPES_FR,optionsEn:TRANSPORT_TYPES_EN},
+  "Merchandise purchase":{icon:"🛒",color:"#4285F4",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:MERCHANDISE_TYPES_FR,optionsEn:MERCHANDISE_TYPES_EN}
+};
 const getCategoryConfig=(cat,lang)=>CATEGORY_CONFIG_FR[cat]||CATEGORY_CONFIG_EN[cat]||null;
+
+
+// ── KEDA transport data (ALEPE → destinations) ──────────────────────────────────
+const KEDA_ROUTES=[
+  {dest:"SAN PEDRO",    t35:500000,t40:550000,t45:600000,t50:650000},
+  {dest:"SOUBRÉ",       t35:500000,t40:550000,t45:600000,t50:650000},
+  {dest:"BLOLEQUIN",    t35:700000,t40:750000,t45:800000,t50:850000},
+  {dest:"GUIBÉROUA",    t35:450000,t40:500000,t45:550000,t50:600000},
+  {dest:"YAMOUSSOUKRO", t35:350000,t40:350000,t45:400000,t50:400000},
+  {dest:"DIVO",         t35:300000,t40:300000,t45:350000,t50:350000},
+  {dest:"LAKOTA",       t35:350000,t40:350000,t45:400000,t50:400000},
+  {dest:"GAGNOA",       t35:350000,t40:350000,t45:400000,t50:400000},
+  {dest:"DALOA",        t35:500000,t40:530000,t45:580000,t50:580000},
+  {dest:"VAVOUA",       t35:550000,t40:600000,t45:650000,t50:650000},
+  {dest:"DOUEKOUE",     t35:600000,t40:600000,t45:650000,t50:650000},
+  {dest:"ABENGOUROU",   t35:300000,t40:300000,t45:350000,t50:350000},
+  {dest:"BONDOUKOU",    t35:550000,t40:550000,t45:600000,t50:600000},
+  {dest:"AGNIBILÉKROU", t35:350000,t40:350000,t45:400000,t50:400000},
+  {dest:"ADZOPÉ",       t35:180000,t40:200000,t45:220000,t50:220000},
+  {dest:"TOUMODI",      t35:300000,t40:300000,t45:340000,t50:340000},
+  {dest:"BOUAKÉ",       t35:450000,t40:450000,t45:480000,t50:480000},
+  {dest:"KORHOGO",      t35:700000,t40:700000,t45:750000,t50:750000},
+  {dest:"BOUNDIALI",    t35:750000,t40:800000,t45:850000,t50:850000},
+  {dest:"KOUTO",        t35:750000,t40:800000,t45:850000,t50:850000},
+  {dest:"OUANGOLODOUGOU",t35:750000,t40:800000,t45:850000,t50:850000},
+];
+const TRANSPORT_COMPANIES_FR=["KEDA CÔTE D'IVOIRE CERAMICS","MELCHAT GHANA LIMITED"];
+const TRANSPORT_COMPANIES_EN=["KEDA CÔTE D'IVOIRE CERAMICS","MELCHAT GHANA LIMITED"];
 
 // ── Inline editable cell ─────────────────────────────────────────────────────────
 function InlineCell({value,onChange,type="text",min,step,placeholder,style={}}){
@@ -2078,10 +2143,12 @@ function CategoryDetail({category,lang,data,onBack}){
   const ci=PERMANENT_CATEGORIES.indexOf(category);
   const icon=ci>=0?ICONS[ci]:"📋";
   const color=ci>=0?COLORS[ci]:C.blue;
-  const inp={width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"10px 14px",color:C.text,fontSize:13,outline:"none",fontFamily:"inherit",cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
+  const inp={width:"100%",background:C.surface,border:`1px solid ${C.border}44`,borderRadius:8,padding:"10px 14px",color:C.text,fontSize:13,outline:"none",fontFamily:"inherit",cursor:"pointer",appearance:"none",WebkitAppearance:"none"};
 
   // ── Seasons state ──────────────────────────────────────────────────────────────
   const [confirmState,setConfirmState]=useState(null);
+  const [selectedCompany,setSelectedCompany]=useState("");
+  const [kedaRows,setKedaRows]=useState(KEDA_ROUTES.map(r=>({...r,transport:0})));
   const [seasons,setSeasons]=useState([
     {id:1,label:"Côte d'Ivoire 2025–2026",products:AGRI_SEED.map(p=>({...p}))}
   ]);
@@ -2089,6 +2156,7 @@ function CategoryDetail({category,lang,data,onBack}){
   const [showAddSeason,setShowAddSeason]=useState(false);
 
   const showAgriTable=selectedType===MERCHANDISE_TYPES_FR[0]||selectedType===MERCHANDISE_TYPES_EN[0];
+  const showConstTable=selectedType===TRANSPORT_TYPES_FR[4]||selectedType===TRANSPORT_TYPES_EN[4]; // "Matériel de construction"
   const season=seasons.find(s=>s.id===activeSeason)||seasons[0];
 
   // ── Product CRUD ───────────────────────────────────────────────────────────────
@@ -2154,29 +2222,18 @@ function CategoryDetail({category,lang,data,onBack}){
     return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${title}</title>
     <style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;font-size:12px;background:#fff;padding:20px 24px}
-      .header{background:#1a1a2e;color:#fff;padding:16px 20px;border-radius:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-      .brand{font-size:20px;font-weight:900;letter-spacing:-0.5px}
-      .brand .b{color:#4285F4}.brand .r{color:#EA4335}.brand .y{color:#FBBC05}.brand .g{color:#34A853}
-      .subtitle{color:rgba(255,255,255,0.6);font-size:10px;margin-top:3px}
+      body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2e;font-size:12px;background:#fff;}
+      .content{padding:16px 24px 20px}
       .formula{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;border-radius:7px;padding:7px 14px;font-size:10px;font-weight:700;margin-bottom:14px}
       table{width:100%;border-collapse:collapse;font-size:11px}
       th{padding:8px 10px;white-space:nowrap}
       td{padding:8px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top}
-      tr:hover td{background:#f8fafc}
-      .badge-count{background:#dcfce7;border:1px solid #86efac;color:#166534;border-radius:6px;padding:3px 10px;font-size:10px;font-weight:700}
       .footer{margin-top:16px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:9px;color:#94a3b8}
-      @media print{@page{margin:1.2cm;size:A4 landscape}body{padding:0}}
+      @media print{@page{margin:0;size:A4 landscape}}
     </style></head>
     <body>
-      <div class="header">
-        <div>
-          <div class="brand"><span class="b">T</span><span class="r">h</span><span class="y">u</span><span class="g">n</span><span class="b">d</span><span class="r">e</span><span class="y">r</span><span class="g">f</span><span class="b">a</span><span class="r">m</span> <span style="color:#fff">Investment</span></div>
-          <div class="subtitle">🌾 ${title}</div>
-        </div>
-        <div class="badge-count">${season.products.length} ${lang==="fr"?"produits":"products"}</div>
-      </div>
-      <div class="formula">📐 ${formula}</div>
+${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Merchandise purchase",lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`)}
+      <div class="content"><div class="formula">📐 ${formula}</div>
       <table>
         <thead><tr>
           ${colH(lang==="fr"?"Produit":"Product")}
@@ -2193,6 +2250,7 @@ function CategoryDetail({category,lang,data,onBack}){
       <div class="footer">
         <span>${lang==="fr"?"Source : Prix officiels + moyennes marché agricole ivoirien":"Source: Official prices + Ivorian agricultural market averages"}</span>
         <span>${lang==="fr"?"Généré le":"Generated on"} ${new Date().toLocaleDateString(lang==="fr"?"fr-FR":"en-GB",{year:"numeric",month:"long",day:"numeric"})}</span>
+      </div>
       </div>
     </body></html>`;
   };
@@ -2219,21 +2277,21 @@ function CategoryDetail({category,lang,data,onBack}){
 
   // ── Helpers ─────────────────────────────────────────────────────────────────────
   const TH=({ch,right=false,w})=>(
-    <th style={{padding:"10px 13px",textAlign:right?"right":"left",color:C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}`,whiteSpace:"nowrap",background:C.surface,width:w||"auto"}}>{ch}</th>
+    <th style={{padding:"10px 13px",textAlign:right?"right":"left",color:"#ffffff",fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap",background:C.surface,width:w||"auto"}}>{ch}</th>
   );
 
   return(
     <div style={{padding:"20px 24px",maxWidth:1300,margin:"0 auto"}}>
       {/* Back */}
       <div style={{marginBottom:16}}>
-        <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,background:"transparent",border:`1px solid ${C.border}`,borderRadius:8,padding:"6px 14px",color:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
+        <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,background:"transparent",border:`1px solid ${C.border}44`,borderRadius:8,padding:"6px 14px",color:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
           <Icon name="arrow" size={13} color={C.muted}/>{lang==="fr"?"Retour":"Back"}
         </button>
       </div>
 
       {/* TOP ROW */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20,alignItems:"stretch"}}>
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
           <div style={{width:52,height:52,borderRadius:13,background:`${color}18`,border:`1px solid ${color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>{icon}</div>
           <div>
             <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:3}}>{lang==="fr"?"Catégorie":"Category"}</div>
@@ -2242,7 +2300,7 @@ function CategoryDetail({category,lang,data,onBack}){
           </div>
         </div>
         {cfg?.hasTypeDropdown&&(
-          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:"18px 20px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"18px 20px",display:"flex",flexDirection:"column",justifyContent:"center"}}>
             <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:8}}>{lang==="fr"?cfg.dropdownLabelFr:cfg.dropdownLabelEn} *</label>
             <div style={{position:"relative"}}>
               <select value={selectedType} onChange={e=>setSelectedType(e.target.value)} style={{...inp,paddingRight:36,borderColor:selectedType?color:C.border}}>
@@ -2266,7 +2324,7 @@ function CategoryDetail({category,lang,data,onBack}){
                 <button onClick={()=>setActiveSeason(s.id)} style={{padding:"7px 16px",borderRadius:seasons.length>1?"8px 0 0 8px":8,border:`1px solid ${activeSeason===s.id?color:C.border}`,background:activeSeason===s.id?`${color}18`:"transparent",color:activeSeason===s.id?color:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:activeSeason===s.id?700:400,transition:"all .15s",whiteSpace:"nowrap"}}>
                   📅 {s.label}
                 </button>
-                {seasons.length>1&&<button onClick={()=>deleteSeason(s.id)} style={{padding:"7px 8px",borderRadius:"0 8px 8px 0",border:`1px solid ${C.border}`,borderLeft:"none",background:"transparent",color:C.red,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>✕</button>}
+                {seasons.length>1&&<button onClick={()=>deleteSeason(s.id)} style={{padding:"7px 8px",borderRadius:"0 8px 8px 0",border:`1px solid ${C.border}44`,borderLeft:"none",background:"transparent",color:C.red,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>✕</button>}
               </div>
             ))}
             <button onClick={()=>duplicateSeason(activeSeason)} style={{padding:"7px 14px",borderRadius:8,border:`1px dashed ${C.border}`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
@@ -2275,9 +2333,9 @@ function CategoryDetail({category,lang,data,onBack}){
           </div>
 
           {/* Table card */}
-          <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,overflow:"hidden"}}>
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,overflow:"hidden"}}>
             {/* Header */}
-            <div style={{padding:"15px 22px",borderBottom:`1px solid ${C.border}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
+            <div style={{padding:"15px 22px",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
               <div>
                 <div style={{fontWeight:800,fontSize:16,color:C.text}}>🌾 {lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`}</div>
               </div>
@@ -2318,7 +2376,7 @@ function CategoryDetail({category,lang,data,onBack}){
                     const profitLines=getCurrencyLines(profitFcfa,settings);
                     const isPos=profitFcfa>=0;
                     return(
-                      <tr key={p.id} style={{borderBottom:`1px solid ${C.border}22`}}
+                      <tr key={p.id} style={{borderBottom:`1px solid ${C.border}44`}}
                         onMouseEnter={e=>e.currentTarget.style.background=C.surface+"88"}
                         onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
 
@@ -2392,7 +2450,7 @@ function CategoryDetail({category,lang,data,onBack}){
             </div>
 
             {/* Footer */}
-            <div style={{padding:"11px 22px",borderTop:`1px solid ${C.border}`,display:"flex",gap:16,flexWrap:"wrap",alignItems:"center"}}>
+            <div style={{padding:"11px 22px",borderTop:`1px solid ${C.border}44`,display:"flex",gap:16,flexWrap:"wrap",alignItems:"center"}}>
               <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{lang==="fr"?"Cliquez sur une valeur pour la modifier directement dans le tableau":"Click any value to edit it directly in the table"}</span></div>
               <div style={{fontSize:10,color:C.muted,marginLeft:"auto",fontStyle:"italic"}}>{lang==="fr"?"Source : Prix officiels + moyennes marché agricole ivoirien · 2025–2026":"Source: Official prices + Ivorian agricultural market averages · 2025–2026"}</div>
             </div>
@@ -2400,22 +2458,206 @@ function CategoryDetail({category,lang,data,onBack}){
         </div>
       )}
 
+      {/* Construction materials table */}
+      {showConstTable&&(
+        <div>
+          {/* Company selector row */}
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,flexWrap:"wrap"}}>
+            <div style={{position:"relative",flex:"0 0 320px"}}>
+              <select value={selectedCompany} onChange={e=>setSelectedCompany(e.target.value)}
+                style={{width:"100%",background:C.card,border:`1px solid ${selectedCompany?C.blue:C.border}`,borderRadius:8,padding:"8px 36px 8px 12px",color:selectedCompany?C.text:C.muted,fontSize:12,outline:"none",fontFamily:"inherit",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
+                <option value="">{lang==="fr"?"— Sélectionner une société —":"— Select a company —"}</option>
+                {(lang==="en"?TRANSPORT_COMPANIES_EN:TRANSPORT_COMPANIES_FR).map((c,i)=><option key={i} value={c}>{c}</option>)}
+              </select>
+              <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:C.muted,fontSize:11}}>▼</div>
+            </div>
+          </div>
+
+          {/* KEDA table */}
+          {selectedCompany&&(selectedCompany.includes("KEDA")||selectedCompany.includes("keda"))&&(
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,overflow:"hidden"}}>
+              <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
+                <div>
+                  <div style={{fontWeight:800,fontSize:15,color:C.text}}>🏭 {selectedCompany}</div>
+                  <div style={{color:C.muted,fontSize:11,marginTop:2}}>{lang==="fr"?"Tarifs de transport ALEPE → destinations · Tonnage initial : 35T":"Transport rates ALEPE → destinations · Initial tonnage: 35T"}</div>
+                </div>
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <div style={{background:`${C.yellow}15`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>📐 Profit = Tonnage − Transport facturé</div>
+                  <div style={{background:`${C.green}15`,color:C.green,border:`1px solid ${C.green}30`,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>{kedaRows.length} trajets</div>
+                  <button onClick={()=>{
+                    const win=window.open("","_blank","width=1200,height=750");if(!win)return;
+                    const kdSettings=data?.settings||{rates:DEFAULT_RATES,selectedCurrencies:["GBP"]};
+                    const curLines=(n)=>getCurrencyLines(n,kdSettings).map(l=>`<div style="color:${l.color};font-size:9px;margin-top:1px">${l.value}</div>`).join("");
+                    const amtCell=(n,color="#1a1a2e")=>`<div style="color:${color};font-weight:700">${fmtNum(n)} <span style="color:#1a1a2e;font-weight:600">F CFA</span></div>${getCurrencyLines(n,kdSettings).map(l=>`<div style="color:${l.color};font-weight:700;font-size:11px;margin-top:1px">${l.value}</div>`).join("")}`;
+                    const profCell=(n,transport)=>{if(transport===0)return"—";const p=n-transport;const c=p>=0?"#34A853":"#EA4335";return`<div style="color:${c};font-weight:700">${p>=0?"+":"-"}${fmtNum(Math.abs(p))} <span style="color:#1a1a2e;font-weight:600">F CFA</span></div>${getCurrencyLines(Math.abs(p),kdSettings).map(l=>`<div style="color:${l.color};font-weight:700;font-size:11px;margin-top:1px">${p>=0?"+":"-"}${l.value}</div>`).join("")}`};
+                    const rows=kedaRows.map(r=>`<tr>
+                      <td><b>ALEPE – ${r.dest}</b></td>
+                      <td style="text-align:right">${amtCell(r.transport,"#9C27B0")}</td>
+                      <td style="text-align:right">${amtCell(r.t35)}</td>
+                      <td style="text-align:right">${profCell(r.t35,r.transport)}</td>
+                      <td style="text-align:right">${amtCell(r.t40)}</td>
+                      <td style="text-align:right">${profCell(r.t40,r.transport)}</td>
+                      <td style="text-align:right">${amtCell(r.t45)}</td>
+                      <td style="text-align:right">${profCell(r.t45,r.transport)}</td>
+                      <td style="text-align:right">${amtCell(r.t50)}</td>
+                      <td style="text-align:right">${profCell(r.t50,r.transport)}</td>
+                    </tr>`).join("");
+                    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${selectedCompany}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;background:#fff}.content{padding:14px 22px 20px}p.formula{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;border-radius:6px;padding:6px 12px;font-size:10px;font-weight:700;margin-bottom:12px}table{width:100%;border-collapse:collapse}th{background:#1a1a2e;color:#fff;padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:right;white-space:normal;vertical-align:top}th:first-child{text-align:left}td{padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:11px}td:first-child{text-align:left;font-weight:700}@media print{@page{size:A4 landscape;margin:0}}</style></head><body>${buildPrintHeader("Catégorie : Transport de marchandise",`Matériel de construction — ${selectedCompany}`)}<div class="content"><p class="formula">📐 Profit = Tonnage − Transport facturé</p><table><thead><tr><th style="text-align:left">Trajet<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">ALEPE →</div></th><th style="color:#CE93D8">Transport<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">facturé</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">35T – 40T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">35T – 40T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">40T – 45T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">40T – 45T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">45T – 50T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">45T – 50T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">50T+</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">50T+</div></th></tr></thead><tbody>${rows}</tbody></table></div></body></html>`;
+                    win.document.write(html);win.document.close();win.focus();setTimeout(()=>win.print(),400);
+                  }} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.blue}`,background:`${C.blue}15`,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
+                    🖨️ {lang==="fr"?"Imprimer":"Print"}
+                  </button>
+                  <button onClick={()=>{
+                    const kdSettings2=data?.settings||{rates:DEFAULT_RATES,selectedCurrencies:["GBP"]};
+                    const curLines2=(n)=>getCurrencyLines(n,kdSettings2).map(l=>`<div style="color:${l.color};font-size:9px;margin-top:1px">${l.value}</div>`).join("");
+                    const amtCell2=(n,color="#1a1a2e")=>`<div style="color:${color};font-weight:700">${fmtNum(n)} <span style="color:#1a1a2e;font-weight:600">F CFA</span></div>${getCurrencyLines(n,kdSettings2).map(l=>`<div style="color:${l.color};font-weight:700;font-size:11px;margin-top:1px">${l.value}</div>`).join("")}`;
+                    const profCell2=(n,transport)=>{if(transport===0)return"—";const p=n-transport;const c=p>=0?"#34A853":"#EA4335";return`<div style="color:${c};font-weight:700">${p>=0?"+":"-"}${fmtNum(Math.abs(p))} <span style="color:#1a1a2e;font-weight:600">F CFA</span></div>${getCurrencyLines(Math.abs(p),kdSettings2).map(l=>`<div style="color:${l.color};font-weight:700;font-size:11px;margin-top:1px">${p>=0?"+":"-"}${l.value}</div>`).join("")}`};
+                    const rows=kedaRows.map(r=>`<tr>
+                      <td><b>ALEPE – ${r.dest}</b></td>
+                      <td style="text-align:right">${amtCell2(r.transport,"#9C27B0")}</td>
+                      <td style="text-align:right">${amtCell2(r.t35)}</td>
+                      <td style="text-align:right">${profCell2(r.t35,r.transport)}</td>
+                      <td style="text-align:right">${amtCell2(r.t40)}</td>
+                      <td style="text-align:right">${profCell2(r.t40,r.transport)}</td>
+                      <td style="text-align:right">${amtCell2(r.t45)}</td>
+                      <td style="text-align:right">${profCell2(r.t45,r.transport)}</td>
+                      <td style="text-align:right">${amtCell2(r.t50)}</td>
+                      <td style="text-align:right">${profCell2(r.t50,r.transport)}</td>
+                    </tr>`).join("");
+                    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${selectedCompany}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;background:#fff}.content{padding:14px 22px 20px}p.formula{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;border-radius:6px;padding:6px 12px;font-size:10px;font-weight:700;margin-bottom:12px}table{width:100%;border-collapse:collapse}th{background:#1a1a2e;color:#fff;padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:right;white-space:normal;vertical-align:top}th:first-child{text-align:left}td{padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right}td:first-child{text-align:left;font-weight:700}@media print{@page{size:A4 landscape;margin:0}}</style></head><body>${buildPrintHeader("Catégorie : Transport de marchandise",`Matériel de construction — ${selectedCompany}`)}<div class="content"><p class="formula">📐 Profit = Tonnage − Transport facturé</p><table><thead><tr><th style="text-align:left">Trajet<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">ALEPE →</div></th><th style="color:#CE93D8">Transport<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">facturé</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">35T – 40T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">35T – 40T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">40T – 45T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">40T – 45T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">45T – 50T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">45T – 50T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">50T+</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">50T+</div></th></tr></thead><tbody>${rows}</tbody></table></div></body></html>`;
+                    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download=`${(selectedCompany||"transport").replace(/[^a-zA-Z0-9]/g,"-")}.html`;a.click();
+                  }} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
+                    ⬇️ {lang==="fr"?"Télécharger":"Download"}
+                  </button>
+                  <button onClick={()=>setKedaRows(r=>[...r,{dest:"NOUVEAU TRAJET",t35:0,t40:0,t45:0,t50:0,transport:0}])} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.green}`,background:`${C.green}15`,color:C.green,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
+                    ＋ {lang==="fr"?"Ajouter":"Add"}
+                  </button>
+                </div>
+              </div>
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+                  <thead><tr>
+                    {[
+                      {label:lang==="fr"?"Trajet":"Route",right:false,sub:"ALEPE →",w:"170px",color:"#fff"},
+                      {label:lang==="fr"?"Transport":"Charged",right:true,sub:lang==="fr"?"facturé":"transport",color:"#9C27B0",w:"120px"},
+                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"35T – 40T",w:"130px",color:"#fff"},
+                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"35T – 40T",color:"#34A853",w:"130px"},
+                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"40T – 45T",w:"130px",color:"#fff"},
+                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"40T – 45T",color:"#34A853",w:"130px"},
+                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"45T – 50T",w:"130px",color:"#fff"},
+                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"45T – 50T",color:"#34A853",w:"130px"},
+                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"50T+",w:"130px",color:"#fff"},
+                      {label:lang==="fi"?"Profit":"Profit",right:true,sub:"50T+",color:"#34A853",w:"130px"},
+                    ].map((h,i)=>(
+                      <th key={i} style={{padding:"8px 8px",textAlign:h.right?"right":"left",background:C.surface,color:h.color||C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.05em",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap",borderLeft:h.color?`2px solid ${h.color}30`:"none",width:h.w,minWidth:h.w,maxWidth:h.w}}>
+                        {h.label}{h.sub&&<span style={{display:"block",fontWeight:400,fontSize:9,letterSpacing:0,textTransform:"none",opacity:.65,marginTop:1}}>{h.sub}</span>}
+                      </th>
+                    ))}
+                  </tr></thead>
+                  <tbody>
+                    {kedaRows.map((r,i)=>{
+                      const p35=r.t35-r.transport; const p40=r.t40-r.transport;
+                      const p45=r.t45-r.transport; const p50=r.t50-r.transport;
+                      const kdCurSettings=data?.settings||{rates:DEFAULT_RATES,selectedCurrencies:["GBP"]};
+                      const profitCell=(val)=>{
+                        const pos=val>=0;
+                        const curLines=getCurrencyLines(Math.abs(val),kdCurSettings);
+                        return r.transport>0?(
+                          <td style={{padding:"8px 6px",textAlign:"right",borderLeft:`2px solid ${pos?C.green:C.red}22`,background:pos?`${C.green}06`:`${C.red}06`,width:"130px",minWidth:"130px"}}>
+                            <div style={{color:pos?C.green:C.red,fontWeight:800,fontSize:12}}>{pos?"+":""}{fmtNum(val)} <span style={{color:pos?C.green:C.red,fontWeight:600}}>F CFA</span></div>
+                            {curLines.map((l,li)=><div key={li} style={{color:l.color,fontWeight:700,fontSize:12,marginTop:2,whiteSpace:"nowrap"}}>{pos?"+":"-"}{l.value}</div>)}
+                          </td>
+                        ):<td style={{padding:"8px 6px",textAlign:"right",color:C.muted,fontSize:11,width:"130px"}}>—</td>;
+                      };
+                      const upd=(field,val)=>setKedaRows(rows=>rows.map((x,j)=>j===i?{...x,[field]:field==="dest"?val:parseFloat(val)||0}:x));
+                      const qtyCell=(val,field,w="130px")=>{
+                        const curLines=getCurrencyLines(val,kdCurSettings);
+                        return(
+                          <td style={{padding:"8px 7px",textAlign:"right",width:w,minWidth:w}}>
+                            <InlineCell value={val} onChange={v=>upd(field,v)} type="number" min="0" step="10000"
+                              style={{color:"#ffffff",fontWeight:700,fontSize:12,textAlign:"right"}}/>
+                            <div style={{color:"#ffffff",fontSize:12,marginTop:1,fontWeight:600}}>F CFA</div>
+                            {curLines.map((l,li)=><div key={li} style={{color:l.color,fontWeight:700,fontSize:12,marginTop:2,whiteSpace:"nowrap"}}>{l.value}</div>)}
+                          </td>
+                        );
+                      };
+                      return(
+                        <tr key={i} style={{borderBottom:`1px solid ${C.border}44`}}
+                          onMouseEnter={e=>e.currentTarget.style.background=C.surface+"88"}
+                          onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                          {/* Route — editable */}
+                          <td style={{padding:"8px 8px",width:"170px",maxWidth:"170px"}}>
+                            <div style={{display:"flex",alignItems:"center",gap:3}}>
+                              <span style={{color:C.muted,fontWeight:500,fontSize:12,flexShrink:0}}>ALEPE –</span>
+                              <InlineCell value={r.dest} onChange={v=>upd("dest",v)} type="text"
+                                style={{color:C.dim,fontWeight:700,fontSize:12}}/>
+                            </div>
+                          </td>
+                          {/* Transport facturé — editable */}
+                          <td style={{padding:"8px 8px",textAlign:"right",width:"120px",minWidth:"120px",maxWidth:"120px",borderLeft:`2px solid #9C27B022`}}>
+                            <InlineCell value={r.transport} onChange={v=>upd("transport",v)} type="number" min="0" step="10000"
+                              style={{color:"#9C27B0",fontWeight:800,fontSize:13,textAlign:"right"}}/>
+                            <div style={{color:"#9C27B0",fontSize:12,marginTop:1,fontWeight:600}}>F CFA</div>
+                            {getCurrencyLines(r.transport,kdCurSettings).map((l,li)=><div key={li} style={{color:l.color,fontWeight:700,fontSize:12,marginTop:2,whiteSpace:"nowrap"}}>{l.value}</div>)}
+                          </td>
+                          {/* 35T-40T + profit */}
+                          {qtyCell(r.t35,"t35","90px")}
+                          {profitCell(p35)}
+                          {/* 40T-45T + profit */}
+                          {qtyCell(r.t40,"t40","90px")}
+                          {profitCell(p40)}
+                          {/* 45T-50T + profit */}
+                          {qtyCell(r.t45,"t45","90px")}
+                          {profitCell(p45)}
+                          {/* 50T+ + profit */}
+                          {qtyCell(r.t50,"t50","80px")}
+                          {profitCell(p50)}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{padding:"10px 20px",borderTop:`1px solid ${C.border}44`,display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
+                <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{lang==="fr"?"Cliquez sur n'importe quelle cellule pour la modifier — les profits se recalculent automatiquement":"Click any cell to edit it — profits recalculate automatically"}</span></div>
+                <div style={{marginLeft:"auto",color:C.muted,fontSize:10,fontStyle:"italic"}}>{lang==="fr"?"Source : Grille tarifaire KEDA CI 2025–2026":"Source: KEDA CI rate schedule 2025–2026"}</div>
+              </div>
+            </div>
+          )}
+
+          {selectedCompany&&selectedCompany.includes("MELCHAT")&&(
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"36px 24px",textAlign:"center"}}>
+              <div style={{fontSize:36,marginBottom:10}}>🚧</div>
+              <div style={{color:C.dim,fontWeight:700,fontSize:14,marginBottom:6}}>MELCHAT GHANA LIMITED</div>
+              <div style={{color:C.muted,fontSize:12}}>{lang==="fr"?"Tableau disponible prochainement.":"Table coming soon."}</div>
+            </div>
+          )}
+
+          {!selectedCompany&&(
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"30px 24px",textAlign:"center",opacity:0.6}}>
+              <div style={{fontSize:32,marginBottom:8}}>👆</div>
+              <div style={{color:C.muted,fontSize:13}}>{lang==="fr"?"Sélectionnez une société pour afficher les tarifs de transport.":"Select a company to display transport rates."}</div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Coming soon */}
-      {selectedType&&!showAgriTable&&(
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:"36px 24px",textAlign:"center"}}>
+      {selectedType&&!showAgriTable&&!showConstTable&&(
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"36px 24px",textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:12}}>🚧</div>
           <div style={{color:C.dim,fontWeight:700,fontSize:15,marginBottom:6}}>{selectedType}</div>
           <div style={{color:C.muted,fontSize:12}}>{lang==="fr"?"Tableau disponible prochainement.":"Table coming soon."}</div>
         </div>
       )}
       {!selectedType&&cfg?.hasTypeDropdown&&(
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:"32px 24px",textAlign:"center",opacity:0.55}}>
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"32px 24px",textAlign:"center",opacity:0.55}}>
           <div style={{fontSize:36,marginBottom:10}}>👆</div>
           <div style={{color:C.muted,fontSize:13}}>{lang==="fr"?"Sélectionnez un type de marchandise pour afficher le tableau.":"Select a merchandise type to display the table."}</div>
         </div>
       )}
       {!cfg&&(
-        <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:14,padding:"32px 24px",textAlign:"center"}}>
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"32px 24px",textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:12}}>&#128679;</div>
           <div style={{color:C.dim,fontWeight:700,fontSize:14}}>{lang==="fr"?"Fonctionnalite a venir":"Feature coming soon"}</div>
         </div>
@@ -2581,7 +2823,7 @@ function Forecast({data,setData,session,t,lang}){
     const actRows=proj.entries.flatMap(e=>e.activities.map(a=>`<tr><td>${e.label}</td><td>${a.category}</td><td>${a.description}</td><td>${fmtNum(a.invested)}</td><td>${fmtNum(a.revenue)}</td><td>${fmtNum(a.expenses)}</td><td style="color:${a.revenue-a.expenses-a.invested>=0?"green":"red"}">${fmtNum(a.revenue-a.expenses-a.invested)}</td></tr>`)).join("");
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${proj.title}</title>
     <style>body{font-family:Arial,sans-serif;padding:24px;color:#1a1a2e;}
-    .header{background:#1a1a2e;color:white;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+    
     .brand{font-size:20px;font-weight:900;}.brand span:nth-child(1){color:#4285F4}.brand span:nth-child(2){color:#EA4335}.brand span:nth-child(3){color:#FBBC05}.brand span:nth-child(4){color:#34A853}
     table{width:100%;border-collapse:collapse;margin-bottom:20px;}th,td{border:1px solid #e2e8f0;padding:8px 12px;font-size:12px;}th{background:#f1f5f9;font-weight:700;}
     .total{background:#0a1628;color:white;}.total td{border-color:#1e3a5f;}
@@ -2591,10 +2833,7 @@ function Forecast({data,setData,session,t,lang}){
     .card .val{font-size:16px;font-weight:800;margin-top:4px;}
     .card .lbl{font-size:10px;color:#64748b;text-transform:uppercase;}
     </style></head><body>
-    <div class="header">
-      <div class="brand"><span>Th</span><span>un</span><span>der</span><span>fam</span><span style="color:white"> Investment</span></div>
-      <div style="text-align:right"><div style="font-size:16px;font-weight:700">${proj.title}</div><div style="font-size:11px;opacity:0.7">${lang==="fr"?"Projection":"Forecast"} — ${investor?investor.name:""} — ${proj.months} ${lang==="fr"?"mois":"months"}</div><div style="font-size:10px;opacity:0.5">${proj.createdAt}</div></div>
-    </div>
+    ${buildPrintHeader(lang==="fr"?"Catégorie: Projection / Forecast":"Category: Projection / Forecast",proj.title)}
     <h2>${lang==="fr"?"Résumé Global":"Global Summary"}</h2>
     <div class="summary">
       <div class="card"><div class="lbl">${lang==="fr"?"Investi":"Invested"}</div><div class="val" style="color:#4285F4">${fmtNum(total.invested)} F</div></div>
@@ -2636,8 +2875,8 @@ Créé le ${proj.createdAt}`;
   };
 
   // ── STYLES ──
-  const inp={width:"100%",background:C.surface,border:`1px solid ${C.border}`,borderRadius:8,padding:"8px 12px",color:C.text,fontSize:13,outline:"none",fontFamily:"inherit"};
-  const card={background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"16px 18px"};
+  const inp={width:"100%",background:C.surface,border:`1px solid ${C.border}44`,borderRadius:8,padding:"8px 12px",color:C.text,fontSize:13,outline:"none",fontFamily:"inherit"};
+  const card={background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"16px 18px"};
 
   // ── LIST VIEW ──────────────────────────────────────────────────────────────────
   if(view==="list")return(
@@ -2724,7 +2963,7 @@ Créé le ${proj.createdAt}`;
             <div>
               <Btn small variant="secondary" onClick={()=>setShowShare(s=>!s)}>📤 {lang==="fr"?"Partager":"Share"}</Btn>
               {showShare&&(
-                <div style={{position:"absolute",right:0,top:"110%",zIndex:200,background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:8,minWidth:170,boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
+                <div style={{position:"absolute",right:0,top:"110%",zIndex:200,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:8,minWidth:170,boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
                   {[["email","📧 Email"],["whatsapp","💬 WhatsApp"],["telegram","✈️ Telegram"],["native","📱 Partager"]].map(([m,lb])=>(
                     <div key={m} onClick={()=>{shareProjection(proj,m);setShowShare(false);}} style={{padding:"8px 12px",borderRadius:7,cursor:"pointer",color:C.dim,fontSize:12,display:"flex",alignItems:"center",gap:8}} onMouseEnter={e=>e.currentTarget.style.background=C.surface} onMouseLeave={e=>e.currentTarget.style.background="transparent"}>{lb}</div>
                   ))}
@@ -2760,7 +2999,7 @@ Créé le ${proj.createdAt}`;
               <thead>
                 <tr style={{background:C.surface}}>
                   {[lang==="fr"?"Mois":"Month",lang==="fr"?"Investi":"Invested",lang==="fr"?"Revenus":"Revenue",lang==="fr"?"Dépenses":"Expenses","Profit"].map((h,i)=>(
-                    <th key={i} style={{padding:"8px 12px",textAlign:i===0?"left":"right",color:C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}`}}>{h}</th>
+                    <th key={i} style={{padding:"8px 12px",textAlign:i===0?"left":"right",color:C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}44`}}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -2768,7 +3007,7 @@ Créé le ${proj.createdAt}`;
                 {proj.entries.map((e,i)=>{
                   const m=calcMonth(e);
                   return(
-                    <tr key={i} style={{borderBottom:`1px solid ${C.border}`}}>
+                    <tr key={i} style={{borderBottom:`1px solid ${C.border}44`}}>
                       <td style={{padding:"8px 12px",color:C.dim,fontWeight:600}}>{e.label}</td>
                       <td style={{padding:"8px 12px",textAlign:"right",color:C.blue}}>{fmtNum(m.invested)}</td>
                       <td style={{padding:"8px 12px",textAlign:"right",color:C.green}}>{fmtNum(m.revenue)}</td>
@@ -2795,7 +3034,7 @@ Créé le ${proj.createdAt}`;
           return entry.activities.length>0?(
             <div key={mi} style={{...card,marginBottom:12}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                <div style={{fontWeight:700,color:C.text,fontSize:13}}>📅 {entry.label}</div>
+                <div style={{fontWeight:700,color:C.text,fontSize:13}}>📅 {monthLabels[form.entries.indexOf(entry)]||entry.label}</div>
                 <div style={{display:"flex",gap:12}}>
                   <span style={{color:C.green,fontSize:11}}>+{fmtNum(m.revenue)}</span>
                   <span style={{color:C.red,fontSize:11}}>-{fmtNum(m.expenses)}</span>
@@ -2805,7 +3044,7 @@ Créé le ${proj.createdAt}`;
               {entry.activities.map(a=>{
                 const p=a.revenue-a.expenses-a.invested;
                 return(
-                  <div key={a.id} style={{background:C.surface,borderRadius:8,padding:"10px 12px",marginBottom:6,border:`1px solid ${C.border}`}}>
+                  <div key={a.id} style={{background:C.surface,borderRadius:8,padding:"10px 12px",marginBottom:6,border:`1px solid ${C.border}44`}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                       <div>
                         <div style={{fontWeight:600,color:C.dim,fontSize:12}}>{a.category}</div>
@@ -2882,14 +3121,14 @@ Créé le ${proj.createdAt}`;
               const isActive=activeMonth===mi;
               return(
                 <div key={mi} onClick={()=>setActiveMonth(mi)} style={{padding:"8px 10px",borderRadius:8,cursor:"pointer",background:isActive?C.blue+"18":"transparent",border:`1px solid ${isActive?C.blue:C.border}`,marginBottom:4,transition:"all .15s"}}>
-                  <div style={{fontWeight:isActive?700:500,color:isActive?C.blue:C.dim,fontSize:12}}>{e.label}</div>
+                  <div style={{fontWeight:isActive?700:500,color:isActive?C.blue:C.dim,fontSize:12}}>{monthLabels[mi]}</div>
                   <div style={{fontSize:10,color:m.profit>=0?C.green:m.profit<0?C.red:C.muted,marginTop:1}}>{e.activities.length} act. · {fmtNum(m.profit)} F</div>
                 </div>
               );
             })}
             {/* Grand total */}
-            <div style={{padding:"8px 10px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}`,marginTop:8}}>
-              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>TOTAL</div>
+            <div style={{padding:"8px 10px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}44`,marginTop:8}}>
+              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"TOTAL":"TOTAL"}</div>
               <div style={{color:grandTotal.profit>=0?C.green:C.red,fontWeight:800,fontSize:13,marginTop:2}}>{fmtNum(grandTotal.profit)} F</div>
             </div>
           </div>
@@ -2898,7 +3137,7 @@ Créé le ${proj.createdAt}`;
           <div>
             <div style={{...card,marginBottom:12}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                <div style={{fontWeight:700,color:C.text,fontSize:14}}>📅 {form.entries[activeMonth]?.label}</div>
+                <div style={{fontWeight:700,color:C.text,fontSize:14}}>📅 {monthLabels[activeMonth]}</div>
                 <div style={{display:"flex",gap:12,alignItems:"center"}}>
                   {[
                     {l:lang==="fr"?"Investi":"Inv.",v:monthTotal.invested,c:C.blue},
@@ -2918,7 +3157,7 @@ Créé le ${proj.createdAt}`;
               {(form.entries[activeMonth]?.activities||[]).map((act,ai)=>{
                 const profit=act.revenue-act.expenses-act.invested;
                 return(
-                  <div key={act.id} style={{background:C.surface,border:`1px solid ${C.border}`,borderRadius:10,padding:"12px 14px",marginBottom:10}}>
+                  <div key={act.id} style={{background:C.surface,border:`1px solid ${C.border}44`,borderRadius:10,padding:"12px 14px",marginBottom:10}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                       <div style={{color:C.dim,fontWeight:600,fontSize:12}}>Activité {ai+1}</div>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
@@ -3046,7 +3285,7 @@ export default function App(){
     <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>setShowCatMenu(false)}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0;}input,select{color-scheme:${theme};}input:focus,select:focus{border-color:${C.blue}!important;outline:none;box-shadow:0 0 0 2px ${C.blue}22;}button{transition:filter .15s,background .15s;}button:not(:disabled):hover{filter:brightness(1.12);}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:${C.surface};}::-webkit-scrollbar-thumb{background:${C.border2};border-radius:3px;}`}</style>
 
-      <header style={{background:C.surface,borderBottom:`1px solid ${C.border}`,padding:"0 18px",display:"flex",alignItems:"center",gap:14,height:54,position:"sticky",top:0,zIndex:100}}>
+      <header style={{background:C.surface,borderBottom:`1px solid ${C.border}44`,padding:"0 18px",display:"flex",alignItems:"center",gap:14,height:54,position:"sticky",top:0,zIndex:100}}>
         <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
           <TFLogo size={28}/>
           <div>
@@ -3063,9 +3302,9 @@ export default function App(){
                   <Icon name="activity" size={12} color={showCatMenu?n.color:C.muted}/>{n.label}<span style={{fontSize:9,marginLeft:1,opacity:0.7}}>{showCatMenu?"▲":"▼"}</span>
                 </button>
                 {showCatMenu&&(
-                  <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"8px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:340,maxWidth:420,maxHeight:"70vh",overflowY:"auto"}}
+                  <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"8px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:340,maxWidth:420,maxHeight:"70vh",overflowY:"auto"}}
                     onClick={e=>e.stopPropagation()}>
-                    <div style={{padding:"8px 16px 6px",borderBottom:`1px solid ${C.border}`,marginBottom:4}}>
+                    <div style={{padding:"8px 16px 6px",borderBottom:`1px solid ${C.border}44`,marginBottom:4}}>
                       <div style={{color:n.color,fontWeight:800,fontSize:12,textTransform:"uppercase",letterSpacing:"0.08em"}}>{lang==="fr"?"Secteurs d'Activité":"Activity Sectors"}</div>
                       <div style={{color:C.muted,fontSize:10,marginTop:1}}>{lang==="fr"?"Catégories permanentes de Thunderfam Investment":"Thunderfam Investment permanent categories"}</div>
                     </div>
@@ -3087,7 +3326,7 @@ export default function App(){
                         </div>
                       );
                     })}
-                    <div style={{padding:"8px 16px",borderTop:`1px solid ${C.border}`,marginTop:4}}>
+                    <div style={{padding:"8px 16px",borderTop:`1px solid ${C.border}44`,marginTop:4}}>
                       <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em"}}>{fmtNum(PERMANENT_CATEGORIES.length)} {lang==="fr"?"catégories au total":"categories total"}</div>
                     </div>
                   </div>
@@ -3109,15 +3348,15 @@ export default function App(){
               <Icon name="bell" size={14} color={unread>0?C.yellow:C.muted}/>
               {unread>0&&<span style={{position:"absolute",top:-3,right:-3,background:C.red,color:"#fff",borderRadius:"50%",width:14,height:14,fontSize:8,fontWeight:700,display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</span>}
             </button>
-            {showNotif&&<div style={{position:"absolute",top:38,right:0,width:300,background:C.card,border:`1px solid ${C.border}`,borderRadius:10,boxShadow:"0 16px 40px rgba(0,0,0,0.4)",zIndex:200,overflow:"hidden"}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px",borderBottom:`1px solid ${C.border}`}}>
+            {showNotif&&<div style={{position:"absolute",top:38,right:0,width:300,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,boxShadow:"0 16px 40px rgba(0,0,0,0.4)",zIndex:200,overflow:"hidden"}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px",borderBottom:`1px solid ${C.border}44`}}>
                 <span style={{color:C.text,fontSize:12,fontWeight:700}}>{t.notifications}</span>
                 <button onClick={markAllRead} style={{background:"none",border:"none",color:C.blue,fontSize:11,cursor:"pointer",fontFamily:"inherit",fontWeight:600}}>{t.markAllRead}</button>
               </div>
               <div style={{maxHeight:280,overflowY:"auto"}}>
                 {data.notifications.length===0&&<div style={{padding:20,textAlign:"center",color:C.muted,fontSize:12}}>{t.noNotifications}</div>}
                 {data.notifications.map(n=>(
-                  <div key={n.id} style={{padding:"10px 14px",borderBottom:`1px solid ${C.border}`,background:n.read?"transparent":C.surface,opacity:n.read?0.6:1}}>
+                  <div key={n.id} style={{padding:"10px 14px",borderBottom:`1px solid ${C.border}44`,background:n.read?"transparent":C.surface,opacity:n.read?0.6:1}}>
                     <div style={{display:"flex",gap:8}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:n.type==="success"?C.green:n.type==="warning"?C.yellow:C.blue,flexShrink:0,marginTop:4}}/>
                       <div><div style={{color:C.dim,fontSize:11}}>{n.msg}</div><div style={{color:C.muted,fontSize:9,marginTop:2}}>{n.date}</div></div>
@@ -3129,7 +3368,7 @@ export default function App(){
           </div>
 
           {/* Lang toggle */}
-          <button onClick={()=>setLang(l=>l==="fr"?"en":"fr")} style={{padding:"4px 8px",border:`1px solid ${C.border}`,borderRadius:7,background:"transparent",color:C.dim,cursor:"pointer",fontSize:10,fontFamily:"inherit",display:"flex",alignItems:"center",gap:3}}>
+          <button onClick={()=>setLang(l=>l==="fr"?"en":"fr")} style={{padding:"4px 8px",border:`1px solid ${C.border}44`,borderRadius:7,background:"transparent",color:C.dim,cursor:"pointer",fontSize:10,fontFamily:"inherit",display:"flex",alignItems:"center",gap:3}}>
             <Icon name="globe" size={10} color={C.dim}/>{lang==="fr"?"EN":"FR"}
           </button>
 
@@ -3146,9 +3385,9 @@ export default function App(){
             {showUserMenu&&<>
               {/* Backdrop */}
               <div onClick={()=>setShowUserMenu(false)} style={{position:"fixed",inset:0,zIndex:299}}/>
-              <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,background:C.card,border:`1px solid ${C.border}`,borderRadius:12,boxShadow:"0 16px 40px rgba(0,0,0,0.4)",zIndex:300,minWidth:220,overflow:"hidden"}}>
+              <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,boxShadow:"0 16px 40px rgba(0,0,0,0.4)",zIndex:300,minWidth:220,overflow:"hidden"}}>
                 {/* Identity */}
-                <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:10}}>
+                <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
                   <div style={{width:34,height:34,borderRadius:8,background:(roleInfo?.color||C.blue)+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{roleInfo?.icon||"👤"}</div>
                   <div>
                     <div style={{color:C.text,fontSize:12,fontWeight:700}}>{session.name}</div>
@@ -3158,7 +3397,7 @@ export default function App(){
                 </div>
 
                 {/* Active currencies */}
-                <div style={{padding:"10px 16px",borderBottom:`1px solid ${C.border}`}}>
+                <div style={{padding:"10px 16px",borderBottom:`1px solid ${C.border}44`}}>
                   <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>{t.settings.currencies}</div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
                     <span style={{padding:"3px 10px",borderRadius:6,background:`${C.blue}22`,color:C.blue,fontSize:11,fontWeight:800}}>F CFA</span>
@@ -3168,7 +3407,7 @@ export default function App(){
                 </div>
 
                 {/* Theme toggle */}
-                <button onClick={()=>{setTheme(t=>t==="dark"?"light":"dark");}} style={{width:"100%",padding:"10px 16px",background:"transparent",border:"none",borderBottom:`1px solid ${C.border}`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontFamily:"inherit"}}>
+                <button onClick={()=>{setTheme(t=>t==="dark"?"light":"dark");}} style={{width:"100%",padding:"10px 16px",background:"transparent",border:"none",borderBottom:`1px solid ${C.border}44`,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between",fontFamily:"inherit"}}>
                   <div style={{display:"flex",alignItems:"center",gap:8}}>
                     <Icon name={theme==="dark"?"sun":"moon"} size={13} color={C.muted}/>
                     <span style={{color:C.dim,fontSize:12}}>{theme==="dark"?t.settings.toLightMode:t.settings.toDarkMode}</span>
@@ -3190,7 +3429,7 @@ export default function App(){
 
       <main style={{flex:1,padding:"20px 22px",maxWidth:1380,margin:"0 auto",width:"100%"}}>{views[view]||views.dashboard}</main>
 
-      <footer style={{borderTop:`1px solid ${C.border}`,padding:"10px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",background:C.surface}}>
+      <footer style={{borderTop:`1px solid ${C.border}44`,padding:"10px 22px",display:"flex",justifyContent:"space-between",alignItems:"center",background:C.surface}}>
         <div style={{display:"flex",alignItems:"center",gap:8}}><TFLogo size={12}/><span style={{color:C.muted,fontSize:10}}>© 2026 Thunderfam Investment — Côte d'Ivoire</span></div>
         <span style={{color:C.muted,fontSize:10}}>v13.0 · {theme==="dark"?t.settings.dark:t.settings.light} · RBAC · Audit</span>
       </footer>
