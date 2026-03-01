@@ -2490,7 +2490,7 @@ function InlineCell({value,onChange,type="text",min,step,placeholder,style={}}){
   );
 }
 
-function CategoryDetail({category,lang,data,onBack}){
+function CategoryDetail({category,lang,data,onBack,session}){
   const C=_C;
   const [selectedType,setSelectedType]=useState("");
   const cfg=getCategoryConfig(category,lang);
@@ -2506,6 +2506,25 @@ function CategoryDetail({category,lang,data,onBack}){
   const [confirmState,setConfirmState]=useState(null);
   const [selectedCompany,setSelectedCompany]=useState("");
   const [kedaRows,setKedaRows]=useState(KEDA_ROUTES.map(r=>({...r,transport:0})));
+  const isAdmin=session&&(session.role==="admin"||session.role==="manager");
+  // ── Inline forms state ──
+  const KEDA_BLANK={dest:"",transport:0,t35:0,t40:0,t45:0,t50:0};
+  const AGRI_BLANK={name:"",saison:"",prixBord:0,transport:1.87,prixGros:0,qtyKg:1000};
+  const [showKedaForm,setShowKedaForm]=useState(false);
+  const [kedaForm,setKedaForm]=useState({...KEDA_BLANK});
+  const [showAgriForm,setShowAgriForm]=useState(false);
+  const [agriForm,setAgriForm]=useState({...AGRI_BLANK});
+  const saveKedaRow=()=>{
+    if(!kedaForm.dest.trim()) return;
+    setKedaRows(r=>[...r,{...kedaForm,dest:kedaForm.dest.trim()}]);
+    setKedaForm({...KEDA_BLANK});setShowKedaForm(false);
+  };
+  const saveAgriRow=()=>{
+    if(!agriForm.name.trim()) return;
+    const newP={id:Date.now(),name:agriForm.name.trim(),nameEn:agriForm.name.trim(),unit:"kg",saison:agriForm.saison,saisonEn:agriForm.saison,prixBord:parseFloat(agriForm.prixBord)||0,prixGros:parseFloat(agriForm.prixGros)||0,transport:parseFloat(agriForm.transport)||1.87,qtyKg:parseInt(agriForm.qtyKg)||1000};
+    setSeasons(ss=>ss.map(s=>s.id!==activeSeason?s:{...s,products:[...s.products,newP]}));
+    setAgriForm({...AGRI_BLANK});setShowAgriForm(false);
+  };
   const [seasons,setSeasons]=useState([
     {id:1,label:"Côte d'Ivoire 2025–2026",products:AGRI_SEED.map(p=>({...p}))}
   ]);
@@ -2705,11 +2724,50 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                 <button onClick={downloadAgriPDF} title={lang==="fr"?"Télécharger PDF":"Download PDF"} style={{padding:"6px 13px",borderRadius:8,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
                   ⬇️ {lang==="fr"?"Télécharger":"Download"}
                 </button>
-                <button onClick={addProduct} style={{padding:"6px 14px",borderRadius:8,border:`1px solid ${color}`,background:`${color}15`,color:color,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-                  ＋ {lang==="fr"?"Ajouter":"Add"}
-                </button>
+                {isAdmin&&<button onClick={()=>{setShowAgriForm(v=>!v);setAgriForm({...AGRI_BLANK});}} style={{padding:"6px 14px",borderRadius:8,border:`1px solid ${showAgriForm?C.red:color}`,background:showAgriForm?`${C.red}15`:`${color}15`,color:showAgriForm?C.red:color,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
+                  {showAgriForm?("✕ "+(lang==="fr"?"Annuler":"Cancel")):("＋ "+(lang==="fr"?"Ajouter":"Add"))}
+                </button>}
               </div>
             </div>
+
+            {/* ── Agri Inline Add Form ── */}
+            {isAdmin&&showAgriForm&&(
+              <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,background:`${C.blue}05`}}>
+                <div style={{color:C.text,fontSize:12,fontWeight:700,marginBottom:10}}>
+                  ＋ {lang==="fr"?"Nouveau produit agricole":"New agricultural product"}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
+                  {[
+                    {label:lang==="fr"?"Produit":"Product",field:"name",type:"text",placeholder:lang==="fr"?"ex: Cacao":"ex: Cacao"},
+                    {label:lang==="fr"?"Disponibilité (saison)":"Availability (season)",field:"saison",type:"text",placeholder:lang==="fr"?"ex: Oct – Sept":"ex: Oct – Sept"},
+                    {label:lang==="fr"?"Prix bord champ (F/kg)":"Farm gate (F/kg)",field:"prixBord",type:"number"},
+                    {label:lang==="fr"?"Transport usine (F/kg)":"Factory transport (F/kg)",field:"transport",type:"number"},
+                    {label:lang==="fr"?"Prix usine/gros (F/kg)":"Factory/wholesale (F/kg)",field:"prixGros",type:"number"},
+                    {label:lang==="fr"?"Quantité min (kg)":"Min. quantity (kg)",field:"qtyKg",type:"number"},
+                  ].map(f=>(
+                    <div key={f.field}>
+                      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}>{f.label}</div>
+                      <input type={f.type} value={agriForm[f.field]} placeholder={f.placeholder||"0"}
+                        onChange={e=>setAgriForm(v=>({...v,[f.field]:f.type==="number"?parseFloat(e.target.value)||0:e.target.value}))}
+                        style={{width:"100%",background:C.surface,border:`1px solid ${f.field==="name"?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                    </div>
+                  ))}
+                  <div>
+                    <button onClick={saveAgriRow} disabled={!agriForm.name.trim()}
+                      style={{padding:"7px 16px",borderRadius:7,border:"none",background:agriForm.name.trim()?C.green:"#333",color:"#fff",cursor:agriForm.name.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                      ✓ {lang==="fr"?"Enregistrer":"Save"}
+                    </button>
+                  </div>
+                </div>
+                {/* Auto-profit preview */}
+                {agriForm.prixGros>0&&agriForm.prixBord>0&&(
+                  <div style={{marginTop:8,fontSize:10,fontWeight:700,color:C.green}}>
+                    {lang==="fr"?"Profit auto :":"Auto profit:"} {fmtNum((agriForm.prixGros-agriForm.prixBord-agriForm.transport)*agriForm.qtyKg)} F CFA
+                    ({lang==="fr"?"pour":"for"} {fmtNum(agriForm.qtyKg)} kg)
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Table */}
             <div style={{overflowX:"auto"}}>
@@ -2886,11 +2944,50 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                   }} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
                     ⬇️ {lang==="fr"?"Télécharger":"Download"}
                   </button>
-                  <button onClick={()=>setKedaRows(r=>[...r,{dest:"NOUVEAU TRAJET",t35:0,t40:0,t45:0,t50:0,transport:0}])} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.green}`,background:`${C.green}15`,color:C.green,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
-                    ＋ {lang==="fr"?"Ajouter":"Add"}
-                  </button>
+                  {isAdmin&&<button onClick={()=>{setShowKedaForm(v=>!v);setKedaForm({...KEDA_BLANK});}} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${showKedaForm?C.red:C.green}`,background:showKedaForm?`${C.red}15`:`${C.green}15`,color:showKedaForm?C.red:C.green,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
+                    {showKedaForm?("✕ "+(lang==="fr"?"Annuler":"Cancel")):("＋ "+(lang==="fr"?"Ajouter":"Add"))}
+                  </button>}
                 </div>
               </div>
+              {/* ── KEDA Inline Add Form ── */}
+              {isAdmin&&showKedaForm&&(
+                <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,background:`${C.green}08`}}>
+                  <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
+                    {[
+                      {label:lang==="fr"?"Trajet (destination)":"Route (destination)",field:"dest",type:"text",placeholder:"ex: YAKASSE-ATTOBROU"},
+                      {label:lang==="fr"?"Transport facturé (F)":"Charged transport (F)",field:"transport",type:"number"},
+                      {label:"35T – 40T (F)",field:"t35",type:"number"},
+                      {label:"40T – 45T (F)",field:"t40",type:"number"},
+                      {label:"45T – 50T (F)",field:"t45",type:"number"},
+                      {label:"50T+ (F)",field:"t50",type:"number"},
+                    ].map(f=>(
+                      <div key={f.field}>
+                        <div style={{color:f.field==="transport"?"#9C27B0":C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}>{f.label}</div>
+                        <input type={f.type} value={kedaForm[f.field]} placeholder={f.placeholder||"0"}
+                          onChange={e=>setKedaForm(v=>({...v,[f.field]:f.type==="number"?parseFloat(e.target.value)||0:e.target.value}))}
+                          style={{width:"100%",background:C.surface,border:`1px solid ${f.field==="dest"?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                      </div>
+                    ))}
+                    <div style={{paddingBottom:0}}>
+                      <button onClick={saveKedaRow} disabled={!kedaForm.dest.trim()}
+                        style={{padding:"7px 16px",borderRadius:7,border:"none",background:kedaForm.dest.trim()?C.green:"#333",color:"#fff",cursor:kedaForm.dest.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                        ✓ {lang==="fr"?"Enregistrer":"Save"}
+                      </button>
+                    </div>
+                  </div>
+                  {/* Auto-profit preview */}
+                  {kedaForm.transport>0&&(
+                    <div style={{marginTop:8,display:"flex",gap:12,flexWrap:"wrap"}}>
+                      {[{k:"t35",l:"35T–40T"},{k:"t40",l:"40T–45T"},{k:"t45",l:"45T–50T"},{k:"t50",l:"50T+"}].map(({k,l})=>{
+                        const p=kedaForm[k]-kedaForm.transport;
+                        return kedaForm[k]>0?(<span key={k} style={{fontSize:10,fontWeight:700,color:p>=0?C.green:C.red}}>
+                          Profit {l}: {p>=0?"+":""}{fmtNum(p)} F
+                        </span>):null;
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
               <div style={{overflowX:"auto"}}>
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
                   <thead><tr>
@@ -3929,7 +4026,7 @@ export default function App(){
     users:     can(session,"manage_users")?<UsersPanel data={data} setData={setData} session={session} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     audit:     can(session,"view_audit")?<AuditLog data={data} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     forecast:  <Forecast data={data} setData={setData} session={session} t={t} lang={lang}/>,
-    category_detail: <CategoryDetail category={selCategory} lang={lang} data={data} onBack={()=>setView('dashboard')}/>,
+    category_detail: <CategoryDetail category={selCategory} lang={lang} data={data} session={session} onBack={()=>setView('dashboard')}/>,
     settings:  <Settings   data={data} setData={setData} session={session} t={t} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>,
   };
   const roleInfo=ROLES[role];
