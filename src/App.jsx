@@ -39,7 +39,7 @@ function can(session,action){return session?(PERMISSIONS[session.role]||[]).incl
 
 // ── INITIAL DATA ────────────────────────────────────────────────────────────────
 const INIT_USERS=[
-  {id:1,username:"admin",password:"admin123",role:"admin",name:"Super Admin",email:"admin@thunderfam.com",active:true,approved:true,investorId:null},
+  {id:1,username:"admin",password:"admin123",role:"admin",name:"Super Admin",email:"admin@thunderfam.com",active:true,approved:true,investorId:null,avatar:null},
   {id:2,username:"manager",password:"manager123",role:"manager",name:"Gestionnaire Principal",email:"manager@thunderfam.com",active:true,approved:true,investorId:null},
   {id:3,username:"investor1",password:"invest123",role:"investor",name:"Investisseur Principal",email:"investisseur@thunderfam.com",active:true,approved:true,investorId:1},
 ];
@@ -63,6 +63,7 @@ const PERMANENT_CATEGORIES=[
 const DEFAULT_CATEGORIES=[...PERMANENT_CATEGORIES];
 const INIT={
   settings:{rates:{...DEFAULT_RATES},selectedCurrencies:["GBP"],adminPwd:"admin123",language:"fr",theme:"dark",ratesLastUpdated:null,dashboardWidgets:["capital","profit","monthly","investors","chart_line","chart_pie"],categories:[...DEFAULT_CATEGORIES]},
+  files:[],
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
   notifications:[
@@ -1888,12 +1889,66 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [profNewPwd,setProfNewPwd]=useState("");
   const [profNewPwd2,setProfNewPwd2]=useState("");
   const [profMsg,setProfMsg]=useState(null); // {ok,text}
+  const [profAvatar,setProfAvatar]=useState(currentUser.avatar||null);
+  const [avatarUploading,setAvatarUploading]=useState(false);
+  const [selFolder,setSelFolder]=useState("all");
+
+  const handleAvatarUpload=(e)=>{
+    const file=e.target.files?.[0];
+    if(!file) return;
+    // Reset input so same file can be re-selected
+    e.target.value="";
+    const maxMB=2;
+    if(file.size>maxMB*1024*1024){
+      setProfMsg({ok:false,text:lang==="fr"?`Image trop grande (max ${maxMB}MB)`:`Image too large (max ${maxMB}MB)`});
+      return;
+    }
+    if(!file.type.startsWith("image/")){
+      setProfMsg({ok:false,text:lang==="fr"?"Format non supporté (JPG, PNG, GIF, WebP)":"Unsupported format (JPG, PNG, GIF, WebP)"});
+      return;
+    }
+    setAvatarUploading(true);
+    const reader=new FileReader();
+    reader.onerror=()=>{
+      setAvatarUploading(false);
+      setProfMsg({ok:false,text:lang==="fr"?"Erreur de lecture du fichier":"File read error"});
+    };
+    reader.onload=(ev)=>{
+      try{
+        const b64=ev.target.result;
+        setProfAvatar(b64);
+        const fileEntry={
+          id:Date.now(),
+          name:file.name,
+          type:file.type,
+          size:file.size,
+          data:b64,
+          uploadedBy:session.username,
+          uploadedAt:fmtDateTime(),
+          category:"avatar",
+          path:"images/"+file.name
+        };
+        setData(d=>({
+          ...d,
+          users:d.users.map(u=>u.username===session.username?{...u,avatar:b64}:u),
+          files:[...(d.files||[]).filter(f=>!(f.uploadedBy===session.username&&f.category==="avatar")),fileEntry]
+        }));
+        addAudit(setData,session,lang==="fr"?"Avatar modifié":"Avatar updated",session.username,"update");
+        setProfMsg({ok:true,text:lang==="fr"?"Avatar mis à jour !":"Avatar updated!"});
+        setTimeout(()=>setProfMsg(null),2500);
+      }catch(err){
+        setProfMsg({ok:false,text:lang==="fr"?"Erreur lors de la sauvegarde":"Error saving avatar"});
+      }finally{
+        setAvatarUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const saveProfile=()=>{
     const user=data.users.find(u=>u.username===session.username);
     if(!user){setProfMsg({ok:false,text:lang==="fr"?"Utilisateur introuvable.":"User not found."});return;}
-    // Validate current password
     if(profCurPwd!==user.password){setProfMsg({ok:false,text:lang==="fr"?"Mot de passe actuel incorrect.":"Current password is incorrect."});return;}
-    // If new password provided, validate match
     if(profNewPwd){
       if(profNewPwd.length<6){setProfMsg({ok:false,text:lang==="fr"?"Le nouveau mot de passe doit faire au moins 6 caractères.":"New password must be at least 6 characters."});return;}
       if(profNewPwd!==profNewPwd2){setProfMsg({ok:false,text:lang==="fr"?"Les nouveaux mots de passe ne correspondent pas.":"New passwords do not match."});return;}
@@ -1910,12 +1965,33 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   // ── Profile card (visible to ALL users) ──────────────────────────────────────
+  const curAvatar=(data.users.find(u=>u.username===session.username)?.avatar)||null;
   const profileCard=(
     <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
-      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
         <Icon name="user" size={14} color={C.blue}/>
         <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Mon Profil":"My Profile"}</span>
         <span style={{marginLeft:"auto",background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{session.username}</span>
+      </div>
+      {/* Avatar upload */}
+      <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:18,padding:"14px 16px",background:C.surface,borderRadius:10,border:`1px solid ${C.border}44`}}>
+        <div style={{position:"relative",flexShrink:0}}>
+          <div style={{width:70,height:70,borderRadius:"50%",border:`3px solid ${C.blue}`,overflow:"hidden",background:C.bg}}>
+            {curAvatar
+              ?<img src={curAvatar} alt="avatar" style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              :<div style={{width:"100%",height:"100%",display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,color:C.muted}}>👤</div>
+            }
+          </div>
+          {avatarUploading&&<div style={{position:"absolute",inset:0,borderRadius:"50%",background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>⏳</div>}
+        </div>
+        <div>
+          <div style={{color:C.text,fontWeight:700,fontSize:13,marginBottom:4}}>{lang==="fr"?"Photo de profil":"Profile photo"}</div>
+          <div style={{color:C.muted,fontSize:11,marginBottom:10}}>{lang==="fr"?"JPG, PNG, GIF — max 2MB":"JPG, PNG, GIF — max 2MB"}</div>
+          <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",background:`${C.blue}22`,border:`1px solid ${C.blue}44`,borderRadius:7,color:C.blue,fontSize:12,fontWeight:700}}>
+            📷 {lang==="fr"?"Changer l'avatar":"Change avatar"}
+            <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handleAvatarUpload} style={{display:"none"}}/>
+          </label>
+        </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
         <div>
@@ -2081,6 +2157,87 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         onConfirm={()=>{const newCats=(s.categories||DEFAULT_CATEGORIES).filter((_,j)=>j!==confirmCat.idx);setData(d=>({...d,settings:{...d.settings,categories:newCats}}));setConfirmCat(null);}}
         onCancel={()=>setConfirmCat(null)}
       />
+
+      {/* ── Files Manager ── */}
+      <div style={{...cs,marginTop:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+          <span style={{fontSize:14}}>📁</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Gestionnaire de fichiers":"File Manager"}</span>
+          <span style={{marginLeft:"auto",background:`${C.muted}18`,color:C.muted,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{(data.files||[]).length} {lang==="fr"?"fichier(s)":"file(s)"}</span>
+          <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700}}>
+            ➕ {lang==="fr"?"Ajouter":"Upload"}
+            <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.xml,.json,.xlsx,.csv" multiple onChange={e=>{
+              const files=Array.from(e.target.files);
+              e.target.value="";
+              files.forEach((file,idx)=>{
+                const maxMB=10;
+                if(file.size>maxMB*1024*1024) return;
+                const reader=new FileReader();
+                reader.onerror=()=>console.warn("Could not read file:",file.name);
+                reader.onload=ev=>{
+                  try{
+                    const ext=file.name.split(".").pop().toLowerCase();
+                    const folder=["jpg","jpeg","png","gif","webp"].includes(ext)?"images":["pdf"].includes(ext)?"pdf":["doc","docx"].includes(ext)?"docs":["json","xml","csv","xlsx"].includes(ext)?"data":"misc";
+                    const entry={id:Date.now()+idx,name:file.name,type:file.type,size:file.size,data:ev.target.result,uploadedBy:session.username,uploadedAt:fmtDateTime(),category:folder,path:folder+"/"+file.name};
+                    setData(d=>({...d,files:[...(d.files||[]),entry]}));
+                    addAudit(setData,session,lang==="fr"?"Fichier ajouté":"File uploaded",file.name,"create");
+                  }catch(err){console.error("File save error:",err);}
+                };
+                reader.readAsDataURL(file);
+              });
+            }} style={{display:"none"}}/>
+          </label>
+        </div>
+        {/* Folder tabs */}
+        {(data.files||[]).length>0&&(()=>{
+          const folders=["all","images","pdf","docs","data","misc","avatar"];
+          const folderLabels={all:lang==="fr"?"Tous":"All",images:"🖼 Images",pdf:"📄 PDF",docs:"📝 Docs",data:"🗂 Data",misc:"📎 Misc",avatar:"👤 Avatars"};
+          const filtered=selFolder==="all"?(data.files||[]):(data.files||[]).filter(f=>f.category===selFolder);
+          return(
+            <div>
+              <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:12}}>
+                {folders.filter(k=>k==="all"||(data.files||[]).some(f=>f.category===k)).map(k=>(
+                  <button key={k} onClick={()=>setSelFolder(k)} style={{padding:"3px 10px",borderRadius:6,border:`1px solid ${selFolder===k?C.blue:C.border}44`,background:selFolder===k?`${C.blue}18`:"transparent",color:selFolder===k?C.blue:C.muted,fontSize:10,fontWeight:selFolder===k?700:400,cursor:"pointer",fontFamily:"inherit"}}>
+                    {folderLabels[k]} {k==="all"?(data.files||[]).length:(data.files||[]).filter(f=>f.category===k).length}
+                  </button>
+                ))}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8}}>
+                {filtered.map(f=>{
+                  const icons={images:"🖼️",pdf:"📄",docs:"📝",data:"🗂️",misc:"📎",avatar:"👤"};
+                  const colors={images:C.green,pdf:C.red,docs:C.blue,data:C.yellow,misc:C.muted,avatar:C.purple};
+                  const isImg=f.type?.startsWith("image/");
+                  const fmtSize=f.size>1024*1024?(f.size/(1024*1024)).toFixed(1)+"MB":(f.size>1024?(f.size/1024).toFixed(0)+"KB":f.size+"B");
+                  return(
+                    <div key={f.id} style={{background:C.surface,border:`1px solid ${C.border}44`,borderRadius:8,padding:10,display:"flex",gap:10,alignItems:"flex-start"}}>
+                      <div style={{width:42,height:42,borderRadius:7,background:(colors[f.category]||C.muted)+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,overflow:"hidden"}}>
+                        {isImg?<img src={f.data} alt={f.name} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:7}}/>:(icons[f.category]||"📎")}
+                      </div>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{color:C.dim,fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={f.name}>{f.name}</div>
+                        <div style={{color:C.muted,fontSize:9,marginTop:2}}>📁 {f.path}</div>
+                        <div style={{color:C.muted,fontSize:9}}>{f.uploadedBy} · {f.uploadedAt} · {fmtSize}</div>
+                      </div>
+                      <div style={{display:"flex",flexDirection:"column",gap:4,flexShrink:0}}>
+                        <a href={f.data} download={f.name} style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:5,background:`${C.blue}18`,color:C.blue,textDecoration:"none",fontSize:12}} title={lang==="fr"?"Télécharger":"Download"}>⬇</a>
+                        {(session.role==="admin"||f.uploadedBy===session.username)&&(
+                          <button onClick={()=>{if(window.confirm(lang==="fr"?`Supprimer ${f.name} ?`:`Delete ${f.name}?`))setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));}} style={{width:22,height:22,borderRadius:5,background:`${C.red}18`,color:C.red,border:"none",cursor:"pointer",fontSize:12}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+        {(data.files||[]).length===0&&(
+          <div style={{textAlign:"center",padding:"30px 0",color:C.muted,fontSize:12}}>
+            <div style={{fontSize:32,marginBottom:8}}>📂</div>
+            {lang==="fr"?"Aucun fichier uploadé pour l'instant.":"No files uploaded yet."}
+          </div>
+        )}
+      </div>
   </div>);
 }
 
@@ -3406,6 +3563,8 @@ function SupabaseSetup({onDone, lang="fr"}){
             <br/>{");"}
             <br/>{"ALTER TABLE app_data ENABLE ROW LEVEL SECURITY;"}
             <br/>{'CREATE POLICY \"public_access\" ON app_data FOR ALL USING (true) WITH CHECK (true);'}
+            <br/>{"-- Activer le realtime sur la table:"}
+            <br/>{"ALTER PUBLICATION supabase_realtime ADD TABLE app_data;"}
           </div>
           <div>4. {fr?"Copiez l'URL et la clé anon depuis":"Copy URL and anon key from"} <strong style={{color:"#4285F4"}}>Settings → API</strong></div>
         </div>
@@ -3509,14 +3668,16 @@ export default function App(){
 
   // ── Save data: Supabase (debounced 1.5s) + localStorage ──────────────────────
   const saveTimer=useRef(null);
+  const isSaving=useRef(false); // prevent realtime loop
   useEffect(()=>{
     if(!dbReady) return;
     // Always save to localStorage as backup
     try{localStorage.setItem("tf_data_v3",JSON.stringify(data));}catch{}
     // Save to Supabase if configured (debounced)
-    if(sbCfg){
+    if(sbCfg&&!sbCfg.skip){
       if(saveTimer.current) clearTimeout(saveTimer.current);
       saveTimer.current=setTimeout(async()=>{
+        isSaving.current=true;
         setDbStatus("saving");
         try{
           await sbSave(sbCfg,data);
@@ -3524,11 +3685,58 @@ export default function App(){
         }catch(e){
           console.error("Supabase save failed:",e);
           setDbStatus("error");
+        }finally{
+          setTimeout(()=>{isSaving.current=false;},500);
         }
       },1500);
     }
     return ()=>{if(saveTimer.current) clearTimeout(saveTimer.current);};
   },[data]);
+
+  // ── Supabase Realtime: listen for changes made by other users ─────────────────
+  useEffect(()=>{
+    if(!sbCfg||sbCfg.skip||!dbReady) return;
+    const {url,key}=sbCfg;
+    // Use Supabase Realtime via WebSocket
+    const wsUrl=url.replace("https://","wss://").replace("http://","ws://")+"/realtime/v1/websocket?apikey="+key+"&vsn=1.0.0";
+    const ws=new WebSocket(wsUrl);
+    let heartbeat;
+
+    ws.onopen=()=>{
+      // Join the postgres_changes channel for app_data table
+      ws.send(JSON.stringify({
+        topic:"realtime:public:app_data",
+        event:"phx_join",
+        payload:{config:{broadcast:{self:false},presence:{key:""},postgres_changes:[{event:"UPDATE",schema:"public",table:"app_data"}]}},
+        ref:"1"
+      }));
+      // Heartbeat every 30s to keep connection alive
+      heartbeat=setInterval(()=>ws.send(JSON.stringify({topic:"phoenix",event:"heartbeat",payload:{},ref:"hb"})),30000);
+    };
+
+    ws.onmessage=(evt)=>{
+      try{
+        const msg=JSON.parse(evt.data);
+        // Only react to UPDATE events on app_data, and not from our own save
+        if(msg.event==="postgres_changes"||msg.payload?.data?.type==="UPDATE"){
+          const newData=msg.payload?.data?.record?.data||msg.payload?.record?.data;
+          if(newData&&!isSaving.current){
+            const merged={...INIT,...newData,
+              settings:{...INIT.settings,...(newData.settings||{})},
+              users:[...(newData.users||INIT.users)]
+            };
+            setData(merged);
+            setDbStatus("ok");
+          }
+        }
+      }catch{}
+    };
+
+    ws.onerror=()=>setDbStatus("error");
+    ws.onclose=()=>clearInterval(heartbeat);
+
+    return ()=>{clearInterval(heartbeat);ws.close();};
+  },[sbCfg,dbReady]);
 
   // ── Show Supabase setup if never configured ───────────────────────────────────
   if(sbCfg===undefined||sbCfg===null){
@@ -3580,10 +3788,12 @@ export default function App(){
     settings:  <Settings   data={data} setData={setData} session={session} t={t} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>,
   };
   const roleInfo=ROLES[role];
+  const DEFAULT_AVATAR="data:image/png;base64,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";
+  const AVATAR_SRC=(data.users.find(u=>u.username===session.username)?.avatar)||DEFAULT_AVATAR;
 
   return(
     <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>setShowCatMenu(false)}>
-      <style>{`*{box-sizing:border-box;margin:0;padding:0;}input,select{color-scheme:${theme};}input:focus,select:focus{border-color:${C.blue}!important;outline:none;box-shadow:0 0 0 2px ${C.blue}22;}button{transition:filter .15s,background .15s;}button:not(:disabled):hover{filter:brightness(1.12);}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:${C.surface};}::-webkit-scrollbar-thumb{background:${C.border2};border-radius:3px;}`}</style>
+      <style>{`*{box-sizing:border-box;margin:0;padding:0;}input,select{color-scheme:${theme};}input:focus,select:focus{border-color:${C.blue}!important;outline:none;box-shadow:0 0 0 2px ${C.blue}22;}button{transition:filter .15s,background .15s;}button:not(:disabled):hover{filter:brightness(1.12);}.nav-btn:hover{background:var(--nav-color-bg)!important;color:var(--nav-color)!important;border-bottom-color:var(--nav-color)!important;filter:none!important;}.nav-btn:hover .nav-icon{color:var(--nav-color)!important;}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:${C.surface};}::-webkit-scrollbar-thumb{background:${C.border2};border-radius:3px;}`}</style>
 
       <header style={{background:C.surface,borderBottom:`1px solid ${C.border}44`,padding:"0 18px",display:"flex",alignItems:"center",gap:14,height:54,position:"sticky",top:0,zIndex:100}}>
         <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
@@ -3598,7 +3808,9 @@ export default function App(){
           {navTabs.map(n=>{const active=view===n.key||("categories"===n.key&&showCatMenu);
             if(n.key==="categories") return(
               <div key="categories" style={{position:"relative"}}>
-                <button onClick={e=>{e.stopPropagation();setShowCatMenu(v=>!v);}} style={{padding:"0 10px",height:36,border:"none",background:showCatMenu?n.color+"18":"transparent",color:showCatMenu?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showCatMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showCatMenu?`2px solid ${n.color}`:"2px solid transparent"}}>
+                <button onClick={e=>{e.stopPropagation();setShowCatMenu(v=>!v);}}
+                  className="nav-btn"
+                  style={{"--nav-color":n.color,"--nav-color-bg":n.color+"18",padding:"0 10px",height:36,border:"none",background:showCatMenu?n.color+"18":"transparent",color:showCatMenu?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showCatMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showCatMenu?`2px solid ${n.color}`:"2px solid transparent",transition:"all .15s"}}>
                   <Icon name="activity" size={12} color={showCatMenu?n.color:C.muted}/>{n.label}<span style={{fontSize:9,marginLeft:1,opacity:0.7}}>{showCatMenu?"▲":"▼"}</span>
                 </button>
                 {showCatMenu&&(
@@ -3634,8 +3846,10 @@ export default function App(){
               </div>
             );
             return(
-            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);}} style={{padding:"0 10px",height:36,border:"none",background:active?n.color+"18":"transparent",color:active?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:active?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:active?`2px solid ${n.color}`:"2px solid transparent"}}>
-              <Icon name={n.icon} size={12} color={active?n.color:C.muted}/>{n.label}
+            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);}}
+              className="nav-btn"
+              style={{"--nav-color":n.color,"--nav-color-bg":n.color+"18",padding:"0 10px",height:36,border:"none",background:active?n.color+"18":"transparent",color:active?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:active?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:active?`2px solid ${n.color}`:"2px solid transparent",transition:"all .15s"}}>
+              <span className="nav-icon" style={{color:active?n.color:C.muted,display:"flex"}}><Icon name={n.icon} size={12} color={active?n.color:C.muted}/></span>{n.label}
             </button>
           );})}
         </nav>
@@ -3672,29 +3886,27 @@ export default function App(){
             <Icon name="globe" size={10} color={C.dim}/>{lang==="fr"?"EN":"FR"}
           </button>
 
-          {/* User menu — contains theme, currencies, logout */}
           {/* DB sync dot */}
-          {dbDot&&<div style={{display:"flex",alignItems:"center",gap:4,padding:"0 8px"}}>{dbDot}</div>}
+          {dbDot&&<div style={{display:"flex",alignItems:"center",gap:4}}>{dbDot}</div>}
+          {/* Avatar button — click to open user menu */}
           <div style={{position:"relative"}}>
-            <button onClick={()=>setShowUserMenu(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 10px",background:showUserMenu?C.surface:C.bg,border:`1px solid ${showUserMenu?C.border2:C.border}`,borderRadius:8,cursor:"pointer",fontFamily:"inherit"}}>
-              <div style={{width:22,height:22,borderRadius:6,background:(roleInfo?.color||C.blue)+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>{roleInfo?.icon||"👤"}</div>
-              <div style={{textAlign:"left"}}>
-                <div style={{color:C.text,fontSize:11,fontWeight:700,lineHeight:1.1}}>{session.name}</div>
-                <div style={{color:roleInfo?.color||C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em"}}>{lang==="fr"?roleInfo?.label:roleInfo?.labelEn}</div>
-              </div>
-              <Icon name={showUserMenu?"chevron-up":"chevron-down"} size={10} color={C.muted}/>
+            <button onClick={()=>setShowUserMenu(v=>!v)} title={session.name}
+              style={{width:36,height:36,padding:0,border:`2px solid ${showUserMenu?roleInfo?.color||C.blue:C.border}`,borderRadius:"50%",cursor:"pointer",background:"transparent",overflow:"hidden",flexShrink:0,transition:"border-color .2s",display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <img src={AVATAR_SRC} alt={session.name} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:"50%"}}/>
             </button>
             {showUserMenu&&<>
               {/* Backdrop */}
               <div onClick={()=>setShowUserMenu(false)} style={{position:"fixed",inset:0,zIndex:299}}/>
               <div style={{position:"absolute",top:"calc(100% + 6px)",right:0,background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,boxShadow:"0 16px 40px rgba(0,0,0,0.4)",zIndex:300,minWidth:220,overflow:"hidden"}}>
                 {/* Identity */}
-                <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
-                  <div style={{width:34,height:34,borderRadius:8,background:(roleInfo?.color||C.blue)+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0}}>{roleInfo?.icon||"👤"}</div>
+                <div style={{padding:"14px 16px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{width:42,height:42,borderRadius:"50%",border:`2px solid ${roleInfo?.color||C.blue}`,overflow:"hidden",flexShrink:0}}>
+                    <img src={AVATAR_SRC} alt={session.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                  </div>
                   <div>
-                    <div style={{color:C.text,fontSize:12,fontWeight:700}}>{session.name}</div>
+                    <div style={{color:C.text,fontSize:13,fontWeight:800}}>{session.name}</div>
                     <div style={{color:C.muted,fontSize:10,marginTop:1}}>{session.email||""}</div>
-                    <div style={{color:roleInfo?.color||C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",marginTop:2}}>{lang==="fr"?roleInfo?.label:roleInfo?.labelEn}</div>
+                    <div style={{display:"inline-block",marginTop:4,background:(roleInfo?.color||C.blue)+"22",color:roleInfo?.color||C.blue,fontSize:9,fontWeight:800,textTransform:"uppercase",letterSpacing:"0.06em",padding:"2px 7px",borderRadius:5}}>{lang==="fr"?roleInfo?.label:roleInfo?.labelEn}</div>
                   </div>
                 </div>
 
