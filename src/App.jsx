@@ -1892,6 +1892,10 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [profAvatar,setProfAvatar]=useState(currentUser.avatar||null);
   const [avatarUploading,setAvatarUploading]=useState(false);
   const [selFolder,setSelFolder]=useState("all");
+  const [filePreview,setFilePreview]=useState(null);   // file being previewed in modal
+  const [shareTarget,setShareTarget]=useState(null);   // file being shared
+  const [sharePopId,setSharePopId]=useState(null);     // which file's share popover is open
+  const [importanceModal,setImportanceModal]=useState(null); // {file, recipients}
 
   const handleAvatarUpload=(e)=>{
     const file=e.target.files?.[0];
@@ -2016,6 +2020,225 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
     </div>
   );
 
+  // ── File Manager (all users) ─────────────────────────────────────────────────
+  const fileManagerSection=(()=>{
+        // ── helpers ──────────────────────────────────────────────────────
+        const isAdmin=session.role==="admin"||session.role==="manager";
+        const investors=data.users.filter(u=>u.role==="investor"&&u.active);
+        const admins=data.users.filter(u=>(u.role==="admin"||u.role==="manager")&&u.active);
+        const impLevels={urgent:{label:"URGENT",icon:"🚨",color:"#EA4335"},important:{label:"IMPORTANT",icon:"⚠️",color:"#FBBC05"},info:{label:"INFO",icon:"ℹ️",color:"#4285F4"}};
+        const fmtSize=n=>n>1024*1024?(n/(1024*1024)).toFixed(1)+"MB":n>1024?(n/1024).toFixed(0)+"KB":n+"B";
+        const catIcons={images:"🖼️",pdf:"📄",docs:"📝",data:"🗂️",misc:"📎",avatar:"👤"};
+        const catColors={images:C.green,pdf:C.red,docs:C.blue,data:C.yellow,misc:C.muted,avatar:C.purple};
+
+        // Determine visible files for current user
+        const myFiles=(data.files||[]).filter(f=>{
+          if(f.category==="avatar") return false; // hide avatar files from manager
+          if(f.uploadedBy===session.username) return true;
+          if(isAdmin) return true; // admins see all
+          // investor: see files shared with them or "all"
+          return (f.sharedWith||[]).includes(session.username)||(f.sharedWith||[]).includes("all");
+        });
+        const folders=["all","images","pdf","docs","data","misc"];
+        const folderLabels={all:lang==="fr"?"Tous":"All",images:"🖼 Images",pdf:"📄 PDF",docs:"📝 Docs",data:"🗂 Data",misc:"📎 Misc"};
+        const filtered=selFolder==="all"?myFiles:myFiles.filter(f=>f.category===selFolder);
+
+        // Share handler
+        const doShare=(file,recipientIds,importance)=>{
+          setData(d=>({...d,files:(d.files||[]).map(f=>f.id===file.id?{...f,sharedWith:recipientIds,sharedBy:session.username,importance:importance}:f)}));
+          addAudit(setData,session,lang==="fr"?"Fichier partagé":"File shared",file.name,"update");
+          setSharePopId(null);setImportanceModal(null);
+        };
+
+        return(<>
+        {/* ── Preview Modal ── */}
+        {filePreview&&(
+          <div onClick={()=>setFilePreview(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.85)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:C.card,borderRadius:14,maxWidth:"90vw",maxHeight:"90vh",width:860,display:"flex",flexDirection:"column",overflow:"hidden",boxShadow:"0 24px 80px rgba(0,0,0,0.7)"}}>
+              {/* Modal header */}
+              <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 18px",borderBottom:`1px solid ${C.border}44`}}>
+                <span style={{fontSize:18}}>{catIcons[filePreview.category]||"📎"}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{color:C.text,fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{filePreview.name}</div>
+                  <div style={{color:C.muted,fontSize:10}}>{filePreview.uploadedBy} · {filePreview.uploadedAt} · {fmtSize(filePreview.size)}</div>
+                </div>
+                {filePreview.importance&&<span style={{background:impLevels[filePreview.importance]?.color+"22",color:impLevels[filePreview.importance]?.color,fontSize:10,fontWeight:700,borderRadius:5,padding:"2px 8px"}}>{impLevels[filePreview.importance]?.icon} {impLevels[filePreview.importance]?.label}</span>}
+                <a href={filePreview.data} download={filePreview.name} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:7,color:C.blue,textDecoration:"none",fontSize:11,fontWeight:700}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                <button onClick={()=>setFilePreview(null)} style={{width:30,height:30,borderRadius:7,background:C.surface,border:`1px solid ${C.border}44`,color:C.muted,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+              </div>
+              {/* Modal content */}
+              <div style={{flex:1,overflow:"auto",padding:16,display:"flex",alignItems:"center",justifyContent:"center",minHeight:300,background:C.bg}}>
+                {filePreview.type?.startsWith("image/")?(
+                  <img src={filePreview.data} alt={filePreview.name} style={{maxWidth:"100%",maxHeight:"70vh",borderRadius:8,objectFit:"contain"}}/>
+                ):filePreview.type==="application/pdf"?(
+                  <iframe src={filePreview.data} style={{width:"100%",height:"70vh",border:"none",borderRadius:8}} title={filePreview.name}/>
+                ):filePreview.category==="data"?(
+                  <pre style={{color:C.dim,fontSize:11,overflow:"auto",maxHeight:"70vh",width:"100%",background:C.surface,padding:16,borderRadius:8,lineHeight:1.6}}>
+                    {filePreview.name.endsWith(".json")?JSON.stringify(JSON.parse(atob(filePreview.data.split(",")[1]||"")||"{}"),null,2):atob(filePreview.data.split(",")[1]||"")}
+                  </pre>
+                ):(
+                  <div style={{textAlign:"center",color:C.muted,padding:40}}>
+                    <div style={{fontSize:48,marginBottom:12}}>{catIcons[filePreview.category]||"📎"}</div>
+                    <div style={{fontSize:13,marginBottom:8,color:C.dim}}>{filePreview.name}</div>
+                    <div style={{fontSize:11,marginBottom:20}}>{lang==="fr"?"Aperçu non disponible pour ce type de fichier.":"Preview not available for this file type."}</div>
+                    <a href={filePreview.data} download={filePreview.name} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 18px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:8,color:C.blue,textDecoration:"none",fontSize:12,fontWeight:700}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Importance + Share Confirm Modal ── */}
+        {importanceModal&&(
+          <div onClick={()=>setImportanceModal(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:1001,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:C.card,borderRadius:12,padding:24,width:380,boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}}>
+              <div style={{color:C.text,fontWeight:800,fontSize:14,marginBottom:4}}>🔔 {lang==="fr"?"Niveau d'importance":"Importance level"}</div>
+              <div style={{color:C.muted,fontSize:11,marginBottom:16}}>{lang==="fr"?"Choisissez le niveau d'importance du fichier partagé :":"Choose the importance level for the shared file:"}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
+                {Object.entries(impLevels).map(([k,v])=>(
+                  <button key={k} onClick={()=>doShare(importanceModal.file,importanceModal.recipients,k)}
+                    style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:v.color+"18",border:`1px solid ${v.color}44`,borderRadius:9,cursor:"pointer",fontFamily:"inherit",textAlign:"left"}}>
+                    <span style={{fontSize:18}}>{v.icon}</span>
+                    <div>
+                      <div style={{color:v.color,fontWeight:800,fontSize:12}}>{v.label}</div>
+                      <div style={{color:C.muted,fontSize:10}}>
+                        {k==="urgent"?(lang==="fr"?"Nécessite une attention immédiate":"Requires immediate attention"):k==="important"?(lang==="fr"?"À traiter en priorité":"Priority action needed"):(lang==="fr"?"Pour information":"For information only")}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <button onClick={()=>setImportanceModal(null)} style={{width:"100%",padding:"8px",background:"transparent",border:`1px solid ${C.border}44`,borderRadius:7,color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── FILE MANAGER CARD ── */}
+        <div style={{...cs,marginTop:12}} onClick={()=>setSharePopId(null)}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+            <span style={{fontSize:14}}>📁</span>
+            <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Gestionnaire de fichiers":"File Manager"}</span>
+            <span style={{background:`${C.muted}18`,color:C.muted,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{myFiles.length}</span>
+            <div style={{marginLeft:"auto"}}>
+              <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700}}>
+                ➕ {lang==="fr"?"Uploader":"Upload"}
+                <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.xml,.json,.xlsx,.csv" multiple onChange={e=>{
+              const files=Array.from(e.target.files);e.target.value="";
+              files.forEach((file,idx)=>{
+                if(file.size>10*1024*1024)return;
+                const reader=new FileReader();
+                reader.onerror=()=>console.warn("Read error:",file.name);
+                reader.onload=ev=>{try{
+                  const ext=file.name.split(".").pop().toLowerCase();
+                  const folder=["jpg","jpeg","png","gif","webp"].includes(ext)?"images":["pdf"].includes(ext)?"pdf":["doc","docx"].includes(ext)?"docs":["json","xml","csv","xlsx"].includes(ext)?"data":"misc";
+                  const entry={id:Date.now()+idx,name:file.name,type:file.type,size:file.size,data:ev.target.result,uploadedBy:session.username,uploadedAt:fmtDateTime(),category:folder,path:folder+"/"+file.name,sharedWith:[],importance:null,sharedBy:null};
+                  setData(d=>({...d,files:[...(d.files||[]),entry]}));
+                  addAudit(setData,session,lang==="fr"?"Fichier ajouté":"File uploaded",file.name,"create");
+                }catch(e){console.error(e);}};
+                reader.readAsDataURL(file);
+              });
+            }} style={{display:"none"}}/>
+              </label>
+            </div>
+          </div>
+
+          {/* Folder tabs */}
+          <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:12}}>
+            {folders.filter(k=>k==="all"||myFiles.some(f=>f.category===k)).map(k=>(
+              <button key={k} onClick={()=>setSelFolder(k)} style={{padding:"3px 10px",borderRadius:6,border:`1px solid ${selFolder===k?C.blue:C.border}44`,background:selFolder===k?`${C.blue}18`:"transparent",color:selFolder===k?C.blue:C.muted,fontSize:10,fontWeight:selFolder===k?700:400,cursor:"pointer",fontFamily:"inherit"}}>
+                {folderLabels[k]} {k==="all"?myFiles.length:myFiles.filter(f=>f.category===k).length}
+              </button>
+            ))}
+          </div>
+
+          {/* File cards grid */}
+          {filtered.length===0?(
+            <div style={{textAlign:"center",padding:"30px 0",color:C.muted,fontSize:12}}>
+              <div style={{fontSize:32,marginBottom:8}}>📂</div>
+              {lang==="fr"?"Aucun fichier ici.":"No files here."}
+            </div>
+          ):(
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:8}}>
+              {filtered.map(f=>{
+                const isImg=f.type?.startsWith("image/");
+                const imp=f.importance?impLevels[f.importance]:null;
+                const isShared=(f.sharedWith||[]).length>0;
+                const isMine=f.uploadedBy===session.username;
+                const canDelete=isAdmin||isMine;
+                // Who can share: admin shares to investors, investor shares to admins, no inv→inv
+                const shareTargets=isAdmin?investors:session.role==="investor"?admins:[];
+                const canShare=shareTargets.length>0;
+
+                return(
+                  <div key={f.id} style={{background:C.surface,border:`1px solid ${imp?imp.color+"44":C.border+"44"}`,borderRadius:10,overflow:"hidden",position:"relative",cursor:"pointer",transition:"transform .15s,box-shadow .15s"}}
+                    onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(0,0,0,0.3)";}}
+                    onMouseLeave={e=>{e.currentTarget.style.transform="none";e.currentTarget.style.boxShadow="none";}}>
+
+                    {/* Importance badge */}
+                    {imp&&<div style={{position:"absolute",top:8,left:8,background:imp.color+"22",border:`1px solid ${imp.color}55`,color:imp.color,fontSize:9,fontWeight:800,borderRadius:5,padding:"2px 6px",zIndex:2,display:"flex",alignItems:"center",gap:3}}>{imp.icon} {imp.label}</div>}
+
+                    {/* Shared-by badge */}
+                    {f.sharedBy&&f.sharedBy!==session.username&&<div style={{position:"absolute",top:8,right:8,background:`${C.purple}22`,border:`1px solid ${C.purple}44`,color:C.purple,fontSize:9,fontWeight:700,borderRadius:5,padding:"2px 6px",zIndex:2}}>📤 {f.sharedBy}</div>}
+
+                    {/* Thumbnail / icon area — clickable to preview */}
+                    <div onClick={()=>setFilePreview(f)} style={{height:120,background:(catColors[f.category]||C.muted)+"12",display:"flex",alignItems:"center",justifyContent:"center",borderBottom:`1px solid ${C.border}22`}}>
+                      {isImg
+                        ?<img src={f.data} alt={f.name} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+                        :<span style={{fontSize:44}}>{catIcons[f.category]||"📎"}</span>
+                      }
+                    </div>
+
+                    {/* Card body */}
+                    <div style={{padding:"8px 10px"}}>
+                      <div style={{color:C.dim,fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2,cursor:"pointer"}} onClick={()=>setFilePreview(f)} title={f.name}>{f.name}</div>
+                      <div style={{color:C.muted,fontSize:9}}>📁 {f.path} · {fmtSize(f.size)}</div>
+                      <div style={{color:C.muted,fontSize:9}}>{f.uploadedBy} · {f.uploadedAt}</div>
+                      {isShared&&<div style={{marginTop:3,color:C.green,fontSize:9,fontWeight:700}}>✓ {lang==="fr"?"Partagé avec":"Shared with"} {(f.sharedWith||[]).includes("all")?(lang==="fr"?"tous":"all"):(f.sharedWith||[]).join(", ")}</div>}
+                    </div>
+
+                    {/* Action bar */}
+                    <div style={{display:"flex",gap:4,padding:"6px 10px",borderTop:`1px solid ${C.border}22`}} onClick={e=>e.stopPropagation()}>
+                      {/* Preview */}
+                      <button onClick={()=>setFilePreview(f)} style={{flex:1,padding:"4px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:5,color:C.blue,cursor:"pointer",fontSize:10,fontWeight:600}} title="Preview">👁</button>
+                      {/* Download */}
+                      <a href={f.data} download={f.name} style={{flex:1,padding:"4px",background:`${C.teal}18`,border:`1px solid ${C.teal}33`,borderRadius:5,color:C.teal,textDecoration:"none",fontSize:10,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center"}} title="Download">⬇</a>
+                      {/* Share */}
+                      {canShare&&(
+                        <div style={{position:"relative",flex:1}}>
+                          <button onClick={e=>{e.stopPropagation();setSharePopId(sharePopId===f.id?null:f.id);}} style={{width:"100%",padding:"4px",background:isShared?`${C.green}18`:`${C.yellow}18`,border:`1px solid ${isShared?C.green:C.yellow}33`,borderRadius:5,color:isShared?C.green:C.yellow,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Partager":"Share"}>📤</button>
+                          {sharePopId===f.id&&(
+                            <div onClick={e=>e.stopPropagation()} style={{position:"absolute",bottom:"calc(100% + 6px)",right:0,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:10,minWidth:200,boxShadow:"0 12px 36px rgba(0,0,0,0.5)",zIndex:500}}>
+                              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>{lang==="fr"?"Partager avec:":"Share with:"}</div>
+                              <button onClick={()=>setImportanceModal({file:f,recipients:["all"]})} style={{width:"100%",padding:"6px 10px",background:`${C.green}18`,border:`1px solid ${C.green}33`,borderRadius:6,color:C.green,cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:700,marginBottom:6,textAlign:"left"}}>
+                                🌐 {lang==="fr"?"Partager avec tous":"Share with all"}
+                              </button>
+                              <div style={{maxHeight:160,overflowY:"auto",display:"flex",flexDirection:"column",gap:3}}>
+                                {shareTargets.map(u=>(
+                                  <button key={u.id} onClick={()=>setImportanceModal({file:f,recipients:[u.username]})} style={{padding:"5px 10px",background:(f.sharedWith||[]).includes(u.username)?`${C.blue}22`:`${C.surface}`,border:`1px solid ${(f.sharedWith||[]).includes(u.username)?C.blue:C.border}44`,borderRadius:6,color:(f.sharedWith||[]).includes(u.username)?C.blue:C.dim,cursor:"pointer",fontFamily:"inherit",fontSize:11,textAlign:"left"}}>
+                                    {u.name} <span style={{color:C.muted,fontSize:9}}>@{u.username}</span>
+                                  </button>
+                                ))}
+                              </div>
+                              {isShared&&<button onClick={()=>{setData(d=>({...d,files:(d.files||[]).map(x=>x.id===f.id?{...x,sharedWith:[],sharedBy:null,importance:null}:x)}));setSharePopId(null);}} style={{width:"100%",marginTop:8,padding:"5px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:6,color:C.red,cursor:"pointer",fontFamily:"inherit",fontSize:10}}>✕ {lang==="fr"?"Annuler le partage":"Unshare"}</button>}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {/* Delete */}
+                      {canDelete&&(
+                        <button onClick={()=>{if(window.confirm(lang==="fr"?`Supprimer "${f.name}" ?`:`Delete "${f.name}"?`))setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));}} style={{flex:1,padding:"4px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        </>);
+      })();
+
   if(!canEdit){
     return(<div>
       <h2 style={{color:C.text,fontSize:20,fontWeight:800,marginBottom:18}}>{t.settings.title}</h2>
@@ -2024,6 +2247,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><span style={{padding:"6px 14px",borderRadius:8,background:`${C.blue}22`,color:C.blue,fontWeight:700}}>F CFA</span>{ALL_CURRENCIES.filter(c=>(s.selectedCurrencies||[]).includes(c.code)).map(cur=>(<span key={cur.code} style={{padding:"6px 14px",borderRadius:8,background:cur.color+"22",color:cur.color,fontSize:16,fontWeight:700}}>{cur.sym} {cur.name}</span>))}</div>
       </div>
       <div style={{background:`${C.red}15`,border:`1px solid ${C.red}44`,borderRadius:8,padding:12,color:"#fca5a5",fontSize:12,display:"flex",gap:8}}><Icon name="shield" size={14} color="#fca5a5"/>{t.settings.adminOnly}</div>
+      {fileManagerSection}
     </div>);
   }
   return(<div>
@@ -2158,86 +2382,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         onCancel={()=>setConfirmCat(null)}
       />
 
-      {/* ── Files Manager ── */}
-      <div style={{...cs,marginTop:12}}>
-        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
-          <span style={{fontSize:14}}>📁</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Gestionnaire de fichiers":"File Manager"}</span>
-          <span style={{marginLeft:"auto",background:`${C.muted}18`,color:C.muted,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{(data.files||[]).length} {lang==="fr"?"fichier(s)":"file(s)"}</span>
-          <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700}}>
-            ➕ {lang==="fr"?"Ajouter":"Upload"}
-            <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.xml,.json,.xlsx,.csv" multiple onChange={e=>{
-              const files=Array.from(e.target.files);
-              e.target.value="";
-              files.forEach((file,idx)=>{
-                const maxMB=10;
-                if(file.size>maxMB*1024*1024) return;
-                const reader=new FileReader();
-                reader.onerror=()=>console.warn("Could not read file:",file.name);
-                reader.onload=ev=>{
-                  try{
-                    const ext=file.name.split(".").pop().toLowerCase();
-                    const folder=["jpg","jpeg","png","gif","webp"].includes(ext)?"images":["pdf"].includes(ext)?"pdf":["doc","docx"].includes(ext)?"docs":["json","xml","csv","xlsx"].includes(ext)?"data":"misc";
-                    const entry={id:Date.now()+idx,name:file.name,type:file.type,size:file.size,data:ev.target.result,uploadedBy:session.username,uploadedAt:fmtDateTime(),category:folder,path:folder+"/"+file.name};
-                    setData(d=>({...d,files:[...(d.files||[]),entry]}));
-                    addAudit(setData,session,lang==="fr"?"Fichier ajouté":"File uploaded",file.name,"create");
-                  }catch(err){console.error("File save error:",err);}
-                };
-                reader.readAsDataURL(file);
-              });
-            }} style={{display:"none"}}/>
-          </label>
-        </div>
-        {/* Folder tabs */}
-        {(data.files||[]).length>0&&(()=>{
-          const folders=["all","images","pdf","docs","data","misc","avatar"];
-          const folderLabels={all:lang==="fr"?"Tous":"All",images:"🖼 Images",pdf:"📄 PDF",docs:"📝 Docs",data:"🗂 Data",misc:"📎 Misc",avatar:"👤 Avatars"};
-          const filtered=selFolder==="all"?(data.files||[]):(data.files||[]).filter(f=>f.category===selFolder);
-          return(
-            <div>
-              <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:12}}>
-                {folders.filter(k=>k==="all"||(data.files||[]).some(f=>f.category===k)).map(k=>(
-                  <button key={k} onClick={()=>setSelFolder(k)} style={{padding:"3px 10px",borderRadius:6,border:`1px solid ${selFolder===k?C.blue:C.border}44`,background:selFolder===k?`${C.blue}18`:"transparent",color:selFolder===k?C.blue:C.muted,fontSize:10,fontWeight:selFolder===k?700:400,cursor:"pointer",fontFamily:"inherit"}}>
-                    {folderLabels[k]} {k==="all"?(data.files||[]).length:(data.files||[]).filter(f=>f.category===k).length}
-                  </button>
-                ))}
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:8}}>
-                {filtered.map(f=>{
-                  const icons={images:"🖼️",pdf:"📄",docs:"📝",data:"🗂️",misc:"📎",avatar:"👤"};
-                  const colors={images:C.green,pdf:C.red,docs:C.blue,data:C.yellow,misc:C.muted,avatar:C.purple};
-                  const isImg=f.type?.startsWith("image/");
-                  const fmtSize=f.size>1024*1024?(f.size/(1024*1024)).toFixed(1)+"MB":(f.size>1024?(f.size/1024).toFixed(0)+"KB":f.size+"B");
-                  return(
-                    <div key={f.id} style={{background:C.surface,border:`1px solid ${C.border}44`,borderRadius:8,padding:10,display:"flex",gap:10,alignItems:"flex-start"}}>
-                      <div style={{width:42,height:42,borderRadius:7,background:(colors[f.category]||C.muted)+"18",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,overflow:"hidden"}}>
-                        {isImg?<img src={f.data} alt={f.name} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:7}}/>:(icons[f.category]||"📎")}
-                      </div>
-                      <div style={{flex:1,minWidth:0}}>
-                        <div style={{color:C.dim,fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={f.name}>{f.name}</div>
-                        <div style={{color:C.muted,fontSize:9,marginTop:2}}>📁 {f.path}</div>
-                        <div style={{color:C.muted,fontSize:9}}>{f.uploadedBy} · {f.uploadedAt} · {fmtSize}</div>
-                      </div>
-                      <div style={{display:"flex",flexDirection:"column",gap:4,flexShrink:0}}>
-                        <a href={f.data} download={f.name} style={{display:"flex",alignItems:"center",justifyContent:"center",width:22,height:22,borderRadius:5,background:`${C.blue}18`,color:C.blue,textDecoration:"none",fontSize:12}} title={lang==="fr"?"Télécharger":"Download"}>⬇</a>
-                        {(session.role==="admin"||f.uploadedBy===session.username)&&(
-                          <button onClick={()=>{if(window.confirm(lang==="fr"?`Supprimer ${f.name} ?`:`Delete ${f.name}?`))setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));}} style={{width:22,height:22,borderRadius:5,background:`${C.red}18`,color:C.red,border:"none",cursor:"pointer",fontSize:12}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })()}
-        {(data.files||[]).length===0&&(
-          <div style={{textAlign:"center",padding:"30px 0",color:C.muted,fontSize:12}}>
-            <div style={{fontSize:32,marginBottom:8}}>📂</div>
-            {lang==="fr"?"Aucun fichier uploadé pour l'instant.":"No files uploaded yet."}
-          </div>
-        )}
-      </div>
+      {fileManagerSection}
   </div>);
 }
 
