@@ -1881,15 +1881,70 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [selected,setSelected]=useState([...(s.selectedCurrencies||["GBP"])]);
   const [pwd,setPwd]=useState(s.adminPwd);
   const [saved,setSaved]=useState(false);const [fetching,setFetching]=useState(false);const [fetchMsg,setFetchMsg]=useState(""); const [confirmCat,setConfirmCat]=useState(null);
+  // ── Profile state ──
+  const currentUser=data.users.find(u=>u.username===session.username)||{};
+  const [profEmail,setProfEmail]=useState(currentUser.email||"");
+  const [profCurPwd,setProfCurPwd]=useState("");
+  const [profNewPwd,setProfNewPwd]=useState("");
+  const [profNewPwd2,setProfNewPwd2]=useState("");
+  const [profMsg,setProfMsg]=useState(null); // {ok,text}
+  const saveProfile=()=>{
+    const user=data.users.find(u=>u.username===session.username);
+    if(!user){setProfMsg({ok:false,text:lang==="fr"?"Utilisateur introuvable.":"User not found."});return;}
+    // Validate current password
+    if(profCurPwd!==user.password){setProfMsg({ok:false,text:lang==="fr"?"Mot de passe actuel incorrect.":"Current password is incorrect."});return;}
+    // If new password provided, validate match
+    if(profNewPwd){
+      if(profNewPwd.length<6){setProfMsg({ok:false,text:lang==="fr"?"Le nouveau mot de passe doit faire au moins 6 caractères.":"New password must be at least 6 characters."});return;}
+      if(profNewPwd!==profNewPwd2){setProfMsg({ok:false,text:lang==="fr"?"Les nouveaux mots de passe ne correspondent pas.":"New passwords do not match."});return;}
+    }
+    setData(d=>({...d,users:d.users.map(u=>u.username===session.username?{...u,email:profEmail,...(profNewPwd?{password:profNewPwd}:{})}:u)}));
+    addAudit(setData,session,lang==="fr"?"Profil modifié":"Profile updated",session.username,"update");
+    setProfCurPwd("");setProfNewPwd("");setProfNewPwd2("");
+    setProfMsg({ok:true,text:lang==="fr"?"Profil mis à jour avec succès.":"Profile updated successfully."});
+    setTimeout(()=>setProfMsg(null),3500);
+  };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
   const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime()}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
+  // ── Profile card (visible to ALL users) ──────────────────────────────────────
+  const profileCard=(
+    <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+        <Icon name="user" size={14} color={C.blue}/>
+        <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Mon Profil":"My Profile"}</span>
+        <span style={{marginLeft:"auto",background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{session.username}</span>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
+        <div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Email</div>
+          <Field value={profEmail} onChange={setProfEmail} type="email" placeholder="email@example.com"/>
+        </div>
+        <div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Mot de passe actuel *":"Current password *"}</div>
+          <Field value={profCurPwd} onChange={setProfCurPwd} type="password" placeholder="••••••"/>
+        </div>
+        <div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Nouveau mot de passe":"New password"}</div>
+          <Field value={profNewPwd} onChange={setProfNewPwd} type="password" placeholder={lang==="fr"?"Laisser vide = inchangé":"Leave empty = unchanged"}/>
+        </div>
+        <div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Confirmer nouveau MDP":"Confirm new password"}</div>
+          <Field value={profNewPwd2} onChange={setProfNewPwd2} type="password" placeholder="••••••"/>
+        </div>
+      </div>
+      {profMsg&&<div style={{marginBottom:10,padding:"8px 12px",borderRadius:7,background:profMsg.ok?`${C.green}18`:`${C.red}18`,border:`1px solid ${profMsg.ok?C.green:C.red}44`,color:profMsg.ok?C.green:"#fca5a5",fontSize:12}}>{profMsg.text}</div>}
+      <Btn variant="primary" small onClick={saveProfile}>{lang==="fr"?"Enregistrer le profil":"Save profile"}</Btn>
+    </div>
+  );
+
   if(!canEdit){
     return(<div>
       <h2 style={{color:C.text,fontSize:20,fontWeight:800,marginBottom:18}}>{t.settings.title}</h2>
-      <div style={cs}>
+      {profileCard}
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><span style={{padding:"6px 14px",borderRadius:8,background:`${C.blue}22`,color:C.blue,fontWeight:700}}>F CFA</span>{ALL_CURRENCIES.filter(c=>(s.selectedCurrencies||[]).includes(c.code)).map(cur=>(<span key={cur.code} style={{padding:"6px 14px",borderRadius:8,background:cur.color+"22",color:cur.color,fontSize:16,fontWeight:700}}>{cur.sym} {cur.name}</span>))}</div>
       </div>
       <div style={{background:`${C.red}15`,border:`1px solid ${C.red}44`,borderRadius:8,padding:12,color:"#fca5a5",fontSize:12,display:"flex",gap:8}}><Icon name="shield" size={14} color="#fca5a5"/>{t.settings.adminOnly}</div>
@@ -1897,7 +1952,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   }
   return(<div>
     <div style={{marginBottom:20}}><h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{t.settings.title}</h2><div style={{color:C.muted,fontSize:12,marginTop:2}}>{t.settings.subtitle}</div></div>
-
+      {profileCard}
       {/* ── ROW 1: Permanent Categories — full width ── */}
       <div style={{...cs,marginBottom:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="activity" size={13} color={C.purple}/><span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.categoriesMgmt}</span></div>
@@ -3228,9 +3283,167 @@ Créé le ${proj.createdAt}`;
 }
 
 // ── APP ROOT ─────────────────────────────────────────────────────────────────────
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUPABASE BACKEND — multi-user shared database
+// ═══════════════════════════════════════════════════════════════════════════════
+const SB_CONFIG_KEY = "tf_supabase_config";
+
+function getSbConfig(){
+  try{
+    const raw=localStorage.getItem(SB_CONFIG_KEY);
+    if(!raw) return undefined; // not yet configured → show setup screen
+    return JSON.parse(raw);
+  }catch{return undefined;}
+}
+function saveSbConfig(cfg){
+  localStorage.setItem(SB_CONFIG_KEY, JSON.stringify(cfg));
+}
+
+async function sbLoad(cfg){
+  const {url, key} = cfg;
+  const res = await fetch(`${url}/rest/v1/app_data?id=eq.main&select=data`, {
+    headers:{"apikey":key,"Authorization":`Bearer ${key}`,"Content-Type":"application/json"}
+  });
+  if(!res.ok) throw new Error(`Supabase load error ${res.status}`);
+  const rows = await res.json();
+  return rows[0]?.data || null;
+}
+
+async function sbSave(cfg, appData){
+  const {url, key} = cfg;
+  const res = await fetch(`${url}/rest/v1/app_data`, {
+    method:"POST",
+    headers:{
+      "apikey":key,"Authorization":`Bearer ${key}`,
+      "Content-Type":"application/json",
+      "Prefer":"resolution=merge-duplicates,return=minimal"
+    },
+    body: JSON.stringify({id:"main", data: appData, updated_at: new Date().toISOString()})
+  });
+  if(!res.ok) throw new Error(`Supabase save error ${res.status}`);
+}
+
+// Debounce helper
+function useDebouncedEffect(fn, deps, delay=1200){
+  const {useEffect,useRef}=window.React||{useEffect:()=>{},useRef:()=>({current:null})};
+  const timer = useRef(null);
+  useEffect(()=>{
+    if(timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(fn, delay);
+    return ()=>clearTimeout(timer.current);
+  }, deps);
+}
+
+// ── Supabase Setup Screen ─────────────────────────────────────────────────────
+function SupabaseSetup({onDone, lang="fr"}){
+  const C=_C;
+  const [url,setUrl]=useState("");
+  const [key,setKey]=useState("");
+  const [testing,setTesting]=useState(false);
+  const [msg,setMsg]=useState(null);
+  const fr=lang==="fr";
+
+  const test=async()=>{
+    if(!url||!key){setMsg({ok:false,t:fr?"Remplissez les deux champs.":"Fill in both fields."});return;}
+    setTesting(true);setMsg(null);
+    try{
+      // Try to create the table if it doesn't exist via a simple select
+      const r=await fetch(`${url}/rest/v1/app_data?id=eq.main&select=id`,{
+        headers:{"apikey":key,"Authorization":`Bearer ${key}`}
+      });
+      if(r.status===200||r.status===404||r.ok){
+        saveSbConfig({url:url.replace(/\/+$/,""),key});
+        setMsg({ok:true,t:fr?"Connexion réussie ! Chargement...":"Connected! Loading..."});
+        setTimeout(()=>onDone({url:url.replace(/\/+$/,""),key}),800);
+      } else {
+        setMsg({ok:false,t:`${fr?"Erreur":"Error"} ${r.status}: ${fr?"Vérifiez l'URL et la clé.":"Check URL and key."}`});
+      }
+    }catch(e){setMsg({ok:false,t:fr?`Connexion échouée: ${e.message}`:`Connection failed: ${e.message}`});}
+    setTesting(false);
+  };
+
+  return(
+    <div style={{minHeight:"100vh",background:"#0e0f14",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',Arial,sans-serif",padding:20}}>
+      <div style={{background:"#1c1e26",border:"1px solid #252733",borderRadius:16,padding:36,width:"100%",maxWidth:500}}>
+        {/* Header */}
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:24}}>
+          <svg width="40" height="40" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="#1c1e26"/>
+            <path d="M50 2 A48 48 0 0 1 98 50 L50 50 Z" fill="#4285F4"/>
+            <path d="M98 50 A48 48 0 0 1 50 98 L50 50 Z" fill="#34A853"/>
+            <path d="M50 98 A48 48 0 0 1 2 50 L50 50 Z" fill="#FBBC05"/>
+            <path d="M2 50 A48 48 0 0 1 50 2 L50 50 Z" fill="#EA4335"/>
+            <path d="M55 16 L36 52 L50 52 L44 84 L64 46 L50 46 Z" fill="white"/>
+          </svg>
+          <div>
+            <div style={{fontSize:20,fontWeight:900}}>
+              <span style={{color:"#4285F4"}}>T</span><span style={{color:"#4285F4"}}>h</span><span style={{color:"#EA4335"}}>u</span><span style={{color:"#EA4335"}}>n</span><span style={{color:"#FBBC05"}}>d</span><span style={{color:"#FBBC05"}}>e</span><span style={{color:"#FBBC05"}}>r</span><span style={{color:"#34A853"}}>f</span><span style={{color:"#34A853"}}>a</span><span style={{color:"#34A853"}}>m</span> <span style={{color:"#fff"}}>Investment</span>
+            </div>
+            <div style={{color:"rgba(255,255,255,0.45)",fontSize:9,letterSpacing:".14em",textTransform:"uppercase"}}>IN — CÔTE D'IVOIRE</div>
+          </div>
+        </div>
+
+        <h2 style={{color:"#fff",fontSize:16,fontWeight:800,marginBottom:6}}>
+          {fr?"🔗 Connexion base de données":"🔗 Database connection"}
+        </h2>
+        <p style={{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:20,lineHeight:1.6}}>
+          {fr?"Connectez votre projet Supabase pour synchroniser les données entre tous les utilisateurs en temps réel.":
+              "Connect your Supabase project to sync data across all users in real time."}
+        </p>
+
+        {/* Instructions */}
+        <div style={{background:"rgba(66,133,244,0.1)",border:"1px solid rgba(66,133,244,0.3)",borderRadius:8,padding:14,marginBottom:20,fontSize:11,color:"rgba(255,255,255,0.7)",lineHeight:1.8}}>
+          <div style={{color:"#4285F4",fontWeight:700,marginBottom:6}}>📋 {fr?"Configuration Supabase (gratuit)":"Supabase Setup (free)"}</div>
+          <div>1. {fr?"Créez un compte sur":"Create account at"} <strong style={{color:"#4285F4"}}>supabase.com</strong></div>
+          <div>2. {fr?"Créez un nouveau projet":"Create a new project"}</div>
+          <div>3. {fr?"Dans SQL Editor, exécutez:":"In SQL Editor, run:"}</div>
+          <div style={{background:"rgba(0,0,0,0.4)",borderRadius:5,padding:"8px 10px",margin:"6px 0",fontFamily:"monospace",fontSize:10,color:"#81C995"}}>
+            {"CREATE TABLE IF NOT EXISTS app_data ("}
+            <br/>{"  id TEXT PRIMARY KEY,"}
+            <br/>{"  data JSONB NOT NULL,"}
+            <br/>{"  updated_at TIMESTAMPTZ DEFAULT NOW()"}
+            <br/>{");"}
+            <br/>{"ALTER TABLE app_data ENABLE ROW LEVEL SECURITY;"}
+            <br/>{'CREATE POLICY \"public_access\" ON app_data FOR ALL USING (true) WITH CHECK (true);'}
+          </div>
+          <div>4. {fr?"Copiez l'URL et la clé anon depuis":"Copy URL and anon key from"} <strong style={{color:"#4285F4"}}>Settings → API</strong></div>
+        </div>
+
+        <div style={{marginBottom:12}}>
+          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Project URL</div>
+          <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://xxxxxxxxxxxx.supabase.co"
+            style={{width:"100%",background:"#161820",border:"1px solid #252733",borderRadius:8,padding:"10px 14px",color:"#fff",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+        <div style={{marginBottom:20}}>
+          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Anon / Public Key</div>
+          <input value={key} onChange={e=>setKey(e.target.value)} placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            style={{width:"100%",background:"#161820",border:"1px solid #252733",borderRadius:8,padding:"10px 14px",color:"#fff",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
+        </div>
+
+        {msg&&<div style={{marginBottom:14,padding:"10px 14px",borderRadius:8,background:msg.ok?"rgba(52,168,83,0.15)":"rgba(234,67,53,0.15)",border:`1px solid ${msg.ok?"rgba(52,168,83,0.4)":"rgba(234,67,53,0.4)"}`,color:msg.ok?"#34A853":"#fca5a5",fontSize:12}}>{msg.t}</div>}
+
+        <button onClick={test} disabled={testing}
+          style={{width:"100%",padding:"12px",background:testing?"#252733":"#4285F4",border:"none",borderRadius:9,color:"#fff",fontSize:14,fontWeight:700,cursor:testing?"not-allowed":"pointer",borderRadius:9}}>
+          {testing?(fr?"Vérification...":"Checking..."):(fr?"Connecter":"Connect")}
+        </button>
+
+        <div style={{marginTop:14,textAlign:"center"}}>
+          <button onClick={()=>onDone(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.35)",fontSize:11,cursor:"pointer",textDecoration:"underline"}}>
+            {fr?"Utiliser sans backend (localStorage)":"Use without backend (localStorage)"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App(){
   const [lang,setLang]=useState("fr");
   const [theme,setTheme]=useState("dark");
+  const [sbCfg,setSbCfg]=useState(()=>getSbConfig()); // null = not configured
+  const [dbReady,setDbReady]=useState(false);   // true once data loaded from DB
+  const [dbStatus,setDbStatus]=useState("idle"); // "loading"|"saving"|"error"|"ok"
   const [data,setData]=useState(INIT);
   const [session,setSession]=useState(null);
   const [view,setView]=useState("dashboard");
@@ -3245,10 +3458,97 @@ export default function App(){
   const C=_C;
   const t=T[lang];
 
-  useEffect(()=>{fetchLiveRates().then(rates=>{if(rates)setData(d=>({...d,settings:{...d.settings,rates,ratesLastUpdated:fmtDateTime()}}));});},[]);
+  // ── Load data from Supabase OR localStorage on mount ─────────────────────────
+  useEffect(()=>{
+    const load=async()=>{
+      if(sbCfg){
+        setDbStatus("loading");
+        try{
+          const remote=await sbLoad(sbCfg);
+          if(remote){
+            const merged={...INIT,...remote,
+              settings:{...INIT.settings,...(remote.settings||{})},
+              users:[...(remote.users||INIT.users)]
+            };
+            setData(merged);
+            setTheme(merged.settings?.theme||"dark");
+          } else {
+            // First run: seed Supabase with local or INIT data
+            const local=localStorage.getItem("tf_data_v3");
+            const seed=local?{...INIT,...JSON.parse(local),settings:{...INIT.settings,...JSON.parse(local).settings}}:INIT;
+            setData(seed);
+            await sbSave(sbCfg, seed);
+          }
+          setDbStatus("ok");
+        }catch(e){
+          console.error("Supabase load failed:",e);
+          setDbStatus("error");
+          // Fallback to localStorage
+          try{
+            const local=localStorage.getItem("tf_data_v3");
+            if(local) setData({...INIT,...JSON.parse(local),settings:{...INIT.settings,...JSON.parse(local).settings}});
+          }catch{}
+        }
+      } else {
+        // No Supabase: use localStorage
+        try{
+          const saved=localStorage.getItem("tf_data_v3");
+          if(saved){
+            const parsed=JSON.parse(saved);
+            const merged={...INIT,...parsed,settings:{...INIT.settings,...(parsed.settings||{})},users:[...(parsed.users||INIT.users)]};
+            setData(merged);
+            setTheme(merged.settings?.theme||"dark");
+          }
+        }catch{}
+      }
+      setDbReady(true);
+      fetchLiveRates().then(rates=>{if(rates)setData(d=>({...d,settings:{...d.settings,rates,ratesLastUpdated:fmtDateTime()}}));});
+    };
+    load();
+  },[sbCfg]);
+
+  // ── Save data: Supabase (debounced 1.5s) + localStorage ──────────────────────
+  const saveTimer=useRef(null);
+  useEffect(()=>{
+    if(!dbReady) return;
+    // Always save to localStorage as backup
+    try{localStorage.setItem("tf_data_v3",JSON.stringify(data));}catch{}
+    // Save to Supabase if configured (debounced)
+    if(sbCfg){
+      if(saveTimer.current) clearTimeout(saveTimer.current);
+      saveTimer.current=setTimeout(async()=>{
+        setDbStatus("saving");
+        try{
+          await sbSave(sbCfg,data);
+          setDbStatus("ok");
+        }catch(e){
+          console.error("Supabase save failed:",e);
+          setDbStatus("error");
+        }
+      },1500);
+    }
+    return ()=>{if(saveTimer.current) clearTimeout(saveTimer.current);};
+  },[data]);
+
+  // ── Show Supabase setup if never configured ───────────────────────────────────
+  if(sbCfg===undefined||sbCfg===null){
+    return <SupabaseSetup lang={lang} onDone={cfg=>{if(cfg){saveSbConfig(cfg);setSbCfg(cfg);}else{saveSbConfig({skip:true});setSbCfg({skip:true});}}}/>;
+  }
+
+  // ── Loading screen while fetching from Supabase ───────────────────────────────
+  if(!dbReady){
+    return(
+      <div style={{minHeight:"100vh",background:"#0e0f14",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',Arial,sans-serif",gap:16}}>
+        <div style={{fontSize:32,animation:"spin 1s linear infinite"}}>⚡</div>
+        <div style={{color:"rgba(255,255,255,0.7)",fontSize:14}}>Chargement depuis la base de données...</div>
+        <style>{"@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"}</style>
+      </div>
+    );
+  }
 
   const doLogout=()=>{setSession(null);setView("dashboard");};
   const markAllRead=()=>setData(d=>({...d,notifications:d.notifications.map(n=>({...n,read:true}))}));
+  const dbDot=sbCfg&&!sbCfg.skip?(<span title={dbStatus==="ok"?"Synchronisé":dbStatus==="saving"?"Sauvegarde...":dbStatus==="error"?"Erreur sync":"Chargement..."} style={{width:8,height:8,borderRadius:"50%",background:dbStatus==="ok"?"#34A853":dbStatus==="saving"?"#FBBC05":dbStatus==="error"?"#EA4335":"#888",display:"inline-block",flexShrink:0,boxShadow:`0 0 6px ${dbStatus==="ok"?"#34A853":dbStatus==="saving"?"#FBBC05":"#EA4335"}`}}/>):null;
   const unread=data.notifications.filter(n=>!n.read).length;
 
   if(!session){return<LoginScreen data={data} setData={setData} onLogin={u=>{setSession(u);setLang(data.settings.language||"fr");setTheme(data.settings.theme||"dark");}} lang={lang} setLang={setLang}/>;}
@@ -3373,6 +3673,8 @@ export default function App(){
           </button>
 
           {/* User menu — contains theme, currencies, logout */}
+          {/* DB sync dot */}
+          {dbDot&&<div style={{display:"flex",alignItems:"center",gap:4,padding:"0 8px"}}>{dbDot}</div>}
           <div style={{position:"relative"}}>
             <button onClick={()=>setShowUserMenu(v=>!v)} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 10px",background:showUserMenu?C.surface:C.bg,border:`1px solid ${showUserMenu?C.border2:C.border}`,borderRadius:8,cursor:"pointer",fontFamily:"inherit"}}>
               <div style={{width:22,height:22,borderRadius:6,background:(roleInfo?.color||C.blue)+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11}}>{roleInfo?.icon||"👤"}</div>
@@ -3417,6 +3719,13 @@ export default function App(){
                   </div>
                 </button>
 
+                {/* DB status */}
+                {sbCfg&&!sbCfg.skip&&(
+                  <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:8,borderTop:`1px solid ${C.border}44`,cursor:"pointer"}} onClick={()=>{if(window.confirm(lang==="fr"?"Reconfigurer la connexion base de données ?":"Reconfigure database connection?")){saveSbConfig(null);window.location.reload();}}}>
+                    <span style={{width:8,height:8,borderRadius:"50%",background:dbStatus==="ok"?"#34A853":dbStatus==="error"?"#EA4335":"#FBBC05",display:"inline-block"}}/>
+                    <span style={{color:C.muted,fontSize:11}}>Supabase — {dbStatus==="ok"?(lang==="fr"?"Synchronisé":"Synced"):dbStatus==="saving"?(lang==="fr"?"Sauvegarde...":"Saving..."):dbStatus==="error"?(lang==="fr"?"Erreur sync":"Sync error"):(lang==="fr"?"Chargement":"Loading")}</span>
+                  </div>
+                )}
                 {/* Logout */}
                 <button onClick={()=>{setShowUserMenu(false);doLogout();}} style={{width:"100%",padding:"10px 16px",background:"transparent",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:8,color:C.red,fontSize:12,fontFamily:"inherit",fontWeight:600}}>
                   <Icon name="lock" size={13} color={C.red}/>{t.login.logout}
