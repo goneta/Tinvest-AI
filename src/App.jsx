@@ -62,7 +62,12 @@ const PERMANENT_CATEGORIES=[
 ];
 const DEFAULT_CATEGORIES=[...PERMANENT_CATEGORIES];
 const INIT={
-  settings:{rates:{...DEFAULT_RATES},selectedCurrencies:["GBP"],adminPwd:"admin123",language:"fr",theme:"dark",ratesLastUpdated:null,dashboardWidgets:["capital","profit","monthly","investors","chart_line","chart_pie"],categories:[...DEFAULT_CATEGORIES]},
+  settings:{rates:{...DEFAULT_RATES},selectedCurrencies:["GBP"],adminPwd:"admin123",language:"fr",theme:"dark",ratesLastUpdated:null,dashboardWidgets:["capital","profit","monthly","investors","chart_line","chart_pie"],categories:[...DEFAULT_CATEGORIES],partnerCompanies:[
+      {id:1,name:"KEDA CÔTE D'IVOIRE CERAMICS",representative:"",country:"Côte d'Ivoire",address:"Zone Industrielle, Abidjan",phone:"",numReg:""},
+      {id:2,name:"MELCHAT GHANA LIMITED",representative:"",country:"Ghana",address:"Accra",phone:"",numReg:""},
+      {id:3,name:"SOPROCI",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""},
+      {id:4,name:"TRITURAF",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""}
+    ]},
   files:[],
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
@@ -387,24 +392,36 @@ function ConfirmModal({open,title,message,itemName,itemType,onConfirm,onCancel,l
   const C=_C;
   if(!open)return null;
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.65)",backdropFilter:"blur(4px)"}} onClick={onCancel}>
-      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:16,padding:"28px 32px",maxWidth:440,width:"90%",boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}} onClick={e=>e.stopPropagation()}>
-        <div style={{width:52,height:52,borderRadius:13,background:`${C.red}18`,border:`1px solid ${C.red}30`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,margin:"0 auto 18px"}}>&#128465;</div>
-        <div style={{color:C.text,fontWeight:800,fontSize:17,textAlign:"center",marginBottom:8}}>{title}</div>
-        <div style={{color:C.muted,fontSize:13,textAlign:"center",marginBottom:16,lineHeight:1.5}}>{message}</div>
+    <div style={{position:"fixed",inset:0,zIndex:9999,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,0.72)",backdropFilter:"blur(6px)"}} onClick={onCancel}>
+      <div style={{background:"#1a1a1a",border:`1px solid rgba(255,255,255,0.08)`,borderRadius:20,padding:"36px 32px 28px",maxWidth:420,width:"90%",boxShadow:"0 32px 80px rgba(0,0,0,0.7)",textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+        {/* Icon */}
+        <div style={{width:72,height:72,borderRadius:18,background:"rgba(239,68,68,0.15)",border:"1px solid rgba(239,68,68,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 24px"}}>🗑️</div>
+        {/* Title */}
+        <div style={{color:"#fff",fontWeight:800,fontSize:19,marginBottom:8,letterSpacing:"-.01em"}}>
+          {title||( lang==="fr"?"Confirmer la suppression":"Confirm deletion")}
+        </div>
+        {/* Subtitle */}
+        <div style={{color:"rgba(255,255,255,0.5)",fontSize:13,marginBottom:20,lineHeight:1.5}}>
+          {message||(lang==="fr"?"Vous allez supprimer definitivement :":"You are about to permanently delete:")}
+        </div>
+        {/* Item box */}
         {itemName&&(
-          <div style={{background:C.surface,border:`1px solid ${C.red}33`,borderRadius:10,padding:"12px 16px",marginBottom:20,textAlign:"center"}}>
-            <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>{itemType}</div>
-            <div style={{color:C.red,fontWeight:800,fontSize:14,lineHeight:1.4}}>{itemName}</div>
+          <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:12,padding:"14px 20px",marginBottom:16,textAlign:"center"}}>
+            {itemType&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:6}}>{itemType}</div>}
+            <div style={{color:"#EA4335",fontWeight:800,fontSize:15,lineHeight:1.4}}>{itemName}</div>
           </div>
         )}
-        <div style={{color:"#fca5a5",fontSize:11,textAlign:"center",marginBottom:20,background:"rgba(239,68,68,0.08)",borderRadius:8,padding:"8px 12px",border:"1px solid rgba(239,68,68,0.2)"}}>
+        {/* Warning banner */}
+        <div style={{background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.22)",borderRadius:9,padding:"10px 16px",marginBottom:24,color:"#fca5a5",fontSize:12,fontWeight:500}}>
           {lang==="fr"?"Attention : cette action est irreversible.":"Warning: this action cannot be undone."}
         </div>
-        <div style={{display:"flex",gap:10}}>
-          <button onClick={onCancel} style={{flex:1,padding:"10px",borderRadius:9,border:`1px solid ${C.border}44`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600}}>{lang==="fr"?"Annuler":"Cancel"}</button>
-          <button onClick={onConfirm} style={{flex:1,padding:"10px",borderRadius:9,border:"none",background:C.red,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-            <Icon name="trash" size={13} color="#fff"/>{lang==="fr"?"Supprimer":"Delete permanently"}
+        {/* Buttons */}
+        <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center"}}>
+          <button onClick={onCancel} style={{padding:"10px 24px",borderRadius:10,border:"none",background:"transparent",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600,letterSpacing:"-.01em"}}>
+            {lang==="fr"?"Annuler":"Cancel"}
+          </button>
+          <button onClick={onConfirm} style={{flex:1,padding:"12px 20px",borderRadius:12,border:"none",background:"#EA4335",color:"#fff",cursor:"pointer",fontSize:14,fontFamily:"inherit",fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:"0 4px 20px rgba(234,67,53,0.4)",letterSpacing:"-.01em"}}>
+            🗑️ {lang==="fr"?"Supprimer":"Delete"}
           </button>
         </div>
       </div>
@@ -487,15 +504,28 @@ function buildReportHTML(report,calc,investors,settings,lang="fr"){
   const tp=T[lang].print;const tl=T[lang].investor;const locale=lang==="fr"?"fr-FR":"en-GB";
   const C=_C;const inv=investors.find(i=>i.id===report.investorId)||{};
   const cellHTML=(n,cls="")=>{const rows=[`<div class="amt ${cls}">${fmtNum(n)} F CFA</div>`];getCurrencyLines(n,settings).forEach(l=>rows.push(`<div class="amt ${cls}">${l.value}</div>`));return rows.join("");};
-  const actRows=report.activities.map(a=>`<tr><td>${fmtDate(a.date)}</td><td class="cat">${a.category}</td><td>${a.description}</td><td class="num">${cellHTML(a.invested)}</td><td class="num">${cellHTML(a.revenue,"blue")}</td><td class="num">${cellHTML(a.expenses,"red")}</td><td class="num">${cellHTML(a.profit,"green")}</td></tr>`).join("");
+  const truckLabel=(t)=>t==="rental"?(lang==="fr"?"🚛 Location":"🚛 Rental"):(lang==="fr"?"🚚 Propre":"🚚 Own");
+  const contractLabel=(c)=>c==="sub_contract"?"Sub Contract":"Own Contract";
+  const actRows=report.activities.map(a=>`<tr>
+    <td style="white-space:nowrap">${fmtDate(a.date)}</td>
+    <td class="cat">${a.category}</td>
+    <td class="soc">${a.company||"—"}</td>
+    <td class="badge-cell">${a.truckType?`<span class="badge-truck ${a.truckType==="rental"?"rental":"own"}">${truckLabel(a.truckType)}</span>`:"—"}</td>
+    <td class="badge-cell">${a.contractType?`<span class="badge-contract ${a.contractType==="sub_contract"?"sub":"own"}">${contractLabel(a.contractType)}</span>`:"—"}</td>
+    <td>${a.description}</td>
+    <td class="num">${cellHTML(a.invested)}</td>
+    <td class="num">${cellHTML(a.revenue,"blue")}</td>
+    <td class="num">${cellHTML(a.expenses,"red")}</td>
+    <td class="num">${cellHTML(a.profit,"green")}</td>
+  </tr>`).join("");
   const expRows=report.additionalExpenses.map(e=>`<tr><td colspan="5">${e.label}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`).join("");
   const sigBlock=report.signatures?.length?`<div style="margin-top:16px;padding:12px;background:#f0f4ff;border-radius:8px;border:1px solid #c7d7ff"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin-bottom:8px">${tp.signatures}</div>${report.signatures.map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:10px"><span>✅ ${s.name}</span><span style="color:#888">${s.date}</span></div>`).join("")}</div>`:"";
-  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
+  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.soc{font-size:9px;color:#333;font-weight:600;max-width:130px;white-space:normal;word-break:break-word;line-height:1.4;}.badge-cell{white-space:nowrap;}.badge-truck{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-truck.own{background:#e6f4ea;color:#2d7a3a;border:1px solid #a8d5b0;}.badge-truck.rental{background:#f0e8ff;color:#6b3fa0;border:1px solid #c9a8f0;}.badge-contract{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-contract.own{background:#e8f0fe;color:#1a56c4;border:1px solid #a8c0f0;}.badge-contract.sub{background:#fef7e0;color:#b5800a;border:1px solid #f0d890;}@media print{@page{size:A4 landscape;margin:1cm;}}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
 ${buildPrintHeader(lang==="fr"?"Rapport Financier Mensuel":"Monthly Financial Report",report.label)}
 <div class="inv-box"><div><span class="lbl">${tp.investorLabel}</span>${inv.name||"—"}</div><div><span class="lbl">${tp.representativeLabel}</span>${inv.representative||"—"}</div><div><span class="lbl">Email</span>${inv.email||"—"}</div><div><span class="lbl">${tp.phoneLabel}</span>${inv.phone||"—"}</div><div><span class="lbl">${tp.addressLabel}</span>${inv.address||"—"}</div><div><span class="lbl">${tp.countryLabel}</span>${inv.country||"—"}</div></div>
 <div class="kpi"><div class="kpi-card k1"><div class="kpi-lbl">${tp.openingCapital}</div>${cellHTML(report.openingInvestment)}</div><div class="kpi-card k2"><div class="kpi-lbl">${tp.totalRevenue}</div>${cellHTML(calc.totalRevenue,"blue")}</div><div class="kpi-card k3"><div class="kpi-lbl">${tp.totalExpenses}</div>${cellHTML(calc.totalExpenses,"red")}</div><div class="kpi-card k4"><div class="kpi-lbl">${tp.netProfit}</div>${cellHTML(calc.netProfit,"green")}</div><div class="kpi-card k5"><div class="kpi-lbl">${tp.newCapital}</div>${cellHTML(calc.newInvestment)}</div></div>
 <div class="sec-title" style="color:#4285F4">${tp.activities}</div>
-<table><thead><tr><th>${tp.date}</th><th>${tp.category}</th><th>${tp.description}</th><th class="num">${tp.invested}</th><th class="num">${tp.revenue}</th><th class="num">${tp.expenses}</th><th class="num">${tp.profit}</th></tr></thead><tbody>${actRows}<tr class="tot-row"><td colspan="3">${tp.total.toUpperCase()}</td><td class="num">${cellHTML(calc.totalInvested)}</td><td class="num">${cellHTML(calc.totalRevenue,"blue")}</td><td class="num">${cellHTML(calc.actExp,"red")}</td><td class="num">${cellHTML(report.activities.reduce((s,a)=>s+a.profit,0),"green")}</td></tr></tbody></table>
+<table><thead><tr><th>${tp.date}</th><th>${tp.category}</th><th>${lang==="fr"?"Société":"Company"}</th><th>${lang==="fr"?"Camion":"Truck"}</th><th>${lang==="fr"?"Contrat":"Contract"}</th><th>${tp.description}</th><th class="num">${tp.invested}</th><th class="num">${tp.revenue}</th><th class="num">${tp.expenses}</th><th class="num">${tp.profit}</th></tr></thead><tbody>${actRows}<tr class="tot-row"><td colspan="6">${tp.total.toUpperCase()}</td><td class="num">${cellHTML(calc.totalInvested)}</td><td class="num">${cellHTML(calc.totalRevenue,"blue")}</td><td class="num">${cellHTML(calc.actExp,"red")}</td><td class="num">${cellHTML(report.activities.reduce((s,a)=>s+a.profit,0),"green")}</td></tr></tbody></table>
 ${report.additionalExpenses.length?`<div class="sec-title" style="color:#EA4335">${tp.addExpenses}</div><table><thead><tr><th colspan="5">${tp.label}</th><th class="num">${tp.amount}</th><th></th></tr></thead><tbody>${expRows}<tr class="tot-row"><td colspan="5">${tp.totalAddExp}</td><td class="num">${cellHTML(calc.addExp,"red")}</td><td></td></tr></tbody></table>`:""}
 <div class="sum-box"><div class="sum-title">${tp.summary}</div>${[[tp.openingCapital,report.openingInvestment,"blue"],[tp.totalRevenue,calc.totalRevenue,"green"],[tp.totalExpenses,calc.totalExpenses,"red"],[tp.netProfit,calc.netProfit,"green"],[tp.newCapital,calc.newInvestment,"blue"]].map(([l,v,cls])=>`<div class="sum-row"><span class="sum-lbl">${l}</span><div class="sum-val ${cls}">${cellHTML(Math.abs(v))}</div></div>`).join("")}</div>
 ${sigBlock}
@@ -1275,6 +1305,41 @@ function Reports({data,setData,session,t,lang}){
   const [editExpId,setEditExpId]=useState(null);const [expDraft,setExpDraft]=useState(null);
   const [shareModal,setShareModal]=useState(false);const [shareToken,setShareToken]=useState(null);
   const [showTimeline,setShowTimeline]=useState(false);
+  // ── Invest Modal ──────────────────────────────────────────────────────────────
+  const [investModal,setInvestModal]=useState(false);
+  const [investCalc,setInvestCalc]=useState({rentalTruck:0,commission:0,roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000});
+  const calcInvested=(ic)=>ic.rentalTruck+ic.commission+ic.roadExpenses+(ic.fuelQty*ic.fuelPrice)+ic.driverBonus;
+  const openInvestModal=(draft)=>{
+    const truckType=draft?.truckType||"own";
+    const contractType=draft?.contractType||"own_contract";
+    const ic={
+      rentalTruck:truckType==="rental"?(draft?.rentalTruckVal||0):0,
+      commission:contractType==="sub_contract"?100000:0,
+      roadExpenses:draft?.roadExpenses||100000,
+      fuelQty:draft?.fuelQty||480,
+      fuelPrice:draft?.fuelPrice||675,
+      driverBonus:draft?.driverBonus||56000
+    };
+    setInvestCalc(ic);setInvestModal(true);
+  };
+  const applyInvestCalc=()=>{
+    const total=calcInvested(investCalc);
+    const updated={...actDraft,invested:total,...investCalc};
+    setActDraft(updated);
+    // If editing an existing row (not a new one), auto-save immediately
+    if(editActId&&editActId!=="new"){
+      const profit=(updated.revenue||0)-total-(updated.expenses||0);
+      const finalAct={...updated,profit};
+      setData(d=>({...d,reports:d.reports.map(r=>{
+        if(r.id!==selId)return r;
+        return{...r,activities:r.activities.map(a=>a.id===editActId?finalAct:a)};
+      })}));
+      addAudit(setData,session,"Investi recalculé",updated.description||"","update");
+      setEditActId(null);setActDraft(null);
+    }
+    setInvestModal(false);
+  };
+  const partnerCompanies=(data.settings.partnerCompanies||[]).map(c=>typeof c==="string"?c:c.name);
   const report=data.reports.find(r=>r.id===selId);
   const calc=report?calcReport(report):null;
   const locked=report?.status==="closed";
@@ -1289,11 +1354,25 @@ function Reports({data,setData,session,t,lang}){
       addAudit(setData,session,lockTarget==="close"?"Rapport fermé":"Rapport réouvert",report.label,"lock");
     }else setLockErr(t.lock.wrong);
   };
-  const startEditAct=a=>{setActDraft({...a});setEditActId(a.id);};
-  const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||t.categories)[0],description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[]});setEditActId("new");};
+  const startEditAct=a=>{
+    setActDraft({
+      ...a,
+      truckType:a.truckType||"own",
+      contractType:a.contractType||"own_contract",
+      company:a.company||"",
+      roadExpenses:a.roadExpenses||100000,
+      fuelQty:a.fuelQty||480,
+      fuelPrice:a.fuelPrice||675,
+      driverBonus:a.driverBonus||56000,
+      rentalTruckVal:a.rentalTruckVal||0
+    });
+    setEditActId(a.id);
+  };
+  const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||t.categories)[0],company:"",truckType:"own",contractType:"own_contract",description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[],roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000,rentalTruckVal:0});setEditActId("new");};
   const saveAct=()=>{
     const profit=(actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0);
-    setData(d=>({...d,reports:d.reports.map(r=>{if(r.id!==selId)return r;const acts=editActId==="new"?[...r.activities,{...actDraft,profit,id:Date.now()}]:r.activities.map(a=>a.id===editActId?{...actDraft,profit}:a);return{...r,activities:acts};})}));
+    const finalAct={...actDraft,profit};
+    setData(d=>({...d,reports:d.reports.map(r=>{if(r.id!==selId)return r;const acts=editActId==="new"?[...r.activities,{...finalAct,id:Date.now()}]:r.activities.map(a=>a.id===editActId?finalAct:a);return{...r,activities:acts};})}));
     addAudit(setData,session,editActId==="new"?"Activité ajoutée":"Activité modifiée",actDraft.description,"create");
     setEditActId(null);setActDraft(null);
   };
@@ -1408,6 +1487,119 @@ function Reports({data,setData,session,t,lang}){
         </Card>
       )}
 
+      {/* ══ INVEST CALCULATION MODAL ══ */}
+      {investModal&&actDraft&&(
+        <div onClick={()=>setInvestModal(false)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",zIndex:600,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:_C.card,border:`1px solid ${_C.border}44`,borderRadius:14,width:500,boxShadow:"0 24px 72px rgba(0,0,0,0.6)",overflow:"hidden"}}>
+            {/* Header */}
+            <div style={{padding:"14px 20px",borderBottom:`1px solid ${_C.border}44`,display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:18}}>🔢</span>
+              <div style={{flex:1}}>
+                <div style={{color:_C.text,fontWeight:800,fontSize:14}}>{lang==="fr"?"Calcul de l'Investissement":"Investment Calculator"}</div>
+                <div style={{color:_C.muted,fontSize:10,marginTop:1}}>
+                  {actDraft.truckType==="rental"?"🚛 Rental Truck":"🚚 Own Truck"} · {actDraft.contractType==="sub_contract"?"Sub Contract":"Own Contract"}
+                </div>
+              </div>
+              <button onClick={()=>setInvestModal(false)} style={{width:28,height:28,background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,color:_C.muted,cursor:"pointer",fontSize:14}}>✕</button>
+            </div>
+            {/* Fields */}
+            <div style={{padding:"16px 20px",display:"flex",flexDirection:"column",gap:10}}>
+              {/* Rental Truck */}
+              <div style={{display:"flex",alignItems:"center",gap:10,opacity:actDraft.truckType==="rental"?1:0.4}}>
+                <span style={{width:26,textAlign:"center",fontSize:14}}>🚛</span>
+                <div style={{flex:1}}>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Rental Truck (F CFA)</div>
+                  <input type="number" value={investCalc.rentalTruck} disabled={actDraft.truckType!=="rental"}
+                    onChange={e=>setInvestCalc(ic=>({...ic,rentalTruck:parseFloat(e.target.value)||0}))}
+                    style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit",opacity:actDraft.truckType==="rental"?1:0.5}}/>
+                </div>
+                <div style={{color:_C.muted,fontSize:11,width:120,textAlign:"right"}}>{fmtNum(investCalc.rentalTruck)} F</div>
+              </div>
+              {/* Commission */}
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{width:26,textAlign:"center",fontSize:14}}>💼</span>
+                <div style={{flex:1}}>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>
+                    Commission {actDraft.contractType==="sub_contract"?<span style={{color:"#FBBC05"}}>(Sub Contract → 100 000 F)</span>:<span style={{color:"#34A853"}}>(Own Contract → 0 F)</span>}
+                  </div>
+                  <input type="number" value={investCalc.commission}
+                    onChange={e=>setInvestCalc(ic=>({...ic,commission:parseFloat(e.target.value)||0}))}
+                    style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                </div>
+                <div style={{color:_C.muted,fontSize:11,width:120,textAlign:"right"}}>{fmtNum(investCalc.commission)} F</div>
+              </div>
+              {/* Road Expenses */}
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{width:26,textAlign:"center",fontSize:14}}>🛣️</span>
+                <div style={{flex:1}}>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Road Expenses (F CFA) — défaut : 100 000</div>
+                  <input type="number" value={investCalc.roadExpenses}
+                    onChange={e=>setInvestCalc(ic=>({...ic,roadExpenses:parseFloat(e.target.value)||0}))}
+                    style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                </div>
+                <div style={{color:_C.muted,fontSize:11,width:120,textAlign:"right"}}>{fmtNum(investCalc.roadExpenses)} F</div>
+              </div>
+              {/* Fuel */}
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{width:26,textAlign:"center",fontSize:14}}>⛽</span>
+                <div style={{flex:1}}>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Fuel Consumption — Qté (L) × Prix/L (F)</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <input type="number" value={investCalc.fuelQty} placeholder="480 L"
+                      onChange={e=>setInvestCalc(ic=>({...ic,fuelQty:parseFloat(e.target.value)||0}))}
+                      style={{flex:1,background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                    <span style={{color:_C.muted,display:"flex",alignItems:"center",fontSize:13}}>×</span>
+                    <input type="number" value={investCalc.fuelPrice} placeholder="675 F/L"
+                      onChange={e=>setInvestCalc(ic=>({...ic,fuelPrice:parseFloat(e.target.value)||0}))}
+                      style={{flex:1,background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                  </div>
+                </div>
+                <div style={{color:_C.muted,fontSize:11,width:120,textAlign:"right"}}>{fmtNum(investCalc.fuelQty*investCalc.fuelPrice)} F</div>
+              </div>
+              {/* Driver Bonus */}
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <span style={{width:26,textAlign:"center",fontSize:14}}>👨‍✈️</span>
+                <div style={{flex:1}}>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Driver Bonus (F CFA) — défaut : 56 000</div>
+                  <input type="number" value={investCalc.driverBonus}
+                    onChange={e=>setInvestCalc(ic=>({...ic,driverBonus:parseFloat(e.target.value)||0}))}
+                    style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
+                </div>
+                <div style={{color:_C.muted,fontSize:11,width:120,textAlign:"right"}}>{fmtNum(investCalc.driverBonus)} F</div>
+              </div>
+              {/* Total */}
+              <div style={{marginTop:4,padding:"12px 14px",background:`${_C.yellow}12`,border:`1px solid ${_C.yellow}33`,borderRadius:9,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div>
+                  <div style={{color:_C.yellow,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",marginBottom:3}}>INVESTI TOTAL</div>
+                  <div style={{color:_C.text,fontSize:10,opacity:0.6}}>
+                    Rental({fmtNum(investCalc.rentalTruck)}) + Commission({fmtNum(investCalc.commission)}) + Route({fmtNum(investCalc.roadExpenses)}) + Fuel({fmtNum(investCalc.fuelQty*investCalc.fuelPrice)}) + Bonus({fmtNum(investCalc.driverBonus)})
+                  </div>
+                </div>
+                <div style={{color:_C.yellow,fontWeight:900,fontSize:18}}>{fmtNum(calcInvested(investCalc))} <span style={{fontSize:12}}>F</span></div>
+              </div>
+              {/* Driver Salary warning (Own Truck only) */}
+              {actDraft.truckType==="own"&&(
+                <div style={{padding:"8px 12px",background:`${_C.teal}12`,border:`1px solid ${_C.teal}33`,borderRadius:7,display:"flex",alignItems:"center",gap:8}}>
+                  <span>🚗</span>
+                  <div style={{flex:1,color:_C.teal,fontSize:11}}>
+                    <strong>Driver Salary</strong> — 200 000 F/mois (Own Truck uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel.
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Footer buttons */}
+            <div style={{padding:"12px 20px",borderTop:`1px solid ${_C.border}44`,display:"flex",justifyContent:"flex-end",gap:8}}>
+              <button onClick={()=>setInvestModal(false)}
+                style={{padding:"7px 16px",background:"transparent",border:`1px solid ${_C.border}44`,borderRadius:8,color:_C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button onClick={applyInvestCalc}
+                style={{padding:"7px 20px",background:_C.yellow,border:"none",borderRadius:8,color:"#1a1a2e",fontWeight:800,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>
+                ✓ {lang==="fr"?"Appliquer":"Apply"} — {fmtNum(calcInvested(investCalc))} F
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Activities table */}
       <Card style={{padding:16,marginBottom:12}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
@@ -1415,44 +1607,103 @@ function Reports({data,setData,session,t,lang}){
           {canEdit&&<Btn onClick={startAddAct} icon="plus" small>{t.activity.add}</Btn>}
         </div>
         {editActId==="new"&&actDraft&&(
-          <div style={{background:C.surface,borderRadius:8,padding:12,marginBottom:10,border:`1px solid ${C.blue}44`}}>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1.4fr 2fr 1fr 1fr 1fr",gap:6,marginBottom:8}}>
-              <EditCell value={actDraft.date}        onChange={v=>setActDraft(d=>({...d,date:v}))}        type="date"/>
-              <EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/>
-              <EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/>
-              <EditCell value={actDraft.invested}    onChange={v=>setActDraft(d=>({...d,invested:v}))}    type="number"/>
-              <EditCell value={actDraft.revenue}     onChange={v=>setActDraft(d=>({...d,revenue:v}))}     type="number"/>
-              <EditCell value={actDraft.expenses}    onChange={v=>setActDraft(d=>({...d,expenses:v}))}    type="number"/>
+          <div style={{background:C.surface,borderRadius:10,padding:14,marginBottom:10,border:`1px solid ${C.blue}44`}}>
+            {/* Row 1: Date / Category / Company / Contract Type / Truck */}
+            <div style={{display:"grid",gridTemplateColumns:"130px 1fr 1fr 160px 160px",gap:6,marginBottom:8}}>
+              <EditCell value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/>
+              <EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/>
+              <EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))}
+                options={["", ...partnerCompanies]} optionLabels={[lang==="fr"?"— Société —":"— Company —",...partnerCompanies]}/>
+              <EditCell value={actDraft.contractType||"own_contract"} onChange={v=>setActDraft(d=>({...d,contractType:v,commission:v==="sub_contract"?100000:0}))}
+                options={["own_contract","sub_contract"]} optionLabels={["Own Contract","Sub Contract"]}/>
+              <EditCell value={actDraft.truckType||"own"} onChange={v=>setActDraft(d=>({...d,truckType:v,rentalTruckVal:v==="rental"?d.rentalTruckVal:0}))}
+                options={["own","rental"]} optionLabels={["Own Truck","Rental Truck"]}/>
             </div>
-            <div style={{display:"flex",gap:6,alignItems:"center"}}>
-              <span style={{color:C.muted,fontSize:10}}>{t.report.autoProfit} </span><span style={{color:C.green,fontWeight:700,fontSize:13}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span>
-              <div style={{flex:1}}/><Btn onClick={saveAct} icon="check" small>{t.activity.save}</Btn><Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small>{t.activity.cancel}</Btn>
+            {/* Row 2: Description / INVESTI (with modal btn) / Revenue / Expenses */}
+            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:6,marginBottom:8}}>
+              <EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/>
+              <div style={{display:"flex",gap:4,alignItems:"stretch"}}>
+                <div style={{flex:1}}>
+                  <EditCell value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/>
+                </div>
+                <button onClick={()=>openInvestModal(actDraft)} title={lang==="fr"?"Calculer l'investi":"Calculate invested"}
+                  style={{width:30,background:`${C.yellow}18`,border:`1px solid ${C.yellow}44`,borderRadius:7,color:C.yellow,cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
+              </div>
+              <EditCell value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/>
+              <EditCell value={actDraft.expenses} onChange={v=>setActDraft(d=>({...d,expenses:parseFloat(v)||0}))} type="number"/>
+            </div>
+            {/* Footer */}
+            <div style={{display:"flex",gap:8,alignItems:"center"}}>
+              <span style={{color:C.muted,fontSize:10}}>{t.report.autoProfit}</span>
+              <span style={{color:C.green,fontWeight:700,fontSize:13}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span>
+              {actDraft.truckType==="own"&&<span style={{color:C.yellow,fontSize:10,marginLeft:4}}>🚗 Driver Salary: {fmtNum(200000)} F/mois</span>}
+              <div style={{flex:1}}/>
+              <Btn onClick={saveAct} icon="check" small>{t.activity.save}</Btn>
+              <Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small>{t.activity.cancel}</Btn>
             </div>
           </div>
         )}
         <div style={{overflowX:"auto"}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-            <thead><tr><TH>{t.activity.date}</TH><TH>{t.activity.category}</TH><TH>{t.activity.description}</TH><TH right>{t.activity.invested}</TH><TH right>{t.activity.revenue}</TH><TH right>{t.activity.expenses}</TH><TH right>{t.activity.profit}</TH><TH/></tr></thead>
+            <thead><tr>
+              <TH>{t.activity.date}</TH>
+              <TH>{t.activity.category}</TH>
+              <TH>{lang==="fr"?"Société":"Company"}</TH>
+              <TH>{lang==="fr"?"Camion":"Truck"}</TH>
+              <TH>{lang==="fr"?"Contrat":"Contract"}</TH>
+              <TH>{t.activity.description}</TH>
+              <TH right>{t.activity.invested}</TH>
+              <TH right>{t.activity.revenue}</TH>
+              <TH right>{t.activity.expenses}</TH>
+              <TH right>{t.activity.profit}</TH>
+              <TH/>
+            </tr></thead>
             <tbody>{report.activities.map(a=>{const editing=editActId===a.id&&actDraft;return(
               <tr key={a.id} style={{borderBottom:`1px solid ${C.border}44`,background:editing?C.surface+"88":"transparent",verticalAlign:"top"}}>
                 {editing?(<>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.date}        onChange={v=>setActDraft(d=>({...d,date:v}))}        type="date"/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.category}    onChange={v=>setActDraft(d=>({...d,category:v}))}    options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.invested}    onChange={v=>setActDraft(d=>({...d,invested:v}))}    type="number" style={{textAlign:"right"}}/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.revenue}     onChange={v=>setActDraft(d=>({...d,revenue:v}))}     type="number" style={{textAlign:"right"}}/></td>
-                  <td style={{padding:"4px 5px"}}><EditCell value={actDraft.expenses}    onChange={v=>setActDraft(d=>({...d,expenses:v}))}    type="number" style={{textAlign:"right"}}/></td>
-                  <td style={{padding:"4px 5px",textAlign:"right"}}><span style={{color:C.green,fontWeight:700}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span></td>
+                  <td style={{padding:"4px 5px",minWidth:110}}><EditCell value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/></td>
+                  <td style={{padding:"4px 5px",minWidth:140}}><EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
+                  <td style={{padding:"4px 5px",minWidth:160}}><EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))} options={["", ...partnerCompanies]} optionLabels={[lang==="fr"?"— Société —":"— Company —",...partnerCompanies]}/></td>
+                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.truckType||"own"} onChange={v=>setActDraft(d=>({...d,truckType:v,rentalTruckVal:v==="rental"?d.rentalTruckVal:0}))} options={["own","rental"]} optionLabels={["Own Truck","Rental Truck"]}/></td>
+                  <td style={{padding:"4px 5px",minWidth:130}}><EditCell value={actDraft.contractType||"own_contract"} onChange={v=>setActDraft(d=>({...d,contractType:v,commission:v==="sub_contract"?100000:0}))} options={["own_contract","sub_contract"]} optionLabels={["Own Contract","Sub Contract"]}/></td>
+                  <td style={{padding:"4px 5px",minWidth:180}}><EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
+                  <td style={{padding:"4px 5px",minWidth:130}}>
+                    <div style={{display:"flex",gap:3,alignItems:"center"}}>
+                      <div style={{flex:1}}><EditCell value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/></div>
+                      <button onClick={()=>openInvestModal(actDraft)} title={lang==="fr"?"Calculer":"Calc"} style={{width:24,height:26,background:`${C.yellow}22`,border:`1px solid ${C.yellow}44`,borderRadius:5,color:C.yellow,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
+                    </div>
+                  </td>
+                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/></td>
+                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.expenses} onChange={v=>setActDraft(d=>({...d,expenses:parseFloat(v)||0}))} type="number"/></td>
+                  <td style={{padding:"4px 5px",textAlign:"right",minWidth:100}}><span style={{color:C.green,fontWeight:700}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span></td>
                   <td style={{padding:"4px 5px"}}><div style={{display:"flex",gap:3}}><Btn onClick={saveAct} variant="green" small><Icon name="check" size={10} color="#fff"/></Btn><Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small><Icon name="close" size={10} color={C.muted}/></Btn></div></td>
                 </>):(<>
-                  <td style={{padding:"8px",color:C.muted,whiteSpace:"nowrap"}}>{fmtDate(a.date)}</td>
-                  <td style={{padding:"8px",color:C.dim,fontSize:10}}>{a.category}</td>
-                  <td style={{padding:"8px",color:C.text}}>{a.description}{a.attachments?.length>0&&<span style={{marginLeft:5,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}</td>
-                  <td style={{padding:"8px"}}><Amt n={a.invested} settings={s} color={C.muted} size={11}/></td>
-                  <td style={{padding:"8px"}}><Amt n={a.revenue}  settings={s} color={C.blue}  size={11}/></td>
-                  <td style={{padding:"8px"}}><Amt n={a.expenses} settings={s} color={C.red}   size={11}/></td>
-                  <td style={{padding:"8px"}}><Amt n={a.profit}   settings={s} color={C.green} size={11}/></td>
-                  <td style={{padding:"8px"}}><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
+                  <td style={{padding:"7px 8px",color:C.muted,whiteSpace:"nowrap"}}>{fmtDate(a.date)}</td>
+                  <td style={{padding:"7px 8px",color:C.dim,fontSize:10}}>{a.category}</td>
+                  <td style={{padding:"7px 8px",maxWidth:140,wordBreak:"break-word",whiteSpace:"normal"}}>
+                    {a.company?<span style={{background:`${C.blue}18`,color:C.blue,borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700,display:"inline-block",lineHeight:1.4,wordBreak:"break-word"}}>{a.company}</span>:<span style={{color:C.muted,fontSize:10}}>—</span>}
+                  </td>
+                  <td style={{padding:"7px 8px"}}>
+                    <span style={{background:(a.truckType==="rental"?C.purple:C.teal)+"18",color:(a.truckType==="rental"?C.purple:C.teal),borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700}}>
+                      {a.truckType==="rental"?"🚛 Rental":"🚚 Own"}
+                    </span>
+                  </td>
+                  <td style={{padding:"7px 8px"}}>
+                    <span style={{background:(a.contractType==="sub_contract"?C.yellow:C.green)+"18",color:(a.contractType==="sub_contract"?C.yellow:C.green),borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700}}>
+                      {a.contractType==="sub_contract"?"Sub":"Own"}
+                    </span>
+                  </td>
+                  <td style={{padding:"7px 8px",color:C.text,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={a.description}>
+                    {a.description}{a.attachments?.length>0&&<span style={{marginLeft:5,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}
+                  </td>
+                  <td style={{padding:"7px 8px",cursor:canEdit?"pointer":"default"}} onClick={()=>{if(canEdit){setActDraft({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});openInvestModal({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});setEditActId(a.id);}}}>
+                    <Amt n={a.invested} settings={s} color={C.muted} size={11}/>
+                    {canEdit&&<span style={{marginLeft:3,color:C.yellow,fontSize:9}}>🔢</span>}
+                  </td>
+                  <td style={{padding:"7px 8px"}}><Amt n={a.revenue}  settings={s} color={C.blue}  size={11}/></td>
+                  <td style={{padding:"7px 8px"}}><Amt n={a.expenses} settings={s} color={C.red}   size={11}/></td>
+                  <td style={{padding:"7px 8px"}}><Amt n={a.profit}   settings={s} color={a.profit>=0?C.green:C.red} size={11}/></td>
+                  <td style={{padding:"7px 8px"}}><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
                     {!isInvestor&&canEdit&&<><Btn onClick={()=>startEditAct(a)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_activity")&&<Btn onClick={()=>delAct(a.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</>}
                     {!isInvestor&&<Btn onClick={()=>attachToActivity(a.id)} variant="ghost" small title="Joindre fichier"><Icon name="paperclip" size={11} color={C.teal}/></Btn>}
                   </div></td>
@@ -1461,7 +1712,7 @@ function Reports({data,setData,session,t,lang}){
             );})}
             </tbody>
             <tfoot><tr style={{borderTop:`2px solid ${C.border2}`}}>
-              <td colSpan={3} style={{padding:"8px",color:C.yellow,fontWeight:700}}>{t.total.toUpperCase()}</td>
+              <td colSpan={6} style={{padding:"8px",color:C.yellow,fontWeight:700}}>{t.total.toUpperCase()}</td>
               <td style={{padding:"8px"}}><Amt n={calc.totalInvested} settings={s} color={C.muted} size={11}/></td>
               <td style={{padding:"8px"}}><Amt n={calc.totalRevenue}  settings={s} color={C.blue}  size={11}/></td>
               <td style={{padding:"8px"}}><Amt n={calc.actExp}        settings={s} color={C.red}   size={11}/></td>
@@ -1471,6 +1722,32 @@ function Reports({data,setData,session,t,lang}){
           </table>
         </div>
       </Card>
+
+      {/* Driver Salary Banner — shown when at least one Own Truck activity exists */}
+      {(()=>{
+        const ownTruckActs=(report.activities||[]).filter(a=>(!a.truckType||a.truckType==="own"));
+        const driverSalaryExp=report.additionalExpenses?.find(e=>e._type==="driver_salary");
+        if(ownTruckActs.length===0) return null;
+        return(
+          <div style={{background:`${C.teal}10`,border:`1px solid ${C.teal}33`,borderRadius:10,padding:"10px 16px",marginBottom:10,display:"flex",alignItems:"center",gap:12}}>
+            <span style={{fontSize:18}}>🚗</span>
+            <div style={{flex:1}}>
+              <div style={{color:C.teal,fontWeight:700,fontSize:12}}>Driver Salary — Own Truck</div>
+              <div style={{color:C.muted,fontSize:10,marginTop:1}}>{lang==="fr"?"Salaire mensuel du chauffeur pour les activités Own Truck.":"Monthly driver salary for Own Truck activities."} <strong>200 000 F/mois</strong></div>
+            </div>
+            {!driverSalaryExp&&canEdit&&(
+              <button onClick={()=>{
+                const entry={id:Date.now(),label:lang==="fr"?"Driver Salary (Own Truck)":"Driver Salary (Own Truck)",amount:200000,_type:"driver_salary"};
+                setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,additionalExpenses:[...(r.additionalExpenses||[]),entry]})}));
+                addAudit(setData,session,"Driver Salary ajouté","200 000 F","create");
+              }} style={{padding:"6px 14px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                ＋ {lang==="fr"?"Ajouter au rapport":"Add to report"}
+              </button>
+            )}
+            {driverSalaryExp&&<span style={{color:C.green,fontWeight:700,fontSize:11}}>✓ {lang==="fr"?"Ajouté":"Added"} — {fmtNum(driverSalaryExp.amount)} F</span>}
+          </div>
+        );
+      })()}
 
       {/* Additional expenses */}
       <Card style={{padding:16,marginBottom:12}}>
@@ -1882,6 +2159,15 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [selected,setSelected]=useState([...(s.selectedCurrencies||["GBP"])]);
   const [pwd,setPwd]=useState(s.adminPwd);
   const [saved,setSaved]=useState(false);const [fetching,setFetching]=useState(false);const [fetchMsg,setFetchMsg]=useState(""); const [confirmCat,setConfirmCat]=useState(null);
+  const [companies,setCompanies]=useState((s.partnerCompanies||[]).map(c=>typeof c==="string"?{id:Date.now()+Math.random(),name:c,representative:"",country:"",address:"",phone:"",numReg:""}:{...c}));
+  const [newCompany,setNewCompany]=useState({name:"",representative:"",country:"",address:"",phone:"",numReg:""});
+  const [editingCompanyId,setEditingCompanyId]=useState(null);
+  const [companyFilter,setCompanyFilter]=useState("");
+  const [companyPage,setCompanyPage]=useState(1);
+  const [showAddCompany,setShowAddCompany]=useState(false);
+  const [confirmDelete,setConfirmDelete]=useState(null); // {type,itemName,onConfirm}
+  const COMPANY_BLANK={name:"",representative:"",country:"",address:"",phone:"",numReg:""};
+  const CO_PAGE_SIZE=15;
   // ── Profile state ──
   const currentUser=data.users.find(u=>u.username===session.username)||{};
   const [profEmail,setProfEmail]=useState(currentUser.email||"");
@@ -1965,7 +2251,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
-  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime()}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   // ── Profile card (visible to ALL users) ──────────────────────────────────────
@@ -2227,7 +2513,11 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                       )}
                       {/* Delete */}
                       {canDelete&&(
-                        <button onClick={()=>{if(window.confirm(lang==="fr"?`Supprimer "${f.name}" ?`:`Delete "${f.name}"?`))setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));}} style={{flex:1,padding:"4px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
+                        <button onClick={()=>setConfirmDelete({
+                            type:lang==="fr"?"Fichier":"File",
+                            itemName:f.name,
+                            onConfirm:()=>{setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));setConfirmDelete(null);}
+                          })} style={{flex:1,padding:"4px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
                       )}
                     </div>
                   </div>
@@ -2236,16 +2526,87 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
             </div>
           )}
         </div>
+        <>
+          <ConfirmModal
+            open={!!confirmDelete}
+            lang={lang}
+            itemType={confirmDelete?.type}
+            itemName={confirmDelete?.itemName}
+            onConfirm={()=>confirmDelete?.onConfirm?.()}
+            onCancel={()=>setConfirmDelete(null)}
+          />
+        </>
         </>);
       })();
 
   if(!canEdit){
+    const roCompanies=(s.partnerCompanies||[]).map(c=>typeof c==="string"?{name:c,representative:"",country:"",address:"",phone:"",numReg:""}:{...c});
+    const roRates=s.rates||DEFAULT_RATES;
+    const roCurs=ALL_CURRENCIES.filter(c=>(s.selectedCurrencies||[]).includes(c.code));
     return(<div>
       <h2 style={{color:C.text,fontSize:20,fontWeight:800,marginBottom:18}}>{t.settings.title}</h2>
       {profileCard}
+
+      {/* Read-only Exchange Rates */}
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><span style={{padding:"6px 14px",borderRadius:8,background:`${C.blue}22`,color:C.blue,fontWeight:700}}>F CFA</span>{ALL_CURRENCIES.filter(c=>(s.selectedCurrencies||[]).includes(c.code)).map(cur=>(<span key={cur.code} style={{padding:"6px 14px",borderRadius:8,background:cur.color+"22",color:cur.color,fontSize:16,fontWeight:700}}>{cur.sym} {cur.name}</span>))}</div>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+          <Icon name="money" size={13} color={C.green}/>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.rates}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Lecture seule":"Read-only"} 👁</span>
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",background:`${C.blue}18`,borderRadius:9,padding:"10px 16px",minWidth:90}}>
+            <span style={{color:C.blue,fontWeight:800,fontSize:15}}>F CFA</span>
+            <span style={{color:C.muted,fontSize:9,marginTop:2}}>Base</span>
+          </div>
+          {roCurs.map(cur=>(
+            <div key={cur.code} style={{display:"flex",flexDirection:"column",alignItems:"center",background:cur.color+"18",borderRadius:9,padding:"10px 16px",minWidth:90}}>
+              <span style={{color:cur.color,fontWeight:800,fontSize:15}}>{cur.sym} {cur.name}</span>
+              <span style={{color:cur.color,fontSize:12,fontWeight:700,marginTop:3}}>1 F = {roRates[cur.code]} {cur.code}</span>
+              <span style={{color:C.muted,fontSize:9,marginTop:1}}>1 {cur.code} = {fmtNum(Math.round(1/roRates[cur.code]))} F</span>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Read-only Partner Companies */}
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+          <span style={{fontSize:14}}>🏢</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Sociétés partenaires":"Partner Companies"}</span>
+          <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{roCompanies.length}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Lecture seule":"Read-only"} 👁</span>
+        </div>
+        {roCompanies.length===0
+          ?<div style={{color:C.muted,fontSize:12,textAlign:"center",padding:20}}>—</div>
+          :<div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+              <thead>
+                <tr style={{borderBottom:`2px solid ${C.border2}`}}>
+                  {["🏭 "+(lang==="fr"?"Société":"Company"),"👤 "+(lang==="fr"?"Représentant":"Rep."),"🌍 "+(lang==="fr"?"Pays":"Country"),"📍 "+(lang==="fr"?"Adresse":"Address"),"📞 Tél.","🔢 Num Reg"].map((h,i)=>(
+                    <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {roCompanies.map((co,i)=>(
+                  <tr key={i} style={{borderBottom:`1px solid ${C.border}22`}}
+                    onMouseEnter={e=>e.currentTarget.style.background=C.surface}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    <td style={{padding:"7px 10px",fontWeight:700,color:C.dim}}>{co.name}</td>
+                    <td style={{padding:"7px 10px",color:C.text}}>{co.representative?co.representative:<span style={{color:C.muted}}>—</span>}</td>
+                    <td style={{padding:"7px 10px",color:C.text}}>{co.country?co.country:<span style={{color:C.muted}}>—</span>}</td>
+                    <td style={{padding:"7px 10px",color:C.text,maxWidth:160,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{co.address?co.address:<span style={{color:C.muted}}>—</span>}</td>
+                    <td style={{padding:"7px 10px",color:C.text}}>{co.phone?co.phone:<span style={{color:C.muted}}>—</span>}</td>
+                    <td style={{padding:"7px 10px",color:C.text}}>{co.numReg?co.numReg:<span style={{color:C.muted}}>—</span>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
       <div style={{background:`${C.red}15`,border:`1px solid ${C.red}44`,borderRadius:8,padding:12,color:"#fca5a5",fontSize:12,display:"flex",gap:8}}><Icon name="shield" size={14} color="#fca5a5"/>{t.settings.adminOnly}</div>
       {fileManagerSection}
     </div>);
@@ -2368,6 +2729,155 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
             {[["fr","🇫🇷 Français"],["en","🇬🇧 English"]].map(([l,lbl])=>(<button key={l} onClick={()=>setLang(l)} style={{padding:"9px 20px",borderRadius:8,border:`2px solid ${lang===l?C.blue:C.border}`,background:lang===l?`${C.blue}22`:"transparent",color:lang===l?C.blue:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:lang===l?700:400,transition:"all .15s"}}>{lbl}</button>))}
           </div>
         </div>
+      </div>
+
+      {/* ── Partner Companies Card ── */}
+      <div style={{...cs}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+          <span style={{fontSize:14}}>🏢</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Sociétés partenaires":"Partner Companies"}</span>
+          <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{companies.length}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Disponibles dans les listes déroulantes des activités":"Available in activity dropdowns"}</span>
+        </div>
+
+        {/* ── Filter bar ── */}
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+          <div style={{position:"relative",flex:1,maxWidth:340}}>
+            <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:C.muted,fontSize:12,pointerEvents:"none"}}>🔍</span>
+            <input value={companyFilter} onChange={e=>{setCompanyFilter(e.target.value);setCompanyPage(1);}}
+              placeholder={lang==="fr"?"Filtrer par nom de société…":"Filter by company name…"}
+              style={{width:"100%",background:C.surface,border:`1px solid ${companyFilter?C.blue:C.border}44`,borderRadius:8,padding:"7px 10px 7px 30px",color:C.text,fontSize:11,outline:"none",fontFamily:"inherit",boxSizing:"border-box"}}/>
+            {companyFilter&&<button onClick={()=>{setCompanyFilter("");setCompanyPage(1);}} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:C.muted,cursor:"pointer",fontSize:13,lineHeight:1}}>✕</button>}
+          </div>
+          <span style={{color:C.muted,fontSize:10,whiteSpace:"nowrap"}}>
+            {companies.filter(c=>c.name.toLowerCase().includes(companyFilter.toLowerCase())).length} {lang==="fr"?"résultat(s)":"result(s)"}
+          </span>
+        </div>
+
+        {/* ── Add form (top of list) ── */}
+        <div style={{background:C.surface,borderRadius:9,border:`1px solid ${showAddCompany?C.green:C.border}33`,marginBottom:12,overflow:"hidden"}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",cursor:"pointer",background:showAddCompany?`${C.green}08`:"transparent"}} onClick={()=>setShowAddCompany(v=>!v)}>
+            <span style={{fontSize:13}}>＋</span>
+            <span style={{fontWeight:700,color:showAddCompany?C.green:C.muted,fontSize:12}}>{lang==="fr"?"Nouvelle société":"New company"}</span>
+            <span style={{color:C.muted,fontSize:10,marginLeft:"auto"}}>{showAddCompany?"▲":"▼"}</span>
+          </div>
+          {showAddCompany&&(
+            <div style={{padding:"0 14px 14px"}}>
+              <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:6,alignItems:"end"}}>
+                {[
+                  {field:"name",label:lang==="fr"?"Nom *":"Name *",placeholder:"ex: KEDA CI"},
+                  {field:"representative",label:lang==="fr"?"Représentant":"Rep.",placeholder:"Nom complet"},
+                  {field:"country",label:lang==="fr"?"Pays":"Country",placeholder:"Côte d'Ivoire"},
+                  {field:"address",label:lang==="fr"?"Adresse":"Address",placeholder:"Abidjan..."},
+                  {field:"phone",label:"Tél.",placeholder:"+225 …"},
+                  {field:"numReg",label:"Num Reg",placeholder:"RC …"},
+                ].map(({field,label,placeholder})=>(
+                  <div key={field}>
+                    <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:3}}>{label}</div>
+                    <input value={newCompany[field]||""} onChange={e=>setNewCompany(nc=>({...nc,[field]:e.target.value}))}
+                      placeholder={placeholder}
+                      style={{width:"100%",background:C.bg,border:`1px solid ${field==="name"&&newCompany.name?C.blue:C.border}44`,borderRadius:6,padding:"6px 8px",color:C.text,fontSize:11,outline:"none",fontFamily:"inherit"}}/>
+                  </div>
+                ))}
+                <button disabled={!newCompany.name?.trim()} onClick={()=>{
+                  if(!newCompany.name?.trim())return;
+                  setCompanies(cs=>[...cs,{...newCompany,id:Date.now(),name:newCompany.name.trim()}]);
+                  setNewCompany({...COMPANY_BLANK});
+                  setShowAddCompany(false);
+                  setCompanyPage(1);
+                  setCompanyFilter("");
+                }} style={{padding:"6px 14px",background:newCompany.name?.trim()?`${C.green}18`:"transparent",border:`1px solid ${newCompany.name?.trim()?C.green:C.border}44`,borderRadius:7,color:newCompany.name?.trim()?C.green:C.muted,cursor:newCompany.name?.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                  ✓ {lang==="fr"?"Ajouter":"Add"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Table + Pagination ── */}
+        {(()=>{
+          const filtered=companies.filter(c=>c.name.toLowerCase().includes(companyFilter.toLowerCase()));
+          const totalPages=Math.ceil(filtered.length/CO_PAGE_SIZE)||1;
+          const safePage=Math.min(companyPage,totalPages);
+          const paged=filtered.slice((safePage-1)*CO_PAGE_SIZE,safePage*CO_PAGE_SIZE);
+          const cellSt={padding:"6px 8px",borderBottom:`1px solid ${C.border}22`};
+          const inpSt={width:"100%",background:"transparent",border:"none",borderBottom:`1px solid ${C.border}44`,color:C.text,fontSize:11,padding:"2px 0",outline:"none",fontFamily:"inherit"};
+          return(
+            <>
+              <div style={{overflowX:"auto",marginBottom:8}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+                  <thead>
+                    <tr style={{borderBottom:`2px solid ${C.border2}`}}>
+                      {["🏭 "+(lang==="fr"?"Société":"Company"),"👤 "+(lang==="fr"?"Représentant":"Rep."),"🌍 "+(lang==="fr"?"Pays":"Country"),"📍 "+(lang==="fr"?"Adresse":"Address"),"📞 Tél.","🔢 Num Reg",""].map((h,i)=>(
+                        <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paged.length===0?(
+                      <tr><td colSpan={7} style={{padding:"24px",textAlign:"center",color:C.muted,fontSize:12}}>
+                        {lang==="fr"?"Aucune société trouvée.":"No company found."}
+                      </td></tr>
+                    ):paged.map(co=>{
+                      const isEditing=editingCompanyId===co.id;
+                      const upd=(field,val)=>setCompanies(cs=>cs.map(c=>c.id===co.id?{...c,[field]:val}:c));
+                      return(
+                        <tr key={co.id} style={{background:isEditing?`${C.blue}08`:"transparent"}}
+                          onMouseEnter={e=>!isEditing&&(e.currentTarget.style.background=C.surface)}
+                          onMouseLeave={e=>!isEditing&&(e.currentTarget.style.background="transparent")}>
+                          <td style={{...cellSt,minWidth:180}}>{isEditing?<input value={co.name} onChange={e=>upd("name",e.target.value)} style={{...inpSt,fontWeight:700,color:C.blue}} autoFocus/>:<span style={{color:C.dim,fontWeight:700}}>{co.name}</span>}</td>
+                          <td style={{...cellSt,minWidth:140}}>{isEditing?<input value={co.representative||""} onChange={e=>upd("representative",e.target.value)} style={inpSt} placeholder="—"/>:<span style={{color:C.text}}>{co.representative?co.representative:<span style={{color:C.muted}}>—</span>}</span>}</td>
+                          <td style={{...cellSt,minWidth:110}}>{isEditing?<input value={co.country||""} onChange={e=>upd("country",e.target.value)} style={inpSt} placeholder="—"/>:<span style={{color:C.text}}>{co.country?co.country:<span style={{color:C.muted}}>—</span>}</span>}</td>
+                          <td style={{...cellSt,minWidth:160}}>{isEditing?<input value={co.address||""} onChange={e=>upd("address",e.target.value)} style={inpSt} placeholder="—"/>:<span style={{color:C.text}}>{co.address?co.address:<span style={{color:C.muted}}>—</span>}</span>}</td>
+                          <td style={{...cellSt,minWidth:130}}>{isEditing?<input value={co.phone||""} onChange={e=>upd("phone",e.target.value)} style={inpSt} placeholder="+225 …"/>:<span style={{color:C.text}}>{co.phone?co.phone:<span style={{color:C.muted}}>—</span>}</span>}</td>
+                          <td style={{...cellSt,minWidth:120}}>{isEditing?<input value={co.numReg||""} onChange={e=>upd("numReg",e.target.value)} style={inpSt} placeholder="RC …"/>:<span style={{color:C.text}}>{co.numReg?co.numReg:<span style={{color:C.muted}}>—</span>}</span>}</td>
+                          <td style={{...cellSt,minWidth:72}}>
+                            <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>
+                              {isEditing
+                                ?<button onClick={()=>setEditingCompanyId(null)} style={{padding:"3px 10px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:5,color:C.green,cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"inherit"}}>✓</button>
+                                :<button onClick={()=>setEditingCompanyId(co.id)} style={{width:22,height:22,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:5,color:C.blue,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                              }
+                              <button onClick={()=>setConfirmDelete({
+                                  type:lang==="fr"?"Société partenaire":"Partner company",
+                                  itemName:co.name,
+                                  onConfirm:()=>{setCompanies(cs=>cs.filter(c=>c.id!==co.id));setEditingCompanyId(null);setConfirmDelete(null);}
+                                })} style={{width:22,height:22,background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              {totalPages>1&&(
+                <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"4px 2px"}}>
+                  <span style={{color:C.muted,fontSize:10}}>
+                    {lang==="fr"?`Page ${safePage}/${totalPages} · ${filtered.length} sociétés`:`Page ${safePage}/${totalPages} · ${filtered.length} companies`}
+                  </span>
+                  <div style={{display:"flex",gap:3}}>
+                    {[
+                      {lbl:"«",action:()=>setCompanyPage(1),dis:safePage===1},
+                      {lbl:"‹",action:()=>setCompanyPage(p=>p-1),dis:safePage===1},
+                      ...Array.from({length:totalPages},(_,i)=>i+1).filter(p=>p===1||p===totalPages||Math.abs(p-safePage)<=1).reduce((acc,p,idx,arr)=>{
+                        if(idx>0&&arr[idx-1]!==p-1)acc.push({lbl:"…",action:null,dis:true,dot:true});
+                        acc.push({lbl:String(p),action:()=>setCompanyPage(p),dis:false,active:p===safePage});
+                        return acc;
+                      },[]),
+                      {lbl:"›",action:()=>setCompanyPage(p=>p+1),dis:safePage===totalPages},
+                      {lbl:"»",action:()=>setCompanyPage(totalPages),dis:safePage===totalPages},
+                    ].map((btn,bi)=>(
+                      <button key={bi} onClick={btn.dis?undefined:btn.action} disabled={btn.dis}
+                        style={{minWidth:26,height:26,borderRadius:6,border:`1px solid ${btn.active?C.blue:C.border}44`,background:btn.active?C.blue:"transparent",color:btn.active?"#fff":btn.dis?C.muted:C.dim,cursor:btn.dis||btn.dot?"default":"pointer",fontSize:btn.dot?13:11,fontWeight:btn.active?700:400,padding:"0 4px"}}>
+                        {btn.lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          );
+        })()}
       </div>
 
       <Btn onClick={save} icon={saved?"check":"save"} variant={saved?"green":"primary"}>{saved?t.settings.savedOk:t.settings.save}</Btn>
@@ -2882,7 +3392,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
               <select value={selectedCompany} onChange={e=>setSelectedCompany(e.target.value)}
                 style={{width:"100%",background:C.card,border:`1px solid ${selectedCompany?C.blue:C.border}`,borderRadius:8,padding:"8px 36px 8px 12px",color:selectedCompany?C.text:C.muted,fontSize:12,outline:"none",fontFamily:"inherit",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
                 <option value="">{lang==="fr"?"— Sélectionner une société —":"— Select a company —"}</option>
-                {(lang==="en"?TRANSPORT_COMPANIES_EN:TRANSPORT_COMPANIES_FR).map((c,i)=><option key={i} value={c}>{c}</option>)}
+                {(data.settings.partnerCompanies||[]).map((c,i)=>{const name=typeof c==="string"?c:c.name;return(<option key={i} value={name}>{name}</option>);})}
               </select>
               <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:C.muted,fontSize:11}}>▼</div>
             </div>
