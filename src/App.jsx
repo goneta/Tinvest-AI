@@ -67,7 +67,8 @@ const INIT={
       {id:2,name:"MELCHAT GHANA LIMITED",representative:"",country:"Ghana",address:"Accra",phone:"",numReg:""},
       {id:3,name:"SOPROCI",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""},
       {id:4,name:"TRITURAF",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""}
-    ]},
+    ],
+    drivers:[]},
   files:[],
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
@@ -518,7 +519,14 @@ function buildReportHTML(report,calc,investors,settings,lang="fr"){
     <td class="num">${cellHTML(a.expenses,"red")}</td>
     <td class="num">${cellHTML(a.profit,"green")}</td>
   </tr>`).join("");
-  const expRows=report.additionalExpenses.map(e=>`<tr><td colspan="5">${e.label}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`).join("");
+  const regularExps=report.additionalExpenses.filter(e=>e._type!=="driver_salary");
+  const driverSalExps=report.additionalExpenses.filter(e=>e._type==="driver_salary");
+  const driverSalTotal=driverSalExps.reduce((s,e)=>s+e.amount,0);
+  const expRows=[
+    ...regularExps.map(e=>`<tr><td colspan="5">${e.label}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`),
+    ...(driverSalExps.length>0?[`<tr><td colspan="5">🚗 ${lang==="fr"?"Salaires Chauffeurs":"Driver Salaries"} (${driverSalExps.length})</td><td class="num">${cellHTML(driverSalTotal,"red")}</td><td></td></tr>`]:[])
+  ].join("");
+  const allAddExp=[...regularExps,...(driverSalExps.length>0?[{label:"drivers_group",amount:driverSalTotal}]:[])];
   const sigBlock=report.signatures?.length?`<div style="margin-top:16px;padding:12px;background:#f0f4ff;border-radius:8px;border:1px solid #c7d7ff"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin-bottom:8px">${tp.signatures}</div>${report.signatures.map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:10px"><span>✅ ${s.name}</span><span style="color:#888">${s.date}</span></div>`).join("")}</div>`:"";
   return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.soc{font-size:9px;color:#333;font-weight:600;max-width:130px;white-space:normal;word-break:break-word;line-height:1.4;}.badge-cell{white-space:nowrap;}.badge-truck{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-truck.own{background:#e6f4ea;color:#2d7a3a;border:1px solid #a8d5b0;}.badge-truck.rental{background:#f0e8ff;color:#6b3fa0;border:1px solid #c9a8f0;}.badge-contract{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-contract.own{background:#e8f0fe;color:#1a56c4;border:1px solid #a8c0f0;}.badge-contract.sub{background:#fef7e0;color:#b5800a;border:1px solid #f0d890;}@media print{@page{size:A4 landscape;margin:1cm;}}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
 ${buildPrintHeader(lang==="fr"?"Rapport Financier Mensuel":"Monthly Financial Report",report.label)}
@@ -526,7 +534,7 @@ ${buildPrintHeader(lang==="fr"?"Rapport Financier Mensuel":"Monthly Financial Re
 <div class="kpi"><div class="kpi-card k1"><div class="kpi-lbl">${tp.openingCapital}</div>${cellHTML(report.openingInvestment)}</div><div class="kpi-card k2"><div class="kpi-lbl">${tp.totalRevenue}</div>${cellHTML(calc.totalRevenue,"blue")}</div><div class="kpi-card k3"><div class="kpi-lbl">${tp.totalExpenses}</div>${cellHTML(calc.totalExpenses,"red")}</div><div class="kpi-card k4"><div class="kpi-lbl">${tp.netProfit}</div>${cellHTML(calc.netProfit,"green")}</div><div class="kpi-card k5"><div class="kpi-lbl">${tp.newCapital}</div>${cellHTML(calc.newInvestment)}</div></div>
 <div class="sec-title" style="color:#4285F4">${tp.activities}</div>
 <table><thead><tr><th>${tp.date}</th><th>${tp.category}</th><th>${lang==="fr"?"Société":"Company"}</th><th>${lang==="fr"?"Camion":"Truck"}</th><th>${lang==="fr"?"Contrat":"Contract"}</th><th>${tp.description}</th><th class="num">${tp.invested}</th><th class="num">${tp.revenue}</th><th class="num">${tp.expenses}</th><th class="num">${tp.profit}</th></tr></thead><tbody>${actRows}<tr class="tot-row"><td colspan="6">${tp.total.toUpperCase()}</td><td class="num">${cellHTML(calc.totalInvested)}</td><td class="num">${cellHTML(calc.totalRevenue,"blue")}</td><td class="num">${cellHTML(calc.actExp,"red")}</td><td class="num">${cellHTML(report.activities.reduce((s,a)=>s+a.profit,0),"green")}</td></tr></tbody></table>
-${report.additionalExpenses.length?`<div class="sec-title" style="color:#EA4335">${tp.addExpenses}</div><table><thead><tr><th colspan="5">${tp.label}</th><th class="num">${tp.amount}</th><th></th></tr></thead><tbody>${expRows}<tr class="tot-row"><td colspan="5">${tp.totalAddExp}</td><td class="num">${cellHTML(calc.addExp,"red")}</td><td></td></tr></tbody></table>`:""}
+${(regularExps.length>0||driverSalExps.length>0)?`<div class="sec-title" style="color:#EA4335">${tp.addExpenses}</div><table><thead><tr><th colspan="5">${tp.label}</th><th class="num">${tp.amount}</th><th></th></tr></thead><tbody>${expRows}<tr class="tot-row"><td colspan="5">${tp.totalAddExp}</td><td class="num">${cellHTML(calc.addExp,"red")}</td><td></td></tr></tbody></table>`:""}
 <div class="sum-box"><div class="sum-title">${tp.summary}</div>${[[tp.openingCapital,report.openingInvestment,"blue"],[tp.totalRevenue,calc.totalRevenue,"green"],[tp.totalExpenses,calc.totalExpenses,"red"],[tp.netProfit,calc.netProfit,"green"],[tp.newCapital,calc.newInvestment,"blue"]].map(([l,v,cls])=>`<div class="sum-row"><span class="sum-lbl">${l}</span><div class="sum-val ${cls}">${cellHTML(Math.abs(v))}</div></div>`).join("")}</div>
 ${sigBlock}
 <footer><span>© 2026 Thunderfam Investment — Côte d'Ivoire</span><span>${tp.generatedOn} ${fmtDateTime()}</span></footer></body></html>`;
@@ -1412,6 +1420,8 @@ function Reports({data,setData,session,t,lang}){
   // ── Attachment modal ──────────────────────────────────────────────
   const [attachModal,setAttachModal]=useState(null); // {actId, actDesc}
   const [attachPreview,setAttachPreview]=useState(null); // {file obj}
+  // ── Driver Salary modal ───────────────────────────────────────────
+  const [driverSalaryModal,setDriverSalaryModal]=useState(null); // {driverId, amount, trips, editing}
   // ── Invest Modal ──────────────────────────────────────────────────────────────
   const [investModal,setInvestModal]=useState(false);
   const [investCalc,setInvestCalc]=useState({rentalTruck:0,commission:0,roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000});
@@ -1882,28 +1892,108 @@ function Reports({data,setData,session,t,lang}){
         </div>
       </Card>
 
-      {/* Driver Salary Banner — shown when at least one Own Truck activity exists */}
+      {/* Driver Salary Banner — multi-entry */}
+      {driverSalaryModal&&(
+        <div onClick={()=>setDriverSalaryModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(10px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(255,255,255,0.1)",borderRadius:18,width:"min(480px,96vw)",boxShadow:"0 32px 80px rgba(0,0,0,0.8)",overflow:"hidden"}}>
+            <div style={{padding:"14px 20px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",gap:10}}>
+              <span style={{fontSize:18}}>🚗</span>
+              <div style={{flex:1}}>
+                <div style={{color:"#fff",fontWeight:800,fontSize:14}}>{driverSalaryModal.editing!=null?(lang==="fr"?"Modifier salaire":"Edit salary"):(lang==="fr"?"Ajouter salaire chauffeur":"Add driver salary")}</div>
+                <div style={{color:"rgba(255,255,255,0.38)",fontSize:10,marginTop:1}}>Driver Salary — Own Truck</div>
+              </div>
+              <button onClick={()=>setDriverSalaryModal(null)} style={{width:28,height:28,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
+            </div>
+            <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
+              {/* Driver dropdown */}
+              <div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Chauffeur":"Driver"}</div>
+                <select value={driverSalaryModal.driverId||""} onChange={e=>setDriverSalaryModal(m=>({...m,driverId:e.target.value}))}
+                  style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  <option value="">{lang==="fr"?"— Sélectionner un chauffeur —":"— Select a driver —"}</option>
+                  {(data.settings.drivers||[]).map(d=>(
+                    <option key={d.id} value={d.id}>{d.nom}{d.prenom?" "+d.prenom:""}</option>
+                  ))}
+                </select>
+                {(data.settings.drivers||[]).length===0&&<div style={{color:"rgba(234,67,53,0.8)",fontSize:10,marginTop:4}}>⚠ {lang==="fr"?"Aucun chauffeur dans les Paramètres.":"No drivers in Settings."}</div>}
+              </div>
+              {/* Salary amount */}
+              <div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Montant du salaire (F CFA)":"Salary Amount (F CFA)"}</div>
+                <input type="number" value={driverSalaryModal.amount||""} onChange={e=>setDriverSalaryModal(m=>({...m,amount:parseFloat(e.target.value)||0}))}
+                  placeholder="200000" style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+              </div>
+              {/* Number of trips */}
+              <div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Nombre de voyages":"Number of trips"}</div>
+                <select value={driverSalaryModal.trips||0} onChange={e=>setDriverSalaryModal(m=>({...m,trips:parseInt(e.target.value)||0}))}
+                  style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  {[0,1,2,3,4,5,6,7,8,9,10].map(n=><option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+            </div>
+            <div style={{padding:"12px 20px",borderTop:"1px solid rgba(255,255,255,0.06)",display:"flex",gap:10,justifyContent:"flex-end"}}>
+              <button onClick={()=>setDriverSalaryModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
+                {lang==="fr"?"Annuler":"Cancel"}
+              </button>
+              <button disabled={!driverSalaryModal.driverId||!driverSalaryModal.amount} onClick={()=>{
+                const driver=(data.settings.drivers||[]).find(d=>String(d.id)===String(driverSalaryModal.driverId));
+                if(!driver||!driverSalaryModal.amount)return;
+                const entry={id:driverSalaryModal.editing??Date.now(),driverId:driverSalaryModal.driverId,driverName:(driver.nom+(driver.prenom?" "+driver.prenom:"")),amount:driverSalaryModal.amount,trips:driverSalaryModal.trips||0,_type:"driver_salary"};
+                setData(d=>({...d,reports:d.reports.map(r=>{
+                  if(r.id!==selId)return r;
+                  const existing=r.additionalExpenses?.filter(e=>e._type!=="driver_salary")||[];
+                  const dsEntries=(r.additionalExpenses||[]).filter(e=>e._type==="driver_salary");
+                  const updated=driverSalaryModal.editing!=null?dsEntries.map(e=>e.id===driverSalaryModal.editing?entry:e):[...dsEntries,entry];
+                  return{...r,additionalExpenses:[...existing,...updated]};
+                })}));
+                addAudit(setData,session,"Driver Salary",entry.driverName+" — "+fmtNum(entry.amount)+" F","create");
+                setDriverSalaryModal(null);
+              }} style={{padding:"7px 20px",background:(driverSalaryModal.driverId&&driverSalaryModal.amount)?_C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:(driverSalaryModal.driverId&&driverSalaryModal.amount)?"#fff":"rgba(255,255,255,0.3)",cursor:(driverSalaryModal.driverId&&driverSalaryModal.amount)?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
+                {driverSalaryModal.editing!=null?(lang==="fr"?"Mettre à jour":"Update"):(lang==="fr"?"Ajouter":"Add")} 🚗
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {(()=>{
         const ownTruckActs=(report.activities||[]).filter(a=>(!a.truckType||a.truckType==="own"));
-        const driverSalaryExp=report.additionalExpenses?.find(e=>e._type==="driver_salary");
+        const dsSalaries=(report.additionalExpenses||[]).filter(e=>e._type==="driver_salary");
+        const dsTotal=dsSalaries.reduce((s,e)=>s+e.amount,0);
         if(ownTruckActs.length===0) return null;
         return(
-          <div style={{background:`${C.teal}10`,border:`1px solid ${C.teal}33`,borderRadius:10,padding:"10px 16px",marginBottom:10,display:"flex",alignItems:"center",gap:12}}>
-            <span style={{fontSize:18}}>🚗</span>
-            <div style={{flex:1}}>
-              <div style={{color:C.teal,fontWeight:700,fontSize:12}}>Driver Salary — Own Truck</div>
-              <div style={{color:C.muted,fontSize:10,marginTop:1}}>{lang==="fr"?"Salaire mensuel du chauffeur pour les activités Own Truck.":"Monthly driver salary for Own Truck activities."} <strong>200 000 F/mois</strong></div>
+          <div style={{background:`${C.teal}10`,border:`1px solid ${C.teal}33`,borderRadius:10,padding:"12px 16px",marginBottom:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:dsSalaries.length>0?10:0}}>
+              <span style={{fontSize:16}}>🚗</span>
+              <div style={{flex:1}}>
+                <div style={{color:C.teal,fontWeight:700,fontSize:12}}>Driver Salary — Own Truck</div>
+                {dsSalaries.length>0&&<div style={{color:C.green,fontSize:11,fontWeight:700,marginTop:1}}>
+                  {lang==="fr"?"Chauffeurs":"Drivers"} ({dsSalaries.length}) — {fmtNum(dsTotal)} F
+                </div>}
+              </div>
+              {canEdit&&(
+                <button onClick={()=>setDriverSalaryModal({driverId:"",amount:200000,trips:1,editing:null})}
+                  style={{padding:"6px 14px",background:`${C.teal}18`,border:`1px solid ${C.teal}55`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                  ＋ {lang==="fr"?"Ajouter salaire des chauffeurs":"Add driver salary"}
+                </button>
+              )}
             </div>
-            {!driverSalaryExp&&canEdit&&(
-              <button onClick={()=>{
-                const entry={id:Date.now(),label:lang==="fr"?"Driver Salary (Own Truck)":"Driver Salary (Own Truck)",amount:200000,_type:"driver_salary"};
-                setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,additionalExpenses:[...(r.additionalExpenses||[]),entry]})}));
-                addAudit(setData,session,"Driver Salary ajouté","200 000 F","create");
-              }} style={{padding:"6px 14px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                ＋ {lang==="fr"?"Ajouter au rapport":"Add to report"}
-              </button>
+            {dsSalaries.length>0&&(
+              <div style={{display:"flex",flexDirection:"column",gap:4}}>
+                {dsSalaries.map((e,i)=>(
+                  <div key={e.id||i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:"rgba(255,255,255,0.04)",borderRadius:7,border:"1px solid rgba(255,255,255,0.06)"}}>
+                    <span style={{fontSize:12}}>👤</span>
+                    <span style={{color:C.text,fontSize:11,fontWeight:600,flex:1}}>{e.driverName||"—"}</span>
+                    {e.trips>0&&<span style={{color:C.muted,fontSize:10}}>{e.trips} {lang==="fr"?"voyage(s)":"trip(s)"}</span>}
+                    <span style={{color:C.green,fontSize:11,fontWeight:700}}>{fmtNum(e.amount)} F</span>
+                    {canEdit&&<>
+                      <button onClick={()=>setDriverSalaryModal({driverId:String(e.driverId),amount:e.amount,trips:e.trips||0,editing:e.id})} style={{width:22,height:22,borderRadius:5,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                      <button onClick={()=>setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,additionalExpenses:r.additionalExpenses.filter(x=>x.id!==e.id)})}))} style={{width:22,height:22,borderRadius:5,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                    </>}
+                  </div>
+                ))}
+              </div>
             )}
-            {driverSalaryExp&&<span style={{color:C.green,fontWeight:700,fontSize:11}}>✓ {lang==="fr"?"Ajouté":"Added"} — {fmtNum(driverSalaryExp.amount)} F</span>}
           </div>
         );
       })()}
@@ -2327,6 +2417,17 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [confirmDelete,setConfirmDelete]=useState(null); // {type,itemName,onConfirm}
   const COMPANY_BLANK={name:"",representative:"",country:"",address:"",phone:"",numReg:""};
   const CO_PAGE_SIZE=15;
+  // ── Drivers state ──────────────────────────────────────────────────
+  const [drivers,setDrivers]=useState(s.drivers||[]);
+  const [driverForm,setDriverForm]=useState({nom:"",prenom:"",pays:"",licenseNum:"",licenseFile:null});
+  const [editDriverId,setEditDriverId]=useState(null);
+  const [showAddDriver,setShowAddDriver]=useState(false);
+  const [confirmDeleteDriver,setConfirmDeleteDriver]=useState(null);
+  const [driverInUseAlert,setDriverInUseAlert]=useState(null); // driver object blocked from deletion
+  const [licensePreview,setLicensePreview]=useState(null); // {name, data, type}
+  const DRIVER_BLANK={nom:"",prenom:"",pays:"",licenseNum:"",licenseFile:null};
+  // Sync drivers to global data immediately (no need to wait for Save)
+  const syncDrivers=(newList)=>{setDrivers(newList);setData(d=>({...d,settings:{...d.settings,drivers:newList}}));};
   // ── Profile state ──
   const currentUser=data.users.find(u=>u.username===session.username)||{};
   const [profEmail,setProfEmail]=useState(currentUser.email||"");
@@ -2410,7 +2511,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
-  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies,drivers:drivers}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   // ── Profile card (visible to ALL users) ──────────────────────────────────────
@@ -3038,6 +3139,199 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           );
         })()}
       </div>
+
+      {/* ── Drivers Card ── */}
+      {canEdit&&(
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
+          <span style={{fontSize:14}}>🚗</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Chauffeurs":"Drivers"}</span>
+          <span style={{background:`${C.teal}18`,color:C.teal,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{drivers.length}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Liste utilisée pour les salaires de chauffeurs":"Used for driver salary entries"}</span>
+        </div>
+
+        {/* Add form toggle */}
+        <div style={{background:C.surface,border:`1px solid ${showAddDriver?C.teal:C.border}33`,borderRadius:8,marginBottom:10,overflow:"hidden"}}>
+          <div onClick={()=>{setShowAddDriver(v=>!v);setDriverForm({...DRIVER_BLANK});}} style={{padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,userSelect:"none"}}>
+            <span style={{color:showAddDriver?C.teal:C.muted,fontSize:13,fontWeight:700}}>{showAddDriver?"▲":"▼"}</span>
+            <span style={{color:showAddDriver?C.teal:C.muted,fontSize:12,fontWeight:700}}>＋ {lang==="fr"?"Ajouter un chauffeur":"Add a driver"}</span>
+          </div>
+          {showAddDriver&&(
+            <div style={{padding:"0 14px 14px",borderTop:`1px solid ${C.border}22`}}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:8,marginTop:10}}>
+                {[["nom",lang==="fr"?"Nom *":"Last Name *"],["prenom",lang==="fr"?"Prénom":"First Name"],["pays",lang==="fr"?"Pays":"Country"],["licenseNum",lang==="fr"?"N° Permis":"License No."]].map(([fld,lbl])=>(
+                  <div key={fld}>
+                    <div style={{color:C.muted,fontSize:9,marginBottom:3,fontWeight:700,textTransform:"uppercase"}}>{lbl}</div>
+                    <input value={driverForm[fld]||""} onChange={e=>setDriverForm(f=>({...f,[fld]:e.target.value}))}
+                      style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:6,padding:"5px 8px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                  </div>
+                ))}
+                <div style={{display:"flex",alignItems:"flex-end"}}>
+                  <button disabled={!driverForm.nom.trim()} onClick={()=>{
+                    const nd={id:Date.now(),nom:driverForm.nom.trim(),prenom:driverForm.prenom.trim(),pays:driverForm.pays.trim(),licenseNum:driverForm.licenseNum.trim(),licenseFile:driverForm.licenseFile};
+                    syncDrivers([...drivers,nd]);setDriverForm({...DRIVER_BLANK});setShowAddDriver(false);
+                  }} style={{padding:"6px 14px",background:driverForm.nom.trim()?C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:7,color:driverForm.nom.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:driverForm.nom.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                    ＋ {lang==="fr"?"Ajouter":"Add"}
+                  </button>
+                </div>
+              </div>
+              {/* License upload */}
+              <div style={{marginTop:8}}>
+                <div style={{color:C.muted,fontSize:9,marginBottom:3,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"Permis de conduire (fichier)":"Driving License (file)"}</div>
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <label style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:6,color:C.blue,cursor:"pointer",fontSize:11,fontWeight:700}}>
+                    📎 {driverForm.licenseFile?driverForm.licenseFile.name:(lang==="fr"?"Choisir fichier":"Choose file")}
+                    <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setDriverForm(df=>({...df,licenseFile:{name:f.name,data:ev.target.result,type:f.type}}));r.readAsDataURL(f);}}/>
+                  </label>
+                  {driverForm.licenseFile&&<button onClick={()=>setDriverForm(f=>({...f,licenseFile:null}))} style={{color:C.red,background:"none",border:"none",cursor:"pointer",fontSize:11}}>✕</button>}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Drivers table */}
+        {drivers.length===0?(
+          <div style={{textAlign:"center",padding:"20px",color:C.muted,fontSize:12}}>
+            {lang==="fr"?"Aucun chauffeur enregistré.":"No drivers registered."}
+          </div>
+        ):(
+          <div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+              <thead><tr>
+                {[lang==="fr"?"Nom":"Last Name",lang==="fr"?"Prénom":"First Name",lang==="fr"?"Pays":"Country",lang==="fr"?"N° Permis":"License No.",lang==="fr"?"Permis":"License",""].map((h,i)=>(
+                  <th key={i} style={{color:C.muted,fontWeight:700,padding:"5px 8px",textAlign:"left",fontSize:9,textTransform:"uppercase",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{h}</th>
+                ))}
+              </tr></thead>
+              <tbody>
+                {drivers.map(d=>(
+                  <tr key={d.id} style={{borderBottom:`1px solid ${C.border}22`}}
+                    onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.03)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                    {editDriverId===d.id?(
+                      <>
+                        {[["nom",""],["prenom",""],["pays",""],["licenseNum",""]].map(([fld])=>(
+                          <td key={fld} style={{padding:"4px 5px"}}>
+                            <input value={d[fld]||""} onChange={e=>setDrivers(ds=>ds.map(x=>x.id!==d.id?x:{...x,[fld]:e.target.value}))}
+                              style={{width:"100%",background:C.bg,border:`1px solid ${C.blue}66`,borderRadius:5,padding:"3px 6px",color:C.text,fontSize:11,fontFamily:"inherit"}}/>
+                          </td>
+                        ))}
+                        <td style={{padding:"4px 5px"}}>
+                          <label style={{cursor:"pointer",color:C.blue,fontSize:10}}>
+                            📎 {d.licenseFile?(d.licenseFile.name.length>12?d.licenseFile.name.slice(0,12)+"…":d.licenseFile.name):(lang==="fr"?"Choisir":"Choose")}
+                            <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setDrivers(ds=>ds.map(x=>x.id!==d.id?x:{...x,licenseFile:{name:f.name,data:ev.target.result,type:f.type}}));r.readAsDataURL(f);}}/>
+                          </label>
+                        </td>
+                        <td style={{padding:"4px 5px"}}>
+                          <div style={{display:"flex",gap:4}}>
+                            <button onClick={()=>{syncDrivers(drivers);setEditDriverId(null);}} style={{padding:"3px 10px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:5,color:C.green,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>✓</button>
+                            <button onClick={()=>{
+  const used=(data.reports||[]).some(r=>(r.additionalExpenses||[]).some(e=>e._type==="driver_salary"&&String(e.driverId)===String(d.id)));
+  if(used){setDriverInUseAlert(d);}else{setConfirmDeleteDriver(d);}
+}} style={{padding:"3px 8px",background:`${C.red}18`,border:`1px solid ${C.red}44`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>✕</button>
+                          </div>
+                        </td>
+                      </>
+                    ):(
+                      <>
+                        <td style={{padding:"5px 8px",color:C.text,fontWeight:600}}>{d.nom}</td>
+                        <td style={{padding:"5px 8px",color:C.dim}}>{d.prenom||"—"}</td>
+                        <td style={{padding:"5px 8px",color:C.dim}}>{d.pays||"—"}</td>
+                        <td style={{padding:"5px 8px",color:C.dim,fontFamily:"monospace",fontSize:10}}>{d.licenseNum||"—"}</td>
+                        <td style={{padding:"5px 8px"}}>
+                          {d.licenseFile
+                            ?<div style={{display:"flex",gap:5,alignItems:"center"}}>
+                              <button onClick={()=>setLicensePreview(d.licenseFile)} title={lang==="fr"?"Voir":"View"}
+                                style={{width:26,height:26,borderRadius:6,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>👁</button>
+                              <a href={d.licenseFile.data} download={d.licenseFile.name} title={lang==="fr"?"Télécharger":"Download"}
+                                style={{width:26,height:26,borderRadius:6,background:`${C.teal}18`,border:`1px solid ${C.teal}33`,color:C.teal,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,textDecoration:"none"}}>⬇</a>
+                            </div>
+                            :<span style={{color:C.muted,fontSize:10}}>—</span>
+                          }
+                        </td>
+                        <td style={{padding:"5px 8px"}}>
+                          <div style={{display:"flex",gap:4,justifyContent:"flex-end"}}>
+                            <button onClick={()=>setEditDriverId(d.id)} style={{width:26,height:26,borderRadius:6,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                            <button onClick={()=>{
+  const used=(data.reports||[]).some(r=>(r.additionalExpenses||[]).some(e=>e._type==="driver_salary"&&String(e.driverId)===String(d.id)));
+  if(used){setDriverInUseAlert(d);}else{setConfirmDeleteDriver(d);}
+}} style={{width:26,height:26,borderRadius:6,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                          </div>
+                        </td>
+                      </>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* License preview modal */}
+        {licensePreview&&(
+          <div onClick={()=>setLicensePreview(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#161618",border:"1px solid rgba(255,255,255,0.12)",borderRadius:18,width:"min(700px,96vw)",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 40px 100px rgba(0,0,0,0.9)",overflow:"hidden"}}>
+              <div style={{padding:"12px 18px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+                <span style={{fontSize:16}}>🪪</span>
+                <div style={{flex:1}}>
+                  <div style={{color:"#fff",fontWeight:800,fontSize:13}}>{licensePreview.name}</div>
+                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:1}}>{lang==="fr"?"Permis de conduire":"Driving License"}</div>
+                </div>
+                <a href={licensePreview.data} download={licensePreview.name} style={{padding:"5px 14px",background:"rgba(20,184,166,0.18)",border:"1px solid rgba(20,184,166,0.4)",borderRadius:7,color:"#14B8A6",textDecoration:"none",fontSize:11,fontWeight:700,marginRight:6}}>
+                  ⬇ {lang==="fr"?"Télécharger":"Download"}
+                </a>
+                <button onClick={()=>setLicensePreview(null)} style={{width:28,height:28,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
+              </div>
+              <div style={{flex:1,overflow:"auto",display:"flex",alignItems:"center",justifyContent:"center",background:"#0d0d0d",minHeight:300}}>
+                {licensePreview.type?.startsWith("image/")
+                  ?<img src={licensePreview.data} alt={licensePreview.name} style={{maxWidth:"100%",maxHeight:"calc(90vh - 80px)",objectFit:"contain",display:"block"}}/>
+                  :licensePreview.type==="application/pdf"
+                    ?<iframe src={licensePreview.data} title={licensePreview.name} style={{width:"100%",height:"calc(90vh - 80px)",minHeight:500,border:"none"}}/>
+                    :<div style={{textAlign:"center",padding:40}}>
+                      <div style={{fontSize:56,marginBottom:16}}>📄</div>
+                      <div style={{color:"rgba(255,255,255,0.6)",fontSize:13}}>{licensePreview.name}</div>
+                      <a href={licensePreview.data} download={licensePreview.name} style={{display:"inline-block",marginTop:20,padding:"10px 24px",background:"#4285F4",borderRadius:8,color:"#fff",textDecoration:"none",fontWeight:700,fontSize:12}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                    </div>
+                }
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Driver in-use alert */}
+        {driverInUseAlert&&(
+          <div onClick={()=>setDriverInUseAlert(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(420px,96vw)",boxShadow:"0 32px 80px rgba(0,0,0,0.8)",overflow:"hidden"}}>
+              <div style={{padding:"20px 24px 16px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:12}}>
+                <div style={{width:60,height:60,borderRadius:14,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🔒</div>
+                <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{lang==="fr"?"Suppression impossible":"Cannot delete"}</div>
+                <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"10px 16px",width:"100%"}}>
+                  <div style={{color:"rgba(255,255,255,0.45)",fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{lang==="fr"?"Chauffeur":"Driver"}</div>
+                  <div style={{color:"#EA4335",fontWeight:700,fontSize:14}}>{driverInUseAlert.nom} {driverInUseAlert.prenom||""}</div>
+                </div>
+                <div style={{color:"rgba(255,255,255,0.55)",fontSize:12,lineHeight:1.6}}>
+                  {lang==="fr"
+                    ?"Ce chauffeur est lié à un ou plusieurs salaires dans les rapports. Supprimez d'abord les entrées de salaire correspondantes."
+                    :"This driver is linked to one or more salary entries in reports. Remove those salary entries first."}
+                </div>
+                <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"8px 14px",width:"100%",display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:14}}>⚠️</span>
+                  <span style={{color:"rgba(234,67,53,0.9)",fontSize:11,fontWeight:600}}>
+                    {lang==="fr"?"Action bloquée — chauffeur utilisé dans les rapports":"Action blocked — driver used in reports"}
+                  </span>
+                </div>
+              </div>
+              <div style={{padding:"12px 24px 20px",display:"flex",justifyContent:"center"}}>
+                <button onClick={()=>setDriverInUseAlert(null)} style={{padding:"9px 32px",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:10,color:"rgba(255,255,255,0.7)",cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"inherit"}}>
+                  {lang==="fr"?"Compris":"Got it"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Delete confirm */}
+        <ConfirmModal open={!!confirmDeleteDriver} lang={lang} itemType={lang==="fr"?"Chauffeur":"Driver"} itemName={confirmDeleteDriver?`${confirmDeleteDriver.nom} ${confirmDeleteDriver.prenom||""}`:""} onConfirm={()=>{const updated=drivers.filter(x=>x.id!==confirmDeleteDriver.id);syncDrivers(updated);setConfirmDeleteDriver(null);}} onCancel={()=>setConfirmDeleteDriver(null)}/>
+      </div>
+      )}
 
       <Btn onClick={save} icon={saved?"check":"save"} variant={saved?"green":"primary"}>{saved?t.settings.savedOk:t.settings.save}</Btn>
       <ConfirmModal
