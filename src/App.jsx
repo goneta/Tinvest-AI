@@ -1294,6 +1294,110 @@ function Dashboard({data,session,t}){
 }
 
 // ── REPORTS PAGE ─────────────────────────────────────────────────────────────────
+
+// ── ActivityAttachModal ───────────────────────────────────────────────────────
+function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
+  const C=_C;
+  const [preview,setPreview]=useState(null);
+  useEffect(()=>{ setPreview(null); },[act?.id]);
+  if(!act) return null;
+  const files=act.attachments||[];
+  const fmtSz=(b)=>{if(!b)return"";if(b<1024)return b+"B";if(b<1048576)return(b/1024).toFixed(1)+"KB";return(b/1048576).toFixed(1)+"MB";};
+  const ico=(t="")=>{if(t.startsWith("image/"))return"🖼️";if(t==="application/pdf")return"📄";if(t.includes("word")||t.includes("doc"))return"📝";if(t.includes("sheet")||t.includes("excel")||t.includes("csv"))return"📊";return"📎";};
+
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.88)",backdropFilter:"blur(12px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{background:"#161618",border:"1px solid rgba(255,255,255,0.12)",borderRadius:20,width:"min(680px,96vw)",maxHeight:"90vh",display:"flex",flexDirection:"column",boxShadow:"0 40px 120px rgba(0,0,0,0.95)",overflow:"hidden"}}>
+
+        {/* HEADER */}
+        <div style={{padding:"14px 18px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
+          {preview
+            ?<button onClick={()=>setPreview(null)} style={{width:32,height:32,borderRadius:8,background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.18)",color:"#fff",cursor:"pointer",fontSize:18,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"inherit"}}>←</button>
+            :<span style={{fontSize:18,flexShrink:0}}>📎</span>
+          }
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{color:"#fff",fontWeight:800,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
+              {preview ? preview.name : (lang==="fr"?"Fichiers joints":"Attached files")}
+            </div>
+            <div style={{color:"rgba(255,255,255,0.38)",fontSize:10,marginTop:1}}>
+              {preview ? fmtSz(preview.size) : files.length+" fichier(s) · "+act.description}
+            </div>
+          </div>
+          {!preview&&canEdit&&(
+            <button onClick={onAttach} style={{padding:"6px 14px",background:"rgba(20,184,166,0.18)",border:"1px solid rgba(20,184,166,0.5)",borderRadius:8,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:800,fontFamily:"inherit",whiteSpace:"nowrap",flexShrink:0}}>
+              ＋ {lang==="fr"?"Ajouter":"Add files"}
+            </button>
+          )}
+          <button onClick={onClose} style={{width:30,height:30,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"inherit"}}>✕</button>
+        </div>
+
+        {/* BODY */}
+        <div style={{flex:1,overflow:"auto"}}>
+
+          {/* PREVIEW */}
+          {preview&&(
+            <div style={{display:"flex",alignItems:"center",justifyContent:"center",minHeight:420,background:"#0d0d0d"}}>
+              {preview.type?.startsWith("image/")
+                ?<img src={preview.data} alt={preview.name} style={{maxWidth:"100%",maxHeight:"calc(90vh - 110px)",objectFit:"contain",display:"block"}}/>
+                :preview.type==="application/pdf"
+                  ?<iframe src={preview.data} title={preview.name} style={{width:"100%",height:"calc(90vh - 80px)",minHeight:500,border:"none"}}/>
+                  :<div style={{textAlign:"center",padding:"50px 30px"}}>
+                    <div style={{fontSize:64,marginBottom:18}}>{ico(preview.type)}</div>
+                    <div style={{color:"rgba(255,255,255,0.85)",fontWeight:700,fontSize:15,marginBottom:8}}>{preview.name}</div>
+                    <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,marginBottom:28}}>{fmtSz(preview.size)}</div>
+                    <a href={preview.data} download={preview.name} style={{padding:"11px 28px",background:C.blue,borderRadius:10,color:"#fff",textDecoration:"none",fontWeight:700,fontSize:13,display:"inline-block"}}>
+                      ⬇ {lang==="fr"?"Télécharger":"Download"}
+                    </a>
+                  </div>
+              }
+            </div>
+          )}
+
+          {/* FILE LIST */}
+          {!preview&&(
+            <div style={{padding:16}}>
+              {files.length===0?(
+                <div style={{textAlign:"center",padding:"50px 20px"}}>
+                  <div style={{fontSize:50,marginBottom:14,opacity:.35}}>📎</div>
+                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:13,marginBottom:20}}>{lang==="fr"?"Aucun fichier joint.":"No files attached."}</div>
+                  {canEdit&&<button onClick={onAttach} style={{padding:"10px 26px",background:"rgba(20,184,166,0.15)",border:"1px solid rgba(20,184,166,0.4)",borderRadius:10,color:C.teal,cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>＋ {lang==="fr"?"Joindre des fichiers":"Attach files"}</button>}
+                </div>
+              ):(
+                <div style={{display:"flex",flexDirection:"column",gap:8}}>
+                  {files.map((f,i)=>(
+                    <div key={f.id||i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 14px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:12}}
+                      onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.07)"}
+                      onMouseLeave={e=>e.currentTarget.style.background="rgba(255,255,255,0.03)"}>
+                      <div style={{width:40,height:40,borderRadius:10,background:"rgba(255,255,255,0.05)",border:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>{ico(f.type)}</div>
+                      <div style={{flex:1,minWidth:0,cursor:"pointer"}} onClick={()=>setPreview(f)}>
+                        <div style={{color:"rgba(255,255,255,0.9)",fontWeight:600,fontSize:12,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{f.name}</div>
+                        <div style={{color:"rgba(255,255,255,0.28)",fontSize:10,marginTop:2}}>{fmtSz(f.size)}{f.uploadedAt?" · "+f.uploadedAt:""}</div>
+                      </div>
+                      <div style={{display:"flex",gap:6,flexShrink:0}}>
+                        <button onClick={()=>setPreview(f)} title="Aperçu" style={{width:32,height:32,borderRadius:8,background:"rgba(66,133,244,0.15)",border:"1px solid rgba(66,133,244,0.35)",color:"#4285F4",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>👁</button>
+                        <a href={f.data} download={f.name} onClick={e=>e.stopPropagation()} style={{width:32,height:32,borderRadius:8,background:"rgba(52,168,83,0.15)",border:"1px solid rgba(52,168,83,0.35)",color:"#34A853",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,textDecoration:"none"}}>⬇</a>
+                        {canEdit&&<button onClick={e=>{e.stopPropagation();onDetach(f.id!=null?f.id:i);}} style={{width:32,height:32,borderRadius:8,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.28)",color:"#EA4335",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER */}
+        {!preview&&files.length>0&&(
+          <div style={{padding:"9px 18px",borderTop:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
+            <span style={{color:"rgba(255,255,255,0.25)",fontSize:10}}>{files.length} fichier(s) · Cliquez pour prévisualiser</span>
+            {canEdit&&<button onClick={onAttach} style={{padding:"5px 14px",background:"rgba(20,184,166,0.12)",border:"1px solid rgba(20,184,166,0.35)",borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>＋ Ajouter</button>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Reports({data,setData,session,t,lang}){
   const C=_C;const s=data.settings;
   const isInvestor=session.role==="investor";
@@ -1305,6 +1409,9 @@ function Reports({data,setData,session,t,lang}){
   const [editExpId,setEditExpId]=useState(null);const [expDraft,setExpDraft]=useState(null);
   const [shareModal,setShareModal]=useState(false);const [shareToken,setShareToken]=useState(null);
   const [showTimeline,setShowTimeline]=useState(false);
+  // ── Attachment modal ──────────────────────────────────────────────
+  const [attachModal,setAttachModal]=useState(null); // {actId, actDesc}
+  const [attachPreview,setAttachPreview]=useState(null); // {file obj}
   // ── Invest Modal ──────────────────────────────────────────────────────────────
   const [investModal,setInvestModal]=useState(false);
   const [investCalc,setInvestCalc]=useState({rentalTruck:0,commission:0,roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000});
@@ -1395,13 +1502,57 @@ function Reports({data,setData,session,t,lang}){
   // Share link
   const doShare=()=>{const token=Math.random().toString(36).substring(2,10).toUpperCase();setData(d=>({...d,reports:d.reports.map(r=>r.id===selId?{...r,shareToken:token}:r)}));setShareToken(token);setShareModal(true);};
 
-  // Attach file to activity
-  const attachToActivity=async(actId)=>{const inp=document.createElement("input");inp.type="file";inp.accept="image/*,.pdf";inp.onchange=async e=>{const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=ev=>{setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,activities:r.activities.map(a=>a.id!==actId?a:{...a,attachments:[...(a.attachments||[]),{name:f.name,data:ev.target.result,type:f.type,size:f.size}]})})}));addAudit(setData,session,"Document joint",f.name,"create");};reader.readAsDataURL(f);};inp.click();};
+  // Attach multiple files to activity
+  const attachToActivity=(actId)=>{
+    const inp=document.createElement("input");
+    inp.type="file";
+    inp.multiple=true;
+    inp.accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv";
+    inp.onchange=e=>{
+      const files=Array.from(e.target.files);
+      if(!files.length)return;
+      let loaded=0;
+      files.forEach(f=>{
+        const reader=new FileReader();
+        reader.onload=ev=>{
+          const newFile={id:Date.now()+Math.random(),name:f.name,data:ev.target.result,type:f.type,size:f.size,uploadedAt:fmtDateTime()};
+          setData(d=>({
+            ...d,
+            reports:d.reports.map(r=>r.id!==selId?r:{
+              ...r,
+              activities:r.activities.map(a=>a.id!==actId?a:{
+                ...a,
+                attachments:[...(a.attachments||[]),newFile]
+              })
+            })
+          }));
+          loaded++;
+          if(loaded===files.length) addAudit(setData,session,"Documents joints",loaded+" fichier(s)","create");
+        };
+        reader.readAsDataURL(f);
+      });
+    };
+    inp.click();
+  };
+  const detachFile=(actId,fileId)=>{
+    setData(d=>({...d,reports:d.reports.map(r=>r.id!==selId?r:{...r,activities:r.activities.map(a=>a.id!==actId?a:{...a,attachments:(a.attachments||[]).filter(f=>f.id!==fileId)})})}));
+  };
+  const fmtFileSize=(bytes)=>{if(!bytes)return"";if(bytes<1024)return bytes+"B";if(bytes<1048576)return(bytes/1024).toFixed(1)+"KB";return(bytes/1048576).toFixed(1)+"MB";};
+  const getFileIcon=(type="")=>{if(type.startsWith("image/"))return"🖼️";if(type==="application/pdf")return"📄";if(type.includes("word")||type.includes("doc"))return"📝";if(type.includes("sheet")||type.includes("excel")||type.includes("csv"))return"📊";return"📎";};
 
   const tabColors=[C.blue,C.red,C.yellow,C.green];
   const TH=({children,right=false})=><th style={{color:C.muted,fontWeight:700,padding:"6px 8px",textAlign:right?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{children}</th>;
 
   return(<div>
+    {/* ══ ACTIVITY ATTACHMENT MODAL ══ */}
+    <ActivityAttachModal
+      act={attachModal && report ? report.activities.find(a=>a.id===attachModal.actId) : null}
+      canEdit={canEdit}
+      lang={lang}
+      onClose={()=>setAttachModal(null)}
+      onDetach={(fileId)=>detachFile(attachModal?.actId, fileId)}
+      onAttach={()=>attachToActivity(attachModal?.actId)}
+    />
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
       <div><h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{isInvestor?t.report.myReports:t.report.title}</h2><div style={{color:C.muted,fontSize:12,marginTop:2}}>{isInvestor?t.report.personalReports:t.report.historyTitle}</div></div>
       <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -1486,6 +1637,9 @@ function Reports({data,setData,session,t,lang}){
           </div>
         </Card>
       )}
+
+
+
 
       {/* ══ INVEST CALCULATION MODAL ══ */}
       {investModal&&actDraft&&(
@@ -1694,7 +1848,7 @@ function Reports({data,setData,session,t,lang}){
                     </span>
                   </td>
                   <td style={{padding:"7px 8px",color:C.text,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={a.description}>
-                    {a.description}{a.attachments?.length>0&&<span style={{marginLeft:5,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}
+                    {a.description}
                   </td>
                   <td style={{padding:"7px 8px",cursor:canEdit?"pointer":"default"}} onClick={()=>{if(canEdit){setActDraft({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});openInvestModal({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});setEditActId(a.id);}}}>
                     <Amt n={a.invested} settings={s} color={C.muted} size={11}/>
@@ -1705,7 +1859,12 @@ function Reports({data,setData,session,t,lang}){
                   <td style={{padding:"7px 8px"}}><Amt n={a.profit}   settings={s} color={a.profit>=0?C.green:C.red} size={11}/></td>
                   <td style={{padding:"7px 8px"}}><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
                     {!isInvestor&&canEdit&&<><Btn onClick={()=>startEditAct(a)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_activity")&&<Btn onClick={()=>delAct(a.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</>}
-                    {!isInvestor&&<Btn onClick={()=>attachToActivity(a.id)} variant="ghost" small title="Joindre fichier"><Icon name="paperclip" size={11} color={C.teal}/></Btn>}
+                    <button onClick={()=>setAttachModal({actId:a.id,actDesc:a.description})}
+                      title={lang==="fr"?"Voir / Joindre fichiers":"View / Attach files"}
+                      style={{display:"flex",alignItems:"center",gap:3,padding:"3px 7px",background:(a.attachments?.length>0)?`${C.teal}18`:"transparent",border:`1px solid ${(a.attachments?.length>0)?C.teal:C.border}44`,borderRadius:6,cursor:"pointer",color:C.teal,fontSize:10,fontWeight:700}}>
+                      <Icon name="paperclip" size={10} color={C.teal}/>
+                      {(a.attachments?.length>0)&&<span>{a.attachments.length}</span>}
+                    </button>
                   </div></td>
                 </>)}
               </tr>
