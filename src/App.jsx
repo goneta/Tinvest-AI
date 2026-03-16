@@ -69,9 +69,24 @@ const INIT={
       {id:4,name:"TRITURAF",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""}
     ],
     drivers:[],
-    fuelPricePerLiter:675,
-    driverSalaryBase:200000,
-    driverSalaryBonus:168000},
+    fuelPrices:[{id:1,label:"Standard",value:675,isDefault:true}],
+    driverSalaries:[{id:1,label:"Standard",base:200000,bonus:168000,isDefault:true}],
+    departureLocations:[
+      {id:1,country:"Ghana",city:"Takoradi"},
+      {id:2,country:"Côte d'Ivoire",city:"Abidjan"}
+    ],
+    destinationLocations:[
+      {id:1,country:"Burkina Faso",city:"Ouagadougou"},
+      {id:2,country:"Mali",city:"Bamako"}
+    ],
+    routeDistances:[
+      {id:1,fromId:1,toId:1,distanceKm:1087}
+    ],
+    fuelByCountry:[
+      {id:1,country:"Ghana",pricePerLiter:675},
+      {id:2,country:"Côte d'Ivoire",pricePerLiter:700},
+      {id:3,country:"Burkina Faso",pricePerLiter:710}
+    ]},
   files:[],
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
@@ -2431,10 +2446,24 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [driverInUseAlert,setDriverInUseAlert]=useState(null); // driver object blocked from deletion
   const [licensePreview,setLicensePreview]=useState(null); // {name, data, type}
   const DRIVER_BLANK={nom:"",prenom:"",pays:"",licenseNum:"",licenseFile:null};
-  // ── Operational defaults (used in Fleet Projection) ──────────────
-  const [fuelPricePerLiter,setFuelPricePerLiter]=useState(s.fuelPricePerLiter||675);
-  const [driverSalaryBase,setDriverSalaryBase]=useState(s.driverSalaryBase||200000);
-  const [driverSalaryBonus,setDriverSalaryBonus]=useState(s.driverSalaryBonus||168000);
+  // ── Operational defaults (multi-value with default selection) ──────
+  const [fuelPrices,setFuelPrices]=useState(s.fuelPrices||[{id:1,label:"Standard",value:675,isDefault:true}]);
+  const [driverSalaries,setDriverSalaries]=useState(s.driverSalaries||[{id:1,label:"Standard",base:200000,bonus:168000,isDefault:true}]);
+  const [newFuelPrice,setNewFuelPrice]=useState({label:"",value:""});
+  const [newDriverSalary,setNewDriverSalary]=useState({label:"",base:"",bonus:""});
+  const [editFuelId,setEditFuelId]=useState(null);
+  const [editSalaryId,setEditSalaryId]=useState(null);
+  // confirmation for settings deletions
+  const [settingsDelConfirm,setSettingsDelConfirm]=useState(null); // {type,label,onConfirm}
+  // ── Locations & Routes ─────────────────────────────────────────
+  const [depsLocs,setDepsLocs]=useState(s.departureLocations||[{id:1,country:"Ghana",city:"Takoradi"},{id:2,country:"Côte d'Ivoire",city:"Abidjan"}]);
+  const [destLocs,setDestLocs]=useState(s.destinationLocations||[{id:1,country:"Burkina Faso",city:"Ouagadougou"},{id:2,country:"Mali",city:"Bamako"}]);
+  const [routeDists,setRouteDists]=useState(s.routeDistances||[{id:1,fromId:1,toId:1,distanceKm:1087}]);
+  const [fuelByCountry,setFuelByCountry]=useState(s.fuelByCountry||[{id:1,country:"Ghana",pricePerLiter:675}]);
+  const [newDepLoc,setNewDepLoc]=useState({country:"",city:""});
+  const [newDestLoc,setNewDestLoc]=useState({country:"",city:""});
+  const [newRoute,setNewRoute]=useState({fromId:"",toId:"",distanceKm:0});
+  const [newFuelCountry,setNewFuelCountry]=useState({country:"",pricePerLiter:675});
   // Sync drivers to global data immediately (no need to wait for Save)
   const syncDrivers=(newList)=>{setDrivers(newList);setData(d=>({...d,settings:{...d.settings,drivers:newList}}));};
   // ── Profile state ──
@@ -2520,7 +2549,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
-  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies,drivers:drivers,fuelPricePerLiter:fuelPricePerLiter,driverSalaryBase:driverSalaryBase,driverSalaryBonus:driverSalaryBonus}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies,drivers:drivers,fuelPrices:fuelPrices,driverSalaries:driverSalaries,departureLocations:depsLocs,destinationLocations:destLocs,routeDistances:routeDists,fuelByCountry:fuelByCountry}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   // ── Profile card (visible to ALL users) ──────────────────────────────────────
@@ -3342,7 +3371,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       </div>
       )}
 
-      {/* ── Operational Defaults Card (for Fleet Projection) ── */}
+      {/* ── Operational Defaults Card ── */}
       {canEdit&&(
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
@@ -3350,21 +3379,239 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Paramètres opérationnels":"Operational Defaults"}</span>
           <span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{lang==="fr"?"Projection flottes":"Fleet Projection"}</span>
         </div>
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+
+          {/* ── Fuel Prices ── */}
+          <div style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
+            <div style={{color:C.teal,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>⛽ {lang==="fr"?"Prix carburant (F/L)":"Fuel Price (F/L)"}</div>
+            <div style={{display:"flex",gap:5,marginBottom:8}}>
+              <input value={newFuelPrice.label} onChange={e=>setNewFuelPrice(f=>({...f,label:e.target.value}))} placeholder={lang==="fr"?"Label":"Label"}
+                style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              <input type="number" value={newFuelPrice.value} onChange={e=>setNewFuelPrice(f=>({...f,value:e.target.value}))} placeholder="F/L"
+                style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              <button disabled={!newFuelPrice.label.trim()||!newFuelPrice.value}
+                onClick={()=>{setFuelPrices(ps=>[...ps,{id:Date.now(),label:newFuelPrice.label.trim(),value:parseFloat(newFuelPrice.value)||0,isDefault:ps.length===0}]);setNewFuelPrice({label:"",value:""}); }}
+                style={{padding:"4px 10px",background:(newFuelPrice.label&&newFuelPrice.value)?C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:(newFuelPrice.label&&newFuelPrice.value)?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {fuelPrices.map(fp=>(
+                <div key={fp.id} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 8px",background:fp.isDefault?"rgba(20,184,166,0.08)":"rgba(255,255,255,0.03)",border:`1px solid ${fp.isDefault?"rgba(20,184,166,0.3)":"rgba(255,255,255,0.06)"}`,borderRadius:6}}>
+                  {editFuelId===fp.id?(
+                    <>
+                      <input value={fp.label} onChange={e=>setFuelPrices(ps=>ps.map(p=>p.id===fp.id?{...p,label:e.target.value}:p))}
+                        style={{flex:1,background:C.bg,border:`1px solid ${C.blue}44`,borderRadius:4,padding:"2px 5px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                      <input type="number" value={fp.value} onChange={e=>setFuelPrices(ps=>ps.map(p=>p.id===fp.id?{...p,value:parseFloat(e.target.value)||0}:p))}
+                        style={{width:65,background:C.bg,border:`1px solid ${C.blue}44`,borderRadius:4,padding:"2px 5px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                      <button onClick={()=>setEditFuelId(null)} style={{width:22,height:22,borderRadius:4,background:`${C.green}18`,border:`1px solid ${C.green}33`,color:C.green,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✓</button>
+                    </>
+                  ):(
+                    <>
+                      <button onClick={()=>setFuelPrices(ps=>ps.map(p=>({...p,isDefault:p.id===fp.id})))} title={lang==="fr"?"Définir par défaut":"Set as default"}
+                        style={{width:16,height:16,borderRadius:"50%",background:fp.isDefault?C.teal:"rgba(255,255,255,0.1)",border:`1px solid ${fp.isDefault?C.teal:C.border}`,cursor:"pointer",flexShrink:0,padding:0}}/>
+                      <span style={{flex:1,color:C.text,fontSize:11,fontWeight:fp.isDefault?700:400}}>{fp.label}</span>
+                      <span style={{color:C.teal,fontSize:11,fontWeight:700}}>{fmtNum(fp.value)} F</span>
+                      {fp.isDefault&&<span style={{background:`${C.teal}18`,color:C.teal,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>DEFAULT</span>}
+                      <button onClick={()=>setEditFuelId(fp.id)} style={{width:20,height:20,borderRadius:4,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                      <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Prix carburant":"Fuel Price",label:fp.label+" ("+fmtNum(fp.value)+" F/L)",onConfirm:()=>{setFuelPrices(ps=>{const f=ps.filter(p=>p.id!==fp.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                    </>
+                  )}
+                </div>
+              ))}
+              {fuelPrices.length===0&&<div style={{color:C.muted,fontSize:10,textAlign:"center",padding:"6px 0"}}>—</div>}
+            </div>
+          </div>
+
+          {/* ── Driver Salaries ── */}
+          <div style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
+            <div style={{color:C.yellow,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>👤 {lang==="fr"?"Salaires chauffeurs":"Driver Salaries"}</div>
+            <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
+              <input value={newDriverSalary.label} onChange={e=>setNewDriverSalary(f=>({...f,label:e.target.value}))} placeholder="Label"
+                style={{flex:"1 0 70px",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              <input type="number" value={newDriverSalary.base} onChange={e=>setNewDriverSalary(f=>({...f,base:e.target.value}))} placeholder={lang==="fr"?"Base":"Base"}
+                style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              <input type="number" value={newDriverSalary.bonus} onChange={e=>setNewDriverSalary(f=>({...f,bonus:e.target.value}))} placeholder="Bonus"
+                style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              <button disabled={!newDriverSalary.label.trim()||!newDriverSalary.base}
+                onClick={()=>{setDriverSalaries(ps=>[...ps,{id:Date.now(),label:newDriverSalary.label.trim(),base:parseFloat(newDriverSalary.base)||0,bonus:parseFloat(newDriverSalary.bonus)||0,isDefault:ps.length===0}]);setNewDriverSalary({label:"",base:"",bonus:""});}}
+                style={{padding:"4px 10px",background:(newDriverSalary.label&&newDriverSalary.base)?C.yellow:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:(newDriverSalary.label&&newDriverSalary.base)?"#000":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:4}}>
+              {driverSalaries.map(ds=>(
+                <div key={ds.id} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 8px",background:ds.isDefault?"rgba(251,188,5,0.08)":"rgba(255,255,255,0.03)",border:`1px solid ${ds.isDefault?"rgba(251,188,5,0.3)":"rgba(255,255,255,0.06)"}`,borderRadius:6}}>
+                  {editSalaryId===ds.id?(
+                    <>
+                      <input value={ds.label} onChange={e=>setDriverSalaries(ps=>ps.map(p=>p.id===ds.id?{...p,label:e.target.value}:p))}
+                        style={{flex:1,background:C.bg,border:`1px solid ${C.blue}44`,borderRadius:4,padding:"2px 5px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                      <input type="number" value={ds.base} onChange={e=>setDriverSalaries(ps=>ps.map(p=>p.id===ds.id?{...p,base:parseFloat(e.target.value)||0}:p))}
+                        style={{width:65,background:C.bg,border:`1px solid ${C.blue}44`,borderRadius:4,padding:"2px 5px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                      <input type="number" value={ds.bonus} onChange={e=>setDriverSalaries(ps=>ps.map(p=>p.id===ds.id?{...p,bonus:parseFloat(e.target.value)||0}:p))}
+                        style={{width:65,background:C.bg,border:`1px solid ${C.blue}44`,borderRadius:4,padding:"2px 5px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+                      <button onClick={()=>setEditSalaryId(null)} style={{width:22,height:22,borderRadius:4,background:`${C.green}18`,border:`1px solid ${C.green}33`,color:C.green,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✓</button>
+                    </>
+                  ):(
+                    <>
+                      <button onClick={()=>setDriverSalaries(ps=>ps.map(p=>({...p,isDefault:p.id===ds.id})))} title={lang==="fr"?"Définir par défaut":"Set as default"}
+                        style={{width:16,height:16,borderRadius:"50%",background:ds.isDefault?C.yellow:"rgba(255,255,255,0.1)",border:`1px solid ${ds.isDefault?C.yellow:C.border}`,cursor:"pointer",flexShrink:0,padding:0}}/>
+                      <span style={{flex:1,color:C.text,fontSize:11,fontWeight:ds.isDefault?700:400}}>{ds.label}</span>
+                      <span style={{color:C.muted,fontSize:10}}>{fmtNum(ds.base)}+{fmtNum(ds.bonus)}</span>
+                      <span style={{color:C.yellow,fontSize:11,fontWeight:700}}>{fmtNum(ds.base+ds.bonus)} F</span>
+                      {ds.isDefault&&<span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>DEFAULT</span>}
+                      <button onClick={()=>setEditSalaryId(ds.id)} style={{width:20,height:20,borderRadius:4,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                      <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Salaire chauffeur":"Driver Salary",label:ds.label+" ("+fmtNum(ds.base+ds.bonus)+" F)",onConfirm:()=>{setDriverSalaries(ps=>{const f=ps.filter(p=>p.id!==ds.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                    </>
+                  )}
+                </div>
+              ))}
+              {driverSalaries.length===0&&<div style={{color:C.muted,fontSize:10,textAlign:"center",padding:"6px 0"}}>—</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+      )}
+
+      {/* ── Locations, Routes & Fuel Card ── */}
+      {canEdit&&(
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+          <span style={{fontSize:14}}>🗺️</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Pays, Villes & Routes":"Countries, Cities & Routes"}</span>
+          <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{lang==="fr"?"Projection Flottes":"Fleet Projection"}</span>
+        </div>
+
+        {/* Two-column: Departures | Destinations */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
+          {/* Departure Locations */}
           {[
-            [lang==="fr"?"Prix carburant (F/L)":"Fuel Price (F/L)", fuelPricePerLiter, v=>setFuelPricePerLiter(v), "675 F/L"],
-            [lang==="fr"?"Salaire chauffeur (base)":"Driver Salary (base)", driverSalaryBase, v=>setDriverSalaryBase(v), "200 000 F"],
-            [lang==="fr"?"Bonus chauffeur":"Driver Bonus", driverSalaryBonus, v=>setDriverSalaryBonus(v), "168 000 F"],
-          ].map(([label,val,setter,ph])=>(
-            <div key={label}>
-              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:4}}>{label}</div>
-              <input type="number" value={val} onChange={e=>setter(parseFloat(e.target.value)||0)} placeholder={ph}
-                style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
-              <div style={{color:C.muted,fontSize:9,marginTop:2}}>{fmtNum(val)} F CFA</div>
+            [lang==="fr"?"Départs (Pays-Ville)":"Departures (Country-City)", depsLocs, setDepsLocs, newDepLoc, setNewDepLoc, "dep"],
+            [lang==="fr"?"Destinations (Pays-Ville)":"Destinations (Country-City)", destLocs, setDestLocs, newDestLoc, setNewDestLoc, "dest"],
+          ].map(([title,locs,setLocs,newLoc,setNew,key])=>(
+            <div key={key} style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
+              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{title}</div>
+              {/* Add row */}
+              <div style={{display:"flex",gap:5,marginBottom:8}}>
+                <input value={newLoc.country} onChange={e=>setNew(n=>({...n,country:e.target.value}))} placeholder={lang==="fr"?"Pays":"Country"}
+                  style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
+                <input value={newLoc.city} onChange={e=>setNew(n=>({...n,city:e.target.value}))} placeholder={lang==="fr"?"Ville":"City"}
+                  style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
+                <button disabled={!newLoc.country.trim()||!newLoc.city.trim()}
+                  onClick={()=>{setLocs(ls=>[...ls,{id:Date.now(),country:newLoc.country.trim(),city:newLoc.city.trim()}]);setNew({country:"",city:""}); }}
+                  style={{padding:"4px 10px",background:(newLoc.country&&newLoc.city)?C.blue:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:(newLoc.country&&newLoc.city)?"#fff":"rgba(255,255,255,0.3)",cursor:(newLoc.country&&newLoc.city)?"pointer":"not-allowed",fontSize:11,fontFamily:"inherit",whiteSpace:"nowrap"}}>＋</button>
+              </div>
+              {/* List */}
+              {locs.length===0
+                ?<div style={{color:C.muted,fontSize:10,textAlign:"center",padding:"8px 0"}}>—</div>
+                :<div style={{display:"flex",flexDirection:"column",gap:3}}>
+                  {locs.map(loc=>(
+                    <div key={loc.id} style={{display:"flex",alignItems:"center",padding:"4px 8px",background:"rgba(255,255,255,0.03)",borderRadius:5}}>
+                      <span style={{flex:1,color:C.text,fontSize:11,fontWeight:600}}>{loc.country}-{loc.city}</span>
+                      <button onClick={()=>setSettingsDelConfirm({type:title,label:loc.country+"-"+loc.city,onConfirm:()=>{setLocs(ls=>ls.filter(l=>l.id!==loc.id));setSettingsDelConfirm(null);}})} style={{width:18,height:18,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              }
             </div>
           ))}
         </div>
+
+        {/* Route Distances */}
+        <div style={{marginBottom:16}}>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{lang==="fr"?"Distances entre villes":"Route Distances"}</div>
+          <div style={{display:"flex",gap:5,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
+            <select value={newRoute.fromId} onChange={e=>setNewRoute(r=>({...r,fromId:e.target.value}))}
+              style={{flex:1,minWidth:120,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:newRoute.fromId?C.text:C.muted,fontSize:10,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+              <option value="">{lang==="fr"?"Départ":"Departure"}</option>
+              {depsLocs.map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
+            </select>
+            <span style={{color:C.muted,fontSize:12}}>→</span>
+            <select value={newRoute.toId} onChange={e=>setNewRoute(r=>({...r,toId:e.target.value}))}
+              style={{flex:1,minWidth:120,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:newRoute.toId?C.text:C.muted,fontSize:10,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+              <option value="">{lang==="fr"?"Destination":"Destination"}</option>
+              {destLocs.map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
+            </select>
+            <input type="number" value={newRoute.distanceKm||""} onChange={e=>setNewRoute(r=>({...r,distanceKm:parseFloat(e.target.value)||0}))} placeholder="km"
+              style={{width:80,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
+            <button disabled={!newRoute.fromId||!newRoute.toId||!newRoute.distanceKm}
+              onClick={()=>{setRouteDists(rs=>[...rs,{id:Date.now(),fromId:parseInt(newRoute.fromId),toId:parseInt(newRoute.toId),distanceKm:newRoute.distanceKm}]);setNewRoute({fromId:"",toId:"",distanceKm:0});}}
+              style={{padding:"4px 10px",background:(newRoute.fromId&&newRoute.toId&&newRoute.distanceKm)?C.green:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:(newRoute.fromId&&newRoute.toId&&newRoute.distanceKm)?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
+          </div>
+          {routeDists.length===0
+            ?<div style={{color:C.muted,fontSize:10,textAlign:"center",padding:"8px 0"}}>—</div>
+            :<div style={{display:"flex",flexDirection:"column",gap:3}}>
+              {routeDists.map(r=>{
+                const dep=depsLocs.find(l=>l.id===r.fromId||l.id===parseInt(r.fromId));
+                const dest=destLocs.find(l=>l.id===r.toId||l.id===parseInt(r.toId));
+                return(
+                  <div key={r.id} style={{display:"flex",alignItems:"center",padding:"5px 8px",background:"rgba(255,255,255,0.03)",borderRadius:5,gap:8}}>
+                    <span style={{flex:1,color:C.text,fontSize:11}}><span style={{fontWeight:600}}>{dep?dep.country+"-"+dep.city:"?"}</span> → <span style={{fontWeight:600}}>{dest?dest.country+"-"+dest.city:"?"}</span></span>
+                    <span style={{color:C.yellow,fontSize:11,fontWeight:700}}>{fmtNum(r.distanceKm)} km</span>
+                    <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Distance":"Route Distance",label:(dep?dep.country+"-"+dep.city:"?")+" → "+(dest?dest.country+"-"+dest.city:"?")+": "+fmtNum(r.distanceKm)+" km",onConfirm:()=>{setRouteDists(rs=>rs.filter(x=>x.id!==r.id));setSettingsDelConfirm(null);}})} style={{width:18,height:18,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                  </div>
+                );
+              })}
+            </div>
+          }
+        </div>
+
+        {/* Fuel price by country */}
+        <div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{lang==="fr"?"Prix carburant par pays (F/L)":"Fuel Price by Country (F/L)"}</div>
+          <div style={{display:"flex",gap:5,marginBottom:8}}>
+            <input value={newFuelCountry.country} onChange={e=>setNewFuelCountry(f=>({...f,country:e.target.value}))} placeholder={lang==="fr"?"Pays":"Country"}
+              style={{flex:2,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
+            <input type="number" value={newFuelCountry.pricePerLiter||""} onChange={e=>setNewFuelCountry(f=>({...f,pricePerLiter:parseFloat(e.target.value)||0}))} placeholder="F/L"
+              style={{width:80,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
+            <button disabled={!newFuelCountry.country.trim()||!newFuelCountry.pricePerLiter}
+              onClick={()=>{setFuelByCountry(fs=>[...fs,{id:Date.now(),country:newFuelCountry.country.trim(),pricePerLiter:newFuelCountry.pricePerLiter}]);setNewFuelCountry({country:"",pricePerLiter:675});}}
+              style={{padding:"4px 10px",background:(newFuelCountry.country&&newFuelCountry.pricePerLiter)?C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:(newFuelCountry.country&&newFuelCountry.pricePerLiter)?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
+          </div>
+          {fuelByCountry.length===0
+            ?<div style={{color:C.muted,fontSize:10,textAlign:"center",padding:"8px 0"}}>—</div>
+            :<div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:5}}>
+              {fuelByCountry.map(f=>(
+                <div key={f.id} style={{display:"flex",alignItems:"center",padding:"5px 8px",background:"rgba(255,255,255,0.03)",borderRadius:5,gap:6}}>
+                  <span style={{flex:1,color:C.text,fontSize:11,fontWeight:600}}>{f.country}</span>
+                  <span style={{color:C.teal,fontSize:11,fontWeight:700}}>{fmtNum(f.pricePerLiter)} F</span>
+                  <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Carburant":"Fuel Price",label:f.country+" ("+fmtNum(f.pricePerLiter)+" F/L)",onConfirm:()=>{setFuelByCountry(fs=>fs.filter(x=>x.id!==f.id));setSettingsDelConfirm(null);}})} style={{width:16,height:16,borderRadius:3,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                </div>
+              ))}
+            </div>
+          }
+        </div>
       </div>
+      )}
+
+
+      {/* Settings deletion confirmation modal */}
+      {settingsDelConfirm&&(
+        <div onClick={()=>setSettingsDelConfirm(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(440px,96vw)",boxShadow:"0 32px 80px rgba(0,0,0,0.8)",overflow:"hidden"}}>
+            <div style={{padding:"22px 24px 18px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:12}}>
+              <div style={{width:64,height:64,borderRadius:14,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🗑️</div>
+              <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{lang==="fr"?"Confirmer la suppression":"Confirm deletion"}</div>
+              <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"10px 16px",width:"100%"}}>
+                <div style={{color:"rgba(255,255,255,0.4)",fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>{settingsDelConfirm.type}</div>
+                <div style={{color:"#EA4335",fontWeight:700,fontSize:13}}>{settingsDelConfirm.label}</div>
+              </div>
+              <div style={{color:"rgba(255,255,255,0.5)",fontSize:12,lineHeight:1.6,maxWidth:340}}>
+                {lang==="fr"
+                  ?"Êtes-vous sûr de vouloir supprimer cet élément ? Cette action peut affecter les projections et les calculs."
+                  :"Are you sure you want to delete this item? This action may affect projections and calculations."}
+              </div>
+              <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"7px 14px",width:"100%",display:"flex",alignItems:"center",gap:8}}>
+                <span>⚠️</span>
+                <span style={{color:"rgba(234,67,53,0.9)",fontSize:11,fontWeight:600}}>{lang==="fr"?"Cette action est irréversible.":"This action is irreversible."}</span>
+              </div>
+            </div>
+            <div style={{padding:"12px 24px 20px",display:"flex",gap:10,justifyContent:"center"}}>
+              <button onClick={()=>setSettingsDelConfirm(null)} style={{padding:"8px 24px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:9,color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600}}>
+                {lang==="fr"?"Annuler":"Cancel"}
+              </button>
+              <button onClick={settingsDelConfirm.onConfirm} style={{padding:"8px 24px",background:"#EA4335",border:"none",borderRadius:9,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:700}}>
+                🗑️ {lang==="fr"?"Confirmer la suppression":"Confirm Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <Btn onClick={save} icon={saved?"check":"save"} variant={saved?"green":"primary"}>{saved?t.settings.savedOk:t.settings.save}</Btn>
@@ -4132,14 +4379,38 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 const MONTHS_FR=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+// ── FleetProjection form helpers (top-level to prevent focus loss) ──
+function FPField({label,children,hint}){
+  const C=_C;
+  return(
+    <div style={{marginBottom:14}}>
+      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
+      {children}
+      {hint&&<div style={{color:C.muted,fontSize:9,marginTop:2}}>{hint}</div>}
+    </div>
+  );
+}
+function FPInp({val,onChange,type,ph,step}){
+  const C=_C;
+  const t=type||"number";
+  return(
+    <input type={t} value={val}
+      onChange={e=>onChange(t==="number"?(parseFloat(e.target.value)||0):e.target.value)}
+      placeholder={ph||""} step={step||"any"}
+      style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+  );
+}
+
 // ── FleetProjection Component ────────────────────────────────────────────────
 function FleetProjection({data,setData,session,t,lang}){
   const C=_C;
   const isAdmin=session.role==="admin";
   const s=data.settings;
 
-  const fuelPriceSetting=s.fuelPricePerLiter||675;
-  const driverSalarySetting=(s.driverSalaryBase||200000)+(s.driverSalaryBonus||168000);
+  const defFuel=(s.fuelPrices||[]).find(f=>f.isDefault)||(s.fuelPrices||[])[0]||{value:675};
+  const defSalary=(s.driverSalaries||[]).find(d=>d.isDefault)||(s.driverSalaries||[])[0]||{base:200000,bonus:168000};
+  const fuelPriceSetting=defFuel.value||675;
+  const driverSalarySetting=(defSalary.base||200000)+(defSalary.bonus||168000);
 
   const [view,setView]=useState("list"); // list|form|detail
   const [selId,setSelId]=useState(null);
@@ -4150,11 +4421,11 @@ function FleetProjection({data,setData,session,t,lang}){
     title:"",
     numTrucks:10,
     pricePerTruck:56328285,
-    country1:"Ghana",city1:"Takoradi",
+    depLocId:"",destLocId:"",country1:"Ghana",city1:"Takoradi",
     country2:"Burkina Faso",city2:"Ouagadougou",
     distanceKm:1087,
     fuelConsumptionPer100km:125,
-    fuelPricePerLiter:fuelPriceSetting,
+    fuelPricePerLiter:fuelPriceSetting,  // snapshot at creation time
     roadExpensesPerTrip:100000,
     driverSalaryMonth:driverSalarySetting,
     revenuePerTrip:2100000,
@@ -4436,18 +4707,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
   const doPrint=(f,c)=>{const w=window.open("","_blank");w.document.write(buildFleetHTML(f,c));w.document.close();setTimeout(()=>w.print(),500);};
   const doDownload=(f,c)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buildFleetHTML(f,c)],{type:"text/html"}));a.download=`fleet-projection-${f.numTrucks}trucks.html`;a.click();};
 
-  // ── Input field helper ─────────────────────────────────────────────
-  const Field=({label,children,hint})=>(
-    <div style={{marginBottom:14}}>
-      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
-      {children}
-      {hint&&<div style={{color:C.muted,fontSize:9,marginTop:2}}>{hint}</div>}
-    </div>
-  );
-  const Inp=({val,onChange,type="number",ph=""})=>(
-    <input type={type} value={val} onChange={e=>onChange(type==="number"?parseFloat(e.target.value)||0:e.target.value)} placeholder={ph}
-      style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
-  );
+  // Field and Inp are now top-level components (above FleetProjection)
 
   // ── Detail view using live calc from stored form ───────────────────
   const projList=data.fleetProjections||[];
@@ -4519,66 +4779,94 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
               <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🚛 {lang==="fr"?"Investissement flotte":"Fleet Investment"}</div>
-              <Field label={lang==="fr"?"Titre de la projection":"Projection Title"}>
-                <Inp type="text" val={form.title} onChange={v=>setForm(f=>({...f,title:v}))} ph="Ex: Fleet Projection 2025"/>
-              </Field>
-              <Field label={lang==="fr"?"Nombre de camions":"Number of Trucks"}>
-                <Inp val={form.numTrucks} onChange={v=>setForm(f=>({...f,numTrucks:v}))}/>
-              </Field>
-              <Field label={lang==="fr"?"Prix par camion (F CFA)":"Price per Truck (F CFA)"} hint={`Total: ${fmtNum(form.numTrucks*form.pricePerTruck)} F CFA`}>
-                <Inp val={form.pricePerTruck} onChange={v=>setForm(f=>({...f,pricePerTruck:v}))}/>
-              </Field>
+              <FPField label={lang==="fr"?"Titre de la projection":"Projection Title"}>
+                <FPInp type="text" val={form.title} onChange={v=>setForm(f=>({...f,title:v}))} ph="Ex: Fleet Projection 2025"/>
+              </FPField>
+              <FPField label={lang==="fr"?"Nombre de camions":"Number of Trucks"}>
+                <FPInp val={form.numTrucks} onChange={v=>setForm(f=>({...f,numTrucks:v}))}/>
+              </FPField>
+              <FPField label={lang==="fr"?"Prix par camion (F CFA)":"Price per Truck (F CFA)"} hint={`Total: ${fmtNum(form.numTrucks*form.pricePerTruck)} F CFA`}>
+                <FPInp val={form.pricePerTruck} onChange={v=>setForm(f=>({...f,pricePerTruck:v}))}/>
+              </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
               <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🗺 {lang==="fr"?"Données de route":"Route Data"}</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-                <Field label="Country 1"><Inp type="text" val={form.country1} onChange={v=>setForm(f=>({...f,country1:v}))}/></Field>
-                <Field label="City 1"><Inp type="text" val={form.city1} onChange={v=>setForm(f=>({...f,city1:v}))}/></Field>
-                <Field label="Country 2"><Inp type="text" val={form.country2} onChange={v=>setForm(f=>({...f,country2:v}))}/></Field>
-                <Field label="City 2"><Inp type="text" val={form.city2} onChange={v=>setForm(f=>({...f,city2:v}))}/></Field>
-              </div>
-              <Field label={lang==="fr"?"Distance (km)":"Route Distance (km)"}>
-                <Inp val={form.distanceKm} onChange={v=>setForm(f=>({...f,distanceKm:v}))}/>
-              </Field>
+              <FPField label={lang==="fr"?"Départ (Pays-Ville)":"Departure (Country-City)"}>
+                <select value={form.depLocId||""} onChange={e=>{
+                  const loc=(data.settings.departureLocations||[]).find(l=>String(l.id)===e.target.value);
+                  if(loc){
+                    const matchedRoute=(data.settings.routeDistances||[]).find(r=>String(r.fromId)===String(loc.id)&&String(r.toId)===String(form.destLocId));
+                    const fuelEntry=(data.settings.fuelByCountry||[]).find(f=>f.country===loc.country);
+                    setForm(f=>({...f,depLocId:e.target.value,country1:loc.country,city1:loc.city,
+                      distanceKm:matchedRoute?matchedRoute.distanceKm:f.distanceKm,
+                      fuelPricePerLiter:fuelEntry?fuelEntry.pricePerLiter:f.fuelPricePerLiter
+                    }));
+                  }
+                }} style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:form.depLocId?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  <option value="">{lang==="fr"?"— Sélectionner le départ —":"— Select departure —"}</option>
+                  {(data.settings.departureLocations||[]).map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
+                </select>
+              </FPField>
+              <FPField label={lang==="fr"?"Destination (Pays-Ville)":"Destination (Country-City)"}>
+                <select value={form.destLocId||""} onChange={e=>{
+                  const loc=(data.settings.destinationLocations||[]).find(l=>String(l.id)===e.target.value);
+                  if(loc){
+                    const matchedRoute=(data.settings.routeDistances||[]).find(r=>String(r.fromId)===String(form.depLocId)&&String(r.toId)===String(loc.id));
+                    setForm(f=>({...f,destLocId:e.target.value,country2:loc.country,city2:loc.city,
+                      distanceKm:matchedRoute?matchedRoute.distanceKm:f.distanceKm
+                    }));
+                  }
+                }} style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:form.destLocId?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  <option value="">{lang==="fr"?"— Sélectionner la destination —":"— Select destination —"}</option>
+                  {(data.settings.destinationLocations||[]).map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
+                </select>
+              </FPField>
+              <FPField label={lang==="fr"?"Distance (km) — auto depuis Paramètres":"Route Distance (km) — auto from Settings"} hint={form.depLocId&&form.destLocId?"✅ Distance auto-remplie depuis les Paramètres":"Sélectionnez départ & destination pour auto-remplir"}>
+                <FPInp val={form.distanceKm} onChange={v=>setForm(f=>({...f,distanceKm:v}))}/>
+              </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
               <div style={{color:C.red,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⛽ {lang==="fr"?"Coûts carburant":"Fuel Costs"}</div>
-              <Field label={lang==="fr"?"Consommation (L/100km)":"Fuel Consumption (L/100km)"}>
-                <Inp val={form.fuelConsumptionPer100km} onChange={v=>setForm(f=>({...f,fuelConsumptionPer100km:v}))}/>
-              </Field>
-              <Field label={lang==="fr"?"Prix carburant (F/L) — Paramètres":"Fuel Price (F/L) — from Settings"} hint={`Coût carburant/trajet: ${fmtNum(Math.round(C2l.fuelCostPerTrip))} F (${Math.round(fuelLiters)}L)`}>
-                <div style={{display:"flex",gap:6}}>
-                  <Inp val={form.fuelPricePerLiter} onChange={v=>setForm(f=>({...f,fuelPricePerLiter:v}))}/>
-                  <button onClick={()=>setForm(f=>({...f,fuelPricePerLiter:fuelPriceSetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Paramètres":"Settings"}</button>
+              <FPField label={lang==="fr"?"Consommation (L/100km)":"Fuel Consumption (L/100km)"}>
+                <FPInp val={form.fuelConsumptionPer100km} onChange={v=>setForm(f=>({...f,fuelConsumptionPer100km:v}))}/>
+              </FPField>
+              <FPField label={lang==="fr"?"Prix carburant F/L — auto depuis pays départ":"Fuel Price F/L — auto from departure country"} hint={`Coût carburant/trajet: ${fmtNum(Math.round(C2l.fuelCostPerTrip))} F (${Math.round(fuelLiters)}L)`}>
+                <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                  <FPInp val={form.fuelPricePerLiter} onChange={v=>setForm(f=>({...f,fuelPricePerLiter:v}))}/>
+                  <button onClick={()=>{
+                    const depLoc=(data.settings.departureLocations||[]).find(l=>String(l.id)===String(form.depLocId));
+                    const fe=depLoc&&(data.settings.fuelByCountry||[]).find(f=>f.country===depLoc.country);
+                    setForm(f=>({...f,fuelPricePerLiter:fe?fe.pricePerLiter:fuelPriceSetting}));
+                  }} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}} title={lang==="fr"?"Auto depuis pays départ ou défaut":"Auto from departure country or default"}>↺ {lang==="fr"?"Pays":"Country"} ({fmtNum(fuelPriceSetting)} F)</button>
                 </div>
-              </Field>
-              <Field label={lang==="fr"?"Dépenses de route/trajet":"Road Expenses/trip"}>
-                <Inp val={form.roadExpensesPerTrip} onChange={v=>setForm(f=>({...f,roadExpensesPerTrip:v}))}/>
-              </Field>
+              </FPField>
+              <FPField label={lang==="fr"?"Dépenses de route/trajet":"Road Expenses/trip"}>
+                <FPInp val={form.roadExpensesPerTrip} onChange={v=>setForm(f=>({...f,roadExpensesPerTrip:v}))}/>
+              </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
               <div style={{color:C.green,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>💰 {lang==="fr"?"Revenus & Opérations":"Revenue & Operations"}</div>
-              <Field label={lang==="fr"?"Revenu par trajet (F CFA)":"Revenue per Trip (F CFA)"}>
-                <Inp val={form.revenuePerTrip} onChange={v=>setForm(f=>({...f,revenuePerTrip:v}))}/>
-              </Field>
-              <Field label={lang==="fr"?"Coût camion location/trajet":"Rental Truck Cost/trip"}>
-                <Inp val={form.rentalCostPerTrip} onChange={v=>setForm(f=>({...f,rentalCostPerTrip:v}))}/>
-              </Field>
-              <Field label={lang==="fr"?"Salaire chauffeur/mois — Paramètres":"Driver Salary/month — from Settings"} hint={`Base + Bonus: ${fmtNum(driverSalarySetting)} F`}>
+              <FPField label={lang==="fr"?"Revenu par trajet (F CFA)":"Revenue per Trip (F CFA)"}>
+                <FPInp val={form.revenuePerTrip} onChange={v=>setForm(f=>({...f,revenuePerTrip:v}))}/>
+              </FPField>
+              <FPField label={lang==="fr"?"Coût camion location/trajet":"Rental Truck Cost/trip"}>
+                <FPInp val={form.rentalCostPerTrip} onChange={v=>setForm(f=>({...f,rentalCostPerTrip:v}))}/>
+              </FPField>
+              <FPField label={lang==="fr"?"Salaire chauffeur/mois — Paramètres":"Driver Salary/month — from Settings"} hint={`Base + Bonus: ${fmtNum(driverSalarySetting)} F`}>
                 <div style={{display:"flex",gap:6}}>
-                  <Inp val={form.driverSalaryMonth} onChange={v=>setForm(f=>({...f,driverSalaryMonth:v}))}/>
-                  <button onClick={()=>setForm(f=>({...f,driverSalaryMonth:driverSalarySetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Paramètres":"Settings"}</button>
+                  <FPInp val={form.driverSalaryMonth} onChange={v=>setForm(f=>({...f,driverSalaryMonth:v}))}/>
+                  <button onClick={()=>setForm(f=>({...f,driverSalaryMonth:driverSalarySetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Défaut":"Default"} ({fmtNum(driverSalarySetting)} F)</button>
                 </div>
-              </Field>
-              <Field label={lang==="fr"?"Trajets par mois (défaut: 3)":"Trips per Month (default: 3)"}>
+              </FPField>
+              <FPField label={lang==="fr"?"Trajets par mois (défaut: 3)":"Trips per Month (default: 3)"}>
                 <select value={form.tripsPerMonth} onChange={e=>setForm(f=>({...f,tripsPerMonth:parseInt(e.target.value)}))}
                   style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
                   {[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>{n} trips/month</option>)}
                 </select>
-              </Field>
+              </FPField>
             </div>
 
           </div>
@@ -5552,6 +5840,7 @@ export default function App(){
   const [showNotif,setShowNotif]=useState(false);
   const [showUserMenu,setShowUserMenu]=useState(false);
   const [showCatMenu,setShowCatMenu]=useState(false);
+  const [showProjMenu,setShowProjMenu]=useState(false);
   const [selCategory,setSelCategory]=useState(null);
 
   // Apply theme globally
@@ -5715,8 +6004,10 @@ export default function App(){
     {key:"users",     icon:"users",     label:t.nav.users,      color:C.purple, show:can(session,"manage_users")},
     {key:"audit",     icon:"audit",     label:t.nav.audit,      color:C.green,  show:can(session,"view_audit")},
     {key:"categories",icon:"activity",  label:t.nav.categories, color:"#FBBC05", show:true, hasSub:true},
-    {key:"forecast",  icon:"forecast",  label:t.nav.forecast,   color:"#9C27B0", show:role==="admin"||role==="investor"},
-    {key:"fleet_projection", icon:"truck", label:lang==="fr"?"Projection Flottes":"Fleet Projection", color:C.blue, show:role==="admin"||role==="investor"},
+    {key:"projections", icon:"forecast", label:lang==="fr"?"Projections":"Projections", color:"#9C27B0", show:role==="admin"||role==="investor", hasDropdown:true, subItems:[
+      {key:"forecast",          label:lang==="fr"?"Projection Marchandises":"Projection for Goods",  icon:"chart"},
+      {key:"fleet_projection",  label:lang==="fr"?"Projection Flottes":"Fleet Projection",            icon:"truck"},
+    ]},
     {key:"settings",  icon:"settings",  label:t.nav.settings,   color:C.green,  show:true},
   ].filter(n=>n.show);
 
@@ -5737,7 +6028,7 @@ export default function App(){
   const AVATAR_SRC=(data.users.find(u=>u.username===session.username)?.avatar)||DEFAULT_AVATAR;
 
   return(
-    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>setShowCatMenu(false)}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>{setShowCatMenu(false);setShowProjMenu(false);}}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0;}input,select{color-scheme:${theme};}input:focus,select:focus{border-color:${C.blue}!important;outline:none;box-shadow:0 0 0 2px ${C.blue}22;}button{transition:filter .15s,background .15s;}button:not(:disabled):hover{filter:brightness(1.12);}.nav-btn:hover{background:var(--nav-color-bg)!important;color:var(--nav-color)!important;border-bottom-color:var(--nav-color)!important;filter:none!important;}.nav-btn:hover .nav-icon{color:var(--nav-color)!important;}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:${C.surface};}::-webkit-scrollbar-thumb{background:${C.border2};border-radius:3px;}`}</style>
 
       <header style={{background:C.surface,borderBottom:`1px solid ${C.border}44`,padding:"0 18px",display:"flex",alignItems:"center",gap:14,height:54,position:"sticky",top:0,zIndex:100}}>
@@ -5750,7 +6041,7 @@ export default function App(){
         </div>
 
         <nav style={{display:"flex",gap:1,flex:1,justifyContent:"center",flexWrap:"wrap",position:"relative"}}>
-          {navTabs.map(n=>{const active=view===n.key||("categories"===n.key&&showCatMenu);
+          {navTabs.map(n=>{const active=view===n.key||(n.key==="categories"&&showCatMenu)||(n.key==="projections"&&showProjMenu);
             if(n.key==="categories") return(
               <div key="categories" style={{position:"relative"}}>
                 <button onClick={e=>{e.stopPropagation();setShowCatMenu(v=>!v);}}
@@ -5790,8 +6081,31 @@ export default function App(){
                 )}
               </div>
             );
+            if(n.key==="projections") return(
+              <div key="projections" style={{position:"relative"}}>
+                <button onClick={e=>{e.stopPropagation();setShowProjMenu(v=>!v);setShowCatMenu(false);}}
+                  className="nav-btn"
+                  style={{"--nav-color":"#9C27B0","--nav-color-bg":"#9C27B018",padding:"0 10px",height:36,border:"none",background:showProjMenu?"#9C27B018":"transparent",color:showProjMenu?"#9C27B0":C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showProjMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showProjMenu?"2px solid #9C27B0":"2px solid transparent",transition:"all .15s"}}>
+                  <Icon name="forecast" size={12} color={showProjMenu?"#9C27B0":C.muted}/>{lang==="fr"?"Projections":"Projections"}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showProjMenu?"▲":"▼"}</span>
+                </button>
+                {showProjMenu&&(
+                  <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:"6px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:220}} onClick={e=>e.stopPropagation()}>
+                    {[
+                      {key:"forecast",         label:lang==="fr"?"Projection Marchandises":"Projection for Goods",  icon:"chart"},
+                      {key:"fleet_projection", label:lang==="fr"?"Projection Flottes":"Fleet Projection",            icon:"truck"},
+                    ].map(sub=>(
+                      <button key={sub.key} onClick={()=>{setView(sub.key);setShowProjMenu(false);}}
+                        style={{width:"100%",padding:"9px 16px",background:view===sub.key?"#9C27B018":"transparent",border:"none",color:view===sub.key?"#9C27B0":C.text,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:view===sub.key?700:400,display:"flex",alignItems:"center",gap:8,textAlign:"left"}}>
+                        <Icon name={sub.icon} size={12} color={view===sub.key?"#9C27B0":C.muted}/>{sub.label}
+                        {view===sub.key&&<span style={{marginLeft:"auto",color:"#9C27B0",fontSize:9}}>●</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
             return(
-            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);}}
+            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);setShowProjMenu(false);}}
               className="nav-btn"
               style={{"--nav-color":n.color,"--nav-color-bg":n.color+"18",padding:"0 10px",height:36,border:"none",background:active?n.color+"18":"transparent",color:active?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:active?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:active?`2px solid ${n.color}`:"2px solid transparent",transition:"all .15s"}}>
               <span className="nav-icon" style={{color:active?n.color:C.muted,display:"flex"}}><Icon name={n.icon} size={12} color={active?n.color:C.muted}/></span>{n.label}
