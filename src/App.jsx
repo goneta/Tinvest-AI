@@ -68,10 +68,14 @@ const INIT={
       {id:3,name:"SOPROCI",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""},
       {id:4,name:"TRITURAF",representative:"",country:"Côte d'Ivoire",address:"Abidjan",phone:"",numReg:""}
     ],
-    drivers:[]},
+    drivers:[],
+    fuelPricePerLiter:675,
+    driverSalaryBase:200000,
+    driverSalaryBonus:168000},
   files:[],
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
+  fleetProjections:[],
   notifications:[
     {id:1,type:"info",msg:"Rapport Février 2026 disponible",date:"2026-02-14",read:false},
     {id:2,type:"success",msg:"Nouveau profit enregistré : +1 650 000 F CFA",date:"2026-02-14",read:false},
@@ -98,7 +102,7 @@ const INIT={
 // ── TRANSLATIONS ────────────────────────────────────────────────────────────────
 const T={
   fr:{
-    nav:{dashboard:"Tableau de Bord",reports:"Rapports",analytics:"Analyses",investors:"Investisseurs",users:"Utilisateurs",audit:"Journal d'Audit",categories:"Catégories",forecast:"Projections",settings:"Paramètres"},
+    nav:{dashboard:"Tableau de Bord",reports:"Rapports",analytics:"Analyses",investors:"Investisseurs",users:"Utilisateurs",audit:"Journal d'Audit",categories:"Catégories",forecast:"Projections",fleetProjection:"Projection Flottes",settings:"Paramètres"},
     login:{title:"Connexion",username:"Utilisateur",password:"Mot de passe",btn:"Se connecter",error:"Identifiants incorrects.",register:"Inscription Investisseur",logout:"Déconnexion"},
     register:{title:"Inscription",name:"Nom complet",username:"Identifiant",email:"Email",password:"Mot de passe",phone:"Téléphone",country:"Pays",address:"Adresse",representative:"Représentant",initialInv:"Investissement initial (F CFA)",btn:"Soumettre",success:"Demande envoyée ! En attente de validation Admin.",backLogin:"Retour connexion"},
     dashboard:{overviewSub:"Vue d'ensemble — Thunderfam Investment",capitalEvolution:"Évolution Capital",profitsByReport:"Profits par Rapport",totalInvested:"Capital Total",netProfit:"Profit Net Cumulé",monthlyProfit:"Profit du Mois",activeInvestors:"Investisseurs Actifs",evolution:"Évolution",recentActivity:"Activités Récentes",roi:"ROI Annualisé",avgGrowth:"Croissance Moy.",bestMonth:"Meilleur Mois",goal:"Objectif Profit",returnRate:"Rendement",overview:"Vue d'ensemble",perReport:"/ rapport",actives:"Actifs",currentCapital:"Capital Actuel",cumulativeProfit:"Profit Cumulé",monthProfit:"Profit du Mois",roiTotal:"ROI Total"},
@@ -208,6 +212,7 @@ const Icon=({name,size=18,color})=>{
     moon:<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></>,
     certificate:<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="3"/><line x1="9" y1="20" x2="9" y2="17.5"/><line x1="15" y1="20" x2="15" y2="17.5"/></>,
     paperclip:<><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></>,
+    truck:<><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>,
     pen:<><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></>,
     share:<><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></>,
     link:<><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>,
@@ -2426,6 +2431,10 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const [driverInUseAlert,setDriverInUseAlert]=useState(null); // driver object blocked from deletion
   const [licensePreview,setLicensePreview]=useState(null); // {name, data, type}
   const DRIVER_BLANK={nom:"",prenom:"",pays:"",licenseNum:"",licenseFile:null};
+  // ── Operational defaults (used in Fleet Projection) ──────────────
+  const [fuelPricePerLiter,setFuelPricePerLiter]=useState(s.fuelPricePerLiter||675);
+  const [driverSalaryBase,setDriverSalaryBase]=useState(s.driverSalaryBase||200000);
+  const [driverSalaryBonus,setDriverSalaryBonus]=useState(s.driverSalaryBonus||168000);
   // Sync drivers to global data immediately (no need to wait for Save)
   const syncDrivers=(newList)=>{setDrivers(newList);setData(d=>({...d,settings:{...d.settings,drivers:newList}}));};
   // ── Profile state ──
@@ -2511,7 +2520,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
   const doFetchRates=async()=>{if(!canEdit)return;setFetching(true);setFetchMsg("");const rates=await fetchLiveRates();setFetching(false);if(rates){setLocalRates(rates);setFetchMsg(t.settings.ratesUpdated);}else setFetchMsg(t.settings.ratesFailed);setTimeout(()=>setFetchMsg(""),4000);};
-  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies,drivers:drivers}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
+  const save=()=>{setData(d=>({...d,settings:{...d.settings,rates:localRates,selectedCurrencies:selected,adminPwd:pwd,language:lang,theme,ratesLastUpdated:fmtDateTime(),partnerCompanies:companies,drivers:drivers,fuelPricePerLiter:fuelPricePerLiter,driverSalaryBase:driverSalaryBase,driverSalaryBonus:driverSalaryBonus}}));addAudit(setData,session,"Paramètres sauvegardés","Paramètres système","update");setSaved(true);setTimeout(()=>setSaved(false),2000);};
   const previewSettings={...s,rates:localRates,selectedCurrencies:selected};
   const cs={background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12};
   // ── Profile card (visible to ALL users) ──────────────────────────────────────
@@ -3333,6 +3342,31 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       </div>
       )}
 
+      {/* ── Operational Defaults Card (for Fleet Projection) ── */}
+      {canEdit&&(
+      <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
+          <span style={{fontSize:14}}>⚙️</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Paramètres opérationnels":"Operational Defaults"}</span>
+          <span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{lang==="fr"?"Projection flottes":"Fleet Projection"}</span>
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+          {[
+            [lang==="fr"?"Prix carburant (F/L)":"Fuel Price (F/L)", fuelPricePerLiter, v=>setFuelPricePerLiter(v), "675 F/L"],
+            [lang==="fr"?"Salaire chauffeur (base)":"Driver Salary (base)", driverSalaryBase, v=>setDriverSalaryBase(v), "200 000 F"],
+            [lang==="fr"?"Bonus chauffeur":"Driver Bonus", driverSalaryBonus, v=>setDriverSalaryBonus(v), "168 000 F"],
+          ].map(([label,val,setter,ph])=>(
+            <div key={label}>
+              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:4}}>{label}</div>
+              <input type="number" value={val} onChange={e=>setter(parseFloat(e.target.value)||0)} placeholder={ph}
+                style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+              <div style={{color:C.muted,fontSize:9,marginTop:2}}>{fmtNum(val)} F CFA</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      )}
+
       <Btn onClick={save} icon={saved?"check":"save"} variant={saved?"green":"primary"}>{saved?t.settings.savedOk:t.settings.save}</Btn>
       <ConfirmModal
         open={!!confirmCat}
@@ -4097,6 +4131,710 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 // ── FORECAST / PROJECTIONS ───────────────────────────────────────────────────────
 const MONTHS_FR=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// ── FleetProjection Component ────────────────────────────────────────────────
+function FleetProjection({data,setData,session,t,lang}){
+  const C=_C;
+  const isAdmin=session.role==="admin";
+  const s=data.settings;
+
+  const fuelPriceSetting=s.fuelPricePerLiter||675;
+  const driverSalarySetting=(s.driverSalaryBase||200000)+(s.driverSalaryBonus||168000);
+
+  const [view,setView]=useState("list"); // list|form|detail
+  const [selId,setSelId]=useState(null);
+  const [confirmDel,setConfirmDel]=useState(null);
+
+  const blankForm=()=>({
+    id:null,
+    title:"",
+    numTrucks:10,
+    pricePerTruck:56328285,
+    country1:"Ghana",city1:"Takoradi",
+    country2:"Burkina Faso",city2:"Ouagadougou",
+    distanceKm:1087,
+    fuelConsumptionPer100km:125,
+    fuelPricePerLiter:fuelPriceSetting,
+    roadExpensesPerTrip:100000,
+    driverSalaryMonth:driverSalarySetting,
+    revenuePerTrip:2100000,
+    rentalCostPerTrip:2000000,
+    tripsPerMonth:3,
+    projectionMonths:12,
+    createdAt:fmtDateTime(),
+  });
+
+  const [form,setForm]=useState(blankForm());
+  const [editingId,setEditingId]=useState(null);
+
+  // ── Auto-calculations ──────────────────────────────────────────────
+  const calc=(f)=>{
+    const totalInvestment=f.numTrucks*f.pricePerTruck;
+    const fuelCostPerTrip=(f.distanceKm/100)*f.fuelConsumptionPer100km*f.fuelPricePerLiter;
+    const netMarginPerTrip=f.revenuePerTrip-fuelCostPerTrip-f.roadExpensesPerTrip;
+    const driverPerTrip=f.driverSalaryMonth/f.tripsPerMonth;
+    const ownNetProfitPerTrip=netMarginPerTrip-driverPerTrip;
+    const ownProfitPerTruckMonth=ownNetProfitPerTrip*f.tripsPerMonth;
+    const ownProfitFleetMonth=ownProfitPerTruckMonth*f.numTrucks;
+    const ownProfitFleetYear=ownProfitFleetMonth*12;
+    const rentalCommission=f.revenuePerTrip-f.rentalCostPerTrip;
+    const rentalProfitPerTruckMonth=rentalCommission*f.tripsPerMonth;
+    const rentalProfitFleetMonth=rentalProfitPerTruckMonth*f.numTrucks;
+    const rentalProfitFleetYear=rentalProfitFleetMonth*12;
+    const ownPaybackMonths=ownProfitFleetMonth>0?totalInvestment/ownProfitFleetMonth:999;
+    const rentalPaybackMonths=rentalProfitFleetMonth>0?totalInvestment/rentalProfitFleetMonth:999;
+    const ownRecovery12=(ownProfitFleetYear/totalInvestment)*100;
+    const rentalRecovery12=(rentalProfitFleetYear/totalInvestment)*100;
+    return{totalInvestment,fuelCostPerTrip,netMarginPerTrip,driverPerTrip,ownNetProfitPerTrip,
+      ownProfitPerTruckMonth,ownProfitFleetMonth,ownProfitFleetYear,
+      rentalCommission,rentalProfitPerTruckMonth,rentalProfitFleetMonth,rentalProfitFleetYear,
+      ownPaybackMonths,rentalPaybackMonths,ownRecovery12,rentalRecovery12,
+      multiplier:rentalProfitFleetMonth>0?(ownProfitFleetMonth/rentalProfitFleetMonth).toFixed(1):0};
+  };
+
+  const C2=calc(form);
+
+  const saveProjection=()=>{
+    const c=calc(form);
+    const entry={...form,id:editingId||Date.now(),calc:c,createdAt:form.createdAt||fmtDateTime()};
+    setData(d=>({...d,fleetProjections:editingId
+      ?(d.fleetProjections||[]).map(p=>p.id===editingId?entry:p)
+      :[...(d.fleetProjections||[]),entry]
+    }));
+    setSelId(entry.id);
+    setEditingId(null);
+    setView("detail");
+  };
+
+  const deleteProj=(id)=>{
+    setData(d=>({...d,fleetProjections:(d.fleetProjections||[]).filter(p=>p.id!==id)}));
+    setView("list");setSelId(null);
+  };
+
+  // ── Generate the printable HTML report (same design as the attached file) ──
+  const buildFleetHTML=(f,c)=>{
+    const fmt=n=>Math.round(n).toLocaleString("fr-FR");
+    const fmtM=n=>{if(Math.abs(n)>=1e9)return(n/1e9).toFixed(1)+"Mrd";if(Math.abs(n)>=1e6)return(n/1e6).toFixed(1)+"M";return Math.round(n).toLocaleString("fr-FR");};
+    const months12=Array.from({length:12},(_,i)=>{
+      const cum=c.ownProfitFleetMonth*(i+1);
+      const pct=(cum/c.totalInvestment*100).toFixed(1);
+      const isLast=i===11;
+      const cellStyle=isLast?' style="border-color:rgba(52,168,83,0.4);background:rgba(52,168,83,0.07);"':'';
+      const moStyle=isLast?' style="color:#34A853;"':'';
+      const cumStyle=isLast?' style="color:#FBBC05;font-size:15px;"':'';
+      const pctStyle=isLast?' style="color:#34A853;font-weight:600;"':'';
+      const check=isLast?' ✓':'';
+      return '<div class="month-cell"'+cellStyle+'>'+
+        '<div class="mc-month"'+moStyle+'>Month '+(i+1)+'</div>'+
+        '<div class="mc-cum"'+cumStyle+'>'+fmtM(cum)+' F</div>'+
+        '<div class="mc-pct"'+pctStyle+'>'+pct+'% recovered'+check+'</div>'+
+        '</div>';
+    }).join("");
+    const tableRows=[
+      ["Revenue per trip (1 truck)",fmt(f.revenuePerTrip)+" F",fmt(f.revenuePerTrip)+" F","Equal"],
+      ["Net profit per trip (1 truck)",fmt(c.ownNetProfitPerTrip)+" F",fmt(c.rentalCommission)+" F",`Own +${fmt(c.ownNetProfitPerTrip-c.rentalCommission)}/trip`],
+      ["Monthly profit (1 truck)",fmt(c.ownProfitPerTruckMonth)+" F",fmt(c.rentalProfitPerTruckMonth)+" F",`Own ×${c.multiplier}x more`],
+      ["Monthly profit ("+f.numTrucks+" trucks)",fmt(c.ownProfitFleetMonth)+" F",fmt(c.rentalProfitFleetMonth)+" F",`Own ×${c.multiplier}x more`],
+      ["Annual profit ("+f.numTrucks+" trucks)",fmt(c.ownProfitFleetYear)+" F",fmt(c.rentalProfitFleetYear)+" F",`Own +${fmt(c.ownProfitFleetYear-c.rentalProfitFleetYear)}/yr`],
+      ["Investment recovered in 12 months",c.ownRecovery12.toFixed(1)+"%",c.rentalRecovery12.toFixed(1)+"%",`Own ×${c.multiplier}x faster`],
+    ];
+    const ownPbYrs=Math.floor(c.ownPaybackMonths/12);const ownPbMo=Math.round(c.ownPaybackMonths%12);
+    const renPbYrs=Math.floor(c.rentalPaybackMonths/12);const renPbMo=Math.round(c.rentalPaybackMonths%12);
+    return`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>${f.title||"Fleet Projection"}</title>
+<style>
+:root{--gold:#FBBC05;--blue:#4285F4;--green:#34A853;--red:#EA4335;--dark:#0e0f14;--dark2:#161820;--dark3:#1c1e26;--text:#e8eaf0;--muted:#6b7280;--border:rgba(251,188,5,0.2);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;line-height:1.6;}
+.print-btn{position:fixed;bottom:30px;right:30px;background:var(--blue);color:#fff;border:none;padding:12px 24px;border-radius:50px;font-weight:600;font-size:13px;cursor:pointer;box-shadow:0 8px 30px rgba(66,133,244,0.4);z-index:999;}
+.page{max-width:960px;margin:0 auto;padding:0 24px 60px;}
+.cover{min-height:60vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:60px;background:linear-gradient(135deg,#0e0f14 0%,#161820 60%,#1a2035 100%);position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.cover::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--blue),transparent);}
+.cover-tag{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:20px;}
+.cover h1{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.1;margin-bottom:14px;max-width:680px;}
+.cover h1 span{color:var(--gold);}
+.cover p{font-size:15px;color:var(--muted);max-width:520px;margin-bottom:40px;}
+.cover-stats{display:grid;grid-template-columns:repeat(3,auto);gap:40px;}
+.cstat-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.cstat-value{font-size:26px;font-weight:700;color:var(--gold);}
+.section{padding:56px 0 0;}
+.section-label{font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--blue);margin-bottom:6px;}
+.section-title{font-size:28px;font-weight:800;margin-bottom:6px;}
+.section-sub{color:var(--muted);font-size:13px;margin-bottom:28px;max-width:600px;}
+.divider{height:1px;background:linear-gradient(90deg,var(--blue),transparent);margin-bottom:28px;width:80px;}
+.invest-banner{background:linear-gradient(135deg,var(--dark3),#1a2040);border:1px solid var(--border);border-radius:16px;padding:28px 36px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:40px;position:relative;overflow:hidden;}
+.invest-banner::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold),var(--blue));}
+.invest-item{text-align:center;}.invest-item .lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.invest-item .val{font-size:20px;font-weight:700;color:var(--gold);}
+.invest-item .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.invest-sep{width:1px;height:50px;background:var(--border);}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px;}
+.card{background:var(--dark2);border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.card-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.icon-own{background:rgba(52,168,83,0.12);}
+.icon-rent{background:rgba(234,67,53,0.12);}
+.card-title{font-size:17px;font-weight:700;}
+.card-tag{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:1px;text-transform:uppercase;}
+.card-body{padding:20px 24px;}
+.data-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.data-row:last-child{border-bottom:none;}
+.data-row .lbl{color:var(--muted);font-size:12px;}
+.data-row .val{font-weight:600;font-size:13px;}
+.green{color:var(--green);}.red{color:var(--red);}.gold{color:var(--gold);}.blue{color:var(--blue);}.muted{color:var(--muted);}
+.card-total{margin-top:14px;padding:14px 18px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;}
+.card-total.own{background:rgba(52,168,83,0.1);border:1px solid rgba(52,168,83,0.2);}
+.card-total.rent{background:rgba(234,67,53,0.1);border:1px solid rgba(234,67,53,0.2);}
+.card-total .lbl{font-size:12px;font-weight:600;}
+.card-total .val{font-size:20px;font-weight:700;}
+.card-total.own .val{color:var(--green);}.card-total.rent .val{color:var(--red);}
+.table-wrap{overflow-x:auto;margin-bottom:40px;}
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--dark3);padding:10px 14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);font-weight:600;text-align:left;border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);}
+tbody tr:hover{background:rgba(255,255,255,0.02);}
+tbody td{padding:10px 14px;font-size:12px;color:var(--text);}
+tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;border-top:2px solid var(--border);}
+.payback-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+.payback-card{background:var(--dark2);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center;}
+.payback-card.highlight{border-color:var(--green);background:linear-gradient(135deg,var(--dark2),rgba(52,168,83,0.06));}
+.pb-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.pb-value{font-size:48px;font-weight:900;line-height:1;margin-bottom:5px;}
+.payback-card.highlight .pb-value{color:var(--green);}.payback-card:not(.highlight) .pb-value{color:var(--red);}
+.pb-sub{font-size:12px;color:var(--muted);}
+.progress-item{margin-bottom:24px;}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:6px;}
+.progress-title{font-weight:600;font-size:13px;}
+.progress-pct{font-size:17px;font-weight:700;}
+.progress-bar{height:10px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;}
+.fill-own{background:linear-gradient(90deg,var(--green),#2EE891);}
+.fill-rent{background:linear-gradient(90deg,var(--red),#FF7070);}
+.progress-detail{font-size:11px;color:var(--muted);margin-top:5px;}
+.recovery-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:40px;}
+.month-cell{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:12px 6px;text-align:center;}
+.mc-month{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.mc-cum{font-size:13px;font-weight:700;color:var(--green);}
+.mc-pct{font-size:10px;color:var(--muted);margin-top:2px;}
+.verdict{background:linear-gradient(135deg,#0f1e12,#122018);border:1px solid rgba(52,168,83,0.3);border-radius:16px;padding:36px 44px;position:relative;overflow:hidden;margin-bottom:40px;}
+.verdict::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),transparent);}
+.verdict-title{font-size:24px;font-weight:800;color:var(--green);margin-bottom:12px;}
+.verdict-text{color:var(--muted);font-size:13px;line-height:1.8;max-width:700px;}
+.verdict-text strong{color:var(--text);}
+.footer{padding:28px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;}
+@media print{body{background:#fff;color:#000;}.print-btn{display:none!important;}.cover{background:#0e0f14!important;min-height:auto;padding:40px 50px 30px;page-break-after:always;}.page{max-width:100%;padding:0 28px 40px;}*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}}
+</style></head><body>
+<button class="print-btn" onclick="window.print()">⬇ Print / Download PDF</button>
+<div class="cover">
+  <div class="cover-tag">Fleet Investment Analysis · ${new Date().getFullYear()}</div>
+  <h1>Fleet Investment<br><span>Projection</span><br>${f.numTrucks} Trucks &amp; Trailers</h1>
+  <p>A financial comparison of own-fleet operations vs. rental operations across the ${f.city1||f.country1} → ${f.country2} corridor, with ${f.projectionMonths}-month payback analysis.</p>
+  <div class="cover-stats">
+    <div><div class="cstat-label">Total Investment</div><div class="cstat-value">${fmtM(c.totalInvestment)} F</div></div>
+    <div><div class="cstat-label">Route Distance</div><div class="cstat-value">${fmt(f.distanceKm)} km</div></div>
+    <div><div class="cstat-label">Fleet Size</div><div class="cstat-value">${f.numTrucks} Trucks</div></div>
+  </div>
+</div>
+<div class="page">
+<div class="section">
+  <div class="section-label">Section 01</div>
+  <div class="section-title">Investment Overview</div>
+  <div class="section-sub">Total capital required for ${f.numTrucks} trucks and trailers at current market pricing.</div>
+  <div class="divider"></div>
+  <div class="invest-banner">
+    <div class="invest-item"><div class="lbl">Price per Truck + Trailer</div><div class="val">${fmt(f.pricePerTruck)} F CFA</div></div>
+    <div class="invest-sep"></div>
+    <div class="invest-item"><div class="lbl">Fleet of ${f.numTrucks} Trucks</div><div class="val">${fmt(c.totalInvestment)} FCFA</div><div class="sub">Total capital investment</div></div>
+    <div class="invest-sep"></div>
+    <div class="invest-item"><div class="lbl">Route</div><div class="val">${f.country1} → ${f.country2}</div><div class="sub">${f.city1} · ${fmt(f.distanceKm)} km</div></div>
+    <div class="invest-sep"></div>
+    <div class="invest-item"><div class="lbl">Trips per Truck/Month</div><div class="val">${f.tripsPerMonth} Trips</div></div>
+  </div>
+</div>
+<div class="section">
+  <div class="section-label">Section 02</div>
+  <div class="section-title">Financial Comparison</div>
+  <div class="section-sub">Per-truck profit breakdown for own fleet operations vs. rental truck commissions.</div>
+  <div class="divider"></div>
+  <div class="compare-grid">
+    <div class="card">
+      <div class="card-header"><div class="card-icon icon-own">🚛</div><div><div class="card-title">Own Trucks</div><div class="card-tag">Full operational model</div></div></div>
+      <div class="card-body">
+        <div class="data-row"><span class="lbl">Revenue per trip</span><span class="val gold">${fmt(f.revenuePerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Fuel (${fmt(f.distanceKm/100*f.fuelConsumptionPer100km)}L × ${fmt(f.fuelPricePerLiter)}F)</span><span class="val red">− ${fmt(c.fuelCostPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Road expenses</span><span class="val red">− ${fmt(f.roadExpensesPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Net margin per trip</span><span class="val green">${fmt(c.netMarginPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Driver salary/month ÷ ${f.tripsPerMonth} trips</span><span class="val red">− ${fmt(c.driverPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Net profit per trip</span><span class="val green">${fmt(c.ownNetProfitPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">× ${f.tripsPerMonth} trips/month</span><span class="val blue">× ${f.tripsPerMonth}</span></div>
+        <div class="card-total own"><span class="lbl">Profit / Truck / Month</span><span class="val">${fmt(c.ownProfitPerTruckMonth)} FCFA</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-icon icon-rent">📋</div><div><div class="card-title">Rental Trucks</div><div class="card-tag">Commission-based model</div></div></div>
+      <div class="card-body">
+        <div class="data-row"><span class="lbl">Revenue per trip</span><span class="val gold">${fmt(f.revenuePerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Rental truck cost</span><span class="val red">− ${fmt(f.rentalCostPerTrip)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">Our commission</span><span class="val green">${fmt(c.rentalCommission)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">No fuel costs</span><span class="val muted">N/A</span></div>
+        <div class="data-row"><span class="lbl">No driver salary</span><span class="val muted">N/A</span></div>
+        <div class="data-row"><span class="lbl">Commission per trip</span><span class="val green">${fmt(c.rentalCommission)} FCFA</span></div>
+        <div class="data-row"><span class="lbl">× ${f.tripsPerMonth} trips/month</span><span class="val blue">× ${f.tripsPerMonth}</span></div>
+        <div class="card-total rent"><span class="lbl">Profit / Truck / Month</span><span class="val">${fmt(c.rentalProfitPerTruckMonth)} FCFA</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="section">
+  <div class="section-label">Section 03</div>
+  <div class="section-title">${f.numTrucks}-Truck Annual Revenue</div>
+  <div class="section-sub">Cumulative earnings across the full fleet of ${f.numTrucks} trucks over 12 months.</div>
+  <div class="divider"></div>
+  <div class="table-wrap"><table><thead><tr><th>Metric</th><th>Per Truck / Month</th><th>${f.numTrucks} Trucks / Month</th><th>Per Truck / Year</th><th>${f.numTrucks} Trucks / Year</th></tr></thead><tbody>
+    <tr><td><strong>🚛 Own Trucks</strong></td><td class="green">${fmt(c.ownProfitPerTruckMonth)} F</td><td class="green">${fmt(c.ownProfitFleetMonth)} F</td><td class="green">${fmt(c.ownProfitPerTruckMonth*12)} F</td><td class="green"><strong>${fmt(c.ownProfitFleetYear)} F</strong></td></tr>
+    <tr><td><strong>📋 Rental Trucks</strong></td><td class="red">${fmt(c.rentalProfitPerTruckMonth)} F</td><td class="red">${fmt(c.rentalProfitFleetMonth)} F</td><td class="red">${fmt(c.rentalProfitPerTruckMonth*12)} F</td><td class="red"><strong>${fmt(c.rentalProfitFleetYear)} F</strong></td></tr>
+    <tr class="total-row"><td>Difference (Own vs Rental)</td><td class="gold">+${fmt(c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth)}</td><td class="gold">+${fmt(c.ownProfitFleetMonth-c.rentalProfitFleetMonth)}</td><td class="gold">+${fmt((c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth)*12)}</td><td class="gold">+${fmt(c.ownProfitFleetYear-c.rentalProfitFleetYear)} F</td></tr>
+  </tbody></table></div>
+</div>
+<div class="section">
+  <div class="section-label">Section 04</div>
+  <div class="section-title">Investment Payback Analysis</div>
+  <div class="section-sub">How long to fully recover the ${fmt(c.totalInvestment)} FCFA fleet investment?</div>
+  <div class="divider"></div>
+  <div class="payback-grid">
+    <div class="payback-card highlight"><div class="pb-label">Own Trucks — Payback Period</div><div class="pb-value">~${Math.ceil(c.ownPaybackMonths)}</div><div style="color:var(--green);font-weight:600;margin-bottom:5px;">months</div><div class="pb-sub">${fmt(c.totalInvestment)} ÷ ${fmt(c.ownProfitFleetMonth)}/mo = ${c.ownPaybackMonths.toFixed(1)} months<br><strong style="color:var(--green);">≈ ${ownPbYrs}y ${ownPbMo}mo</strong></div></div>
+    <div class="payback-card"><div class="pb-label">Rental Trucks — Payback Period</div><div class="pb-value">~${Math.min(999,Math.ceil(c.rentalPaybackMonths))}</div><div style="color:var(--red);font-weight:600;margin-bottom:5px;">months</div><div class="pb-sub">${fmt(c.totalInvestment)} ÷ ${fmt(c.rentalProfitFleetMonth)}/mo = ${c.rentalPaybackMonths>900?"∞":c.rentalPaybackMonths.toFixed(1)} months<br><strong style="color:var(--red);">≈ ${renPbYrs}y ${renPbMo}mo</strong></div></div>
+  </div>
+  <div><div style="color:var(--muted);font-size:13px;margin-bottom:16px;">Percentage of investment recovered in the <strong>first 12 months</strong>:</div>
+  <div class="progress-item"><div class="progress-header"><span class="progress-title">🚛 Own Trucks — 12-Month Recovery</span><span class="progress-pct green">${c.ownRecovery12.toFixed(1)}%</span></div><div class="progress-bar"><div class="progress-fill fill-own" style="width:${Math.min(100,c.ownRecovery12).toFixed(1)}%"></div></div><div class="progress-detail">${fmt(c.ownProfitFleetYear)} FCFA recovered out of ${fmt(c.totalInvestment)} FCFA investment</div></div>
+  <div class="progress-item"><div class="progress-header"><span class="progress-title">📋 Rental Trucks — 12-Month Recovery</span><span class="progress-pct red">${c.rentalRecovery12.toFixed(1)}%</span></div><div class="progress-bar"><div class="progress-fill fill-rent" style="width:${Math.min(100,c.rentalRecovery12).toFixed(1)}%"></div></div><div class="progress-detail">${fmt(c.rentalProfitFleetYear)} FCFA recovered out of ${fmt(c.totalInvestment)} FCFA investment</div></div></div>
+</div>
+<div class="section">
+  <div class="section-label">Section 05</div>
+  <div class="section-title">Month-by-Month Cumulative Recovery</div>
+  <div class="section-sub">Cumulative earnings with own trucks (${f.numTrucks} fleet · ${fmt(c.ownProfitFleetMonth)} FCFA/month). Investment: ${fmt(c.totalInvestment)} FCFA.</div>
+  <div class="divider"></div>
+  <div class="recovery-grid">${months12}</div>
+</div>
+<div class="section">
+  <div class="section-label">Section 06</div>
+  <div class="section-title">Full Comparison Summary</div>
+  <div class="section-sub">Side-by-side key metrics for both operational models.</div>
+  <div class="divider"></div>
+  <div class="table-wrap" style="margin-bottom:40px;"><table><thead><tr><th>Metric</th><th>🚛 Own Trucks</th><th>📋 Rental Trucks</th><th>Advantage</th></tr></thead><tbody>
+    ${tableRows.map(([m,o,r,a])=>'<tr><td>'+m+'</td><td class="green">'+o+'</td><td class="red">'+r+'</td><td class="green">'+a+'</td></tr>').join("")}
+    <tr class="total-row"><td>Full payback period</td><td class="gold">~${Math.ceil(c.ownPaybackMonths)} months</td><td class="red">~${Math.min(999,Math.ceil(c.rentalPaybackMonths))} months</td><td class="gold">Own ${Math.ceil(c.rentalPaybackMonths-c.ownPaybackMonths)} months faster</td></tr>
+  </tbody></table></div>
+</div>
+<div class="verdict">
+  <div class="verdict-title">✅ Verdict: Own Fleet is the Clear Winner</div>
+  <div class="verdict-text">Operating with <strong>own trucks generates ${c.multiplier}× more monthly revenue</strong> than a rental model on the ${f.country1}–${f.country2} corridor. With ${f.numTrucks} trucks, the fleet earns <strong>${fmt(c.ownProfitFleetYear)} FCFA annually</strong>, recovering <strong>${c.ownRecovery12.toFixed(1)}% of the full investment within the first 12 months</strong> — and reaching full payback in approximately <strong>${Math.ceil(c.ownPaybackMonths)} months (${ownPbYrs} years ${ownPbMo} months)</strong>.<br><br>By contrast, rental operations yield only ${fmt(c.rentalProfitFleetYear)} FCFA per year — recovering just <strong>${c.rentalRecovery12.toFixed(1)}% of the investment in Year 1</strong>, with a payback period stretching to nearly <strong>${renPbYrs} years</strong>. The data overwhelmingly supports <strong>purchasing and operating the fleet directly</strong>.</div>
+</div>
+<div class="footer"><span>Fleet Investment Projection · ${f.country1}–${f.country2} Corridor · ${f.numTrucks} Trucks</span><span>All values in FCFA · Prepared ${new Date().getFullYear()}</span></div>
+</div></body></html>`;
+  };
+
+  const doPrint=(f,c)=>{const w=window.open("","_blank");w.document.write(buildFleetHTML(f,c));w.document.close();setTimeout(()=>w.print(),500);};
+  const doDownload=(f,c)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buildFleetHTML(f,c)],{type:"text/html"}));a.download=`fleet-projection-${f.numTrucks}trucks.html`;a.click();};
+
+  // ── Input field helper ─────────────────────────────────────────────
+  const Field=({label,children,hint})=>(
+    <div style={{marginBottom:14}}>
+      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
+      {children}
+      {hint&&<div style={{color:C.muted,fontSize:9,marginTop:2}}>{hint}</div>}
+    </div>
+  );
+  const Inp=({val,onChange,type="number",ph=""})=>(
+    <input type={type} value={val} onChange={e=>onChange(type==="number"?parseFloat(e.target.value)||0:e.target.value)} placeholder={ph}
+      style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+  );
+
+  // ── Detail view using live calc from stored form ───────────────────
+  const projList=data.fleetProjections||[];
+  const selProj=projList.find(p=>p.id===selId);
+
+  // ─── LIST VIEW ────────────────────────────────────────────────────
+  if(view==="list"){
+    return(
+      <div>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div>
+            <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{lang==="fr"?"Projection Flotte":"Fleet Projection"}</h2>
+            <div style={{color:C.muted,fontSize:12,marginTop:2}}>{lang==="fr"?"Own Trucks vs Rental Trucks — Analyse d'investissement":"Own Trucks vs Rental Trucks — Investment Analysis"}</div>
+          </div>
+          {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="secondary" icon="plus">{lang==="fr"?"+ Nouvelle Projection":"+ New Projection"}</Btn>}
+        </div>
+        {projList.length===0?(
+          <div style={{textAlign:"center",padding:"60px 20px",background:C.card,borderRadius:12,border:`1px solid ${C.border}44`}}>
+            <div style={{fontSize:48,marginBottom:14,opacity:.4}}>🚛</div>
+            <div style={{color:C.muted,fontSize:14,marginBottom:20}}>{lang==="fr"?"Aucune projection. Créez votre première analyse.":"No projections yet. Create your first fleet analysis."}</div>
+            {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="primary" icon="plus">{lang==="fr"?"Créer une projection":"Create projection"}</Btn>}
+          </div>
+        ):(
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {projList.map(p=>{
+              const c=calc(p);
+              return(
+                <div key={p.id} onClick={()=>{setSelId(p.id);setView("detail");}}
+                  style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"16px 20px",cursor:"pointer",display:"flex",alignItems:"center",gap:16,transition:"all .15s"}}
+                  onMouseEnter={e=>e.currentTarget.style.borderColor=C.blue+"66"}
+                  onMouseLeave={e=>e.currentTarget.style.borderColor=C.border+"44"}>
+                  <div style={{width:44,height:44,borderRadius:10,background:`${C.blue}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>🚛</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{color:C.text,fontWeight:700,fontSize:13}}>{p.title||`${p.numTrucks} Trucks — ${p.country1}→${p.country2}`}</div>
+                    <div style={{color:C.muted,fontSize:10,marginTop:2}}>{p.numTrucks} trucks · {p.distanceKm}km · {p.tripsPerMonth} trips/mo · {p.createdAt}</div>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{color:C.green,fontWeight:700,fontSize:13}}>{fmtNum(c.ownProfitFleetMonth)} F/mo</div>
+                    <div style={{color:C.yellow,fontSize:10,marginTop:2}}>Payback: ~{Math.ceil(c.ownPaybackMonths)} months</div>
+                  </div>
+                  {isAdmin&&<div style={{display:"flex",gap:5,flexShrink:0}} onClick={e=>e.stopPropagation()}>
+                    <button onClick={()=>{setForm({...p});setEditingId(p.id);setView("form");}} style={{width:30,height:30,borderRadius:7,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                    <button onClick={()=>setConfirmDel(p)} style={{width:30,height:30,borderRadius:7,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                  </div>}
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <ConfirmModal open={!!confirmDel} lang={lang} itemType={lang==="fr"?"Projection":"Projection"} itemName={confirmDel?.title||`${confirmDel?.numTrucks} Trucks`} onConfirm={()=>{deleteProj(confirmDel.id);setConfirmDel(null);}} onCancel={()=>setConfirmDel(null)}/>
+      </div>
+    );
+  }
+
+  // ─── FORM VIEW ────────────────────────────────────────────────────
+  if(view==="form"){
+    const C2l=calc(form);
+    const fuelLiters=(form.distanceKm/100)*form.fuelConsumptionPer100km;
+    return(
+      <div>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
+          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {lang==="fr"?"Retour":"Back"}</button>
+          <h2 style={{color:C.text,fontSize:18,fontWeight:800,margin:0}}>{editingId?(lang==="fr"?"Modifier projection":"Edit projection"):(lang==="fr"?"Nouvelle projection flotte":"New Fleet Projection")}</h2>
+        </div>
+
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+          {/* Left column: Inputs */}
+          <div style={{display:"flex",flexDirection:"column",gap:0}}>
+
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
+              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🚛 {lang==="fr"?"Investissement flotte":"Fleet Investment"}</div>
+              <Field label={lang==="fr"?"Titre de la projection":"Projection Title"}>
+                <Inp type="text" val={form.title} onChange={v=>setForm(f=>({...f,title:v}))} ph="Ex: Fleet Projection 2025"/>
+              </Field>
+              <Field label={lang==="fr"?"Nombre de camions":"Number of Trucks"}>
+                <Inp val={form.numTrucks} onChange={v=>setForm(f=>({...f,numTrucks:v}))}/>
+              </Field>
+              <Field label={lang==="fr"?"Prix par camion (F CFA)":"Price per Truck (F CFA)"} hint={`Total: ${fmtNum(form.numTrucks*form.pricePerTruck)} F CFA`}>
+                <Inp val={form.pricePerTruck} onChange={v=>setForm(f=>({...f,pricePerTruck:v}))}/>
+              </Field>
+            </div>
+
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
+              <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🗺 {lang==="fr"?"Données de route":"Route Data"}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                <Field label="Country 1"><Inp type="text" val={form.country1} onChange={v=>setForm(f=>({...f,country1:v}))}/></Field>
+                <Field label="City 1"><Inp type="text" val={form.city1} onChange={v=>setForm(f=>({...f,city1:v}))}/></Field>
+                <Field label="Country 2"><Inp type="text" val={form.country2} onChange={v=>setForm(f=>({...f,country2:v}))}/></Field>
+                <Field label="City 2"><Inp type="text" val={form.city2} onChange={v=>setForm(f=>({...f,city2:v}))}/></Field>
+              </div>
+              <Field label={lang==="fr"?"Distance (km)":"Route Distance (km)"}>
+                <Inp val={form.distanceKm} onChange={v=>setForm(f=>({...f,distanceKm:v}))}/>
+              </Field>
+            </div>
+
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
+              <div style={{color:C.red,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⛽ {lang==="fr"?"Coûts carburant":"Fuel Costs"}</div>
+              <Field label={lang==="fr"?"Consommation (L/100km)":"Fuel Consumption (L/100km)"}>
+                <Inp val={form.fuelConsumptionPer100km} onChange={v=>setForm(f=>({...f,fuelConsumptionPer100km:v}))}/>
+              </Field>
+              <Field label={lang==="fr"?"Prix carburant (F/L) — Paramètres":"Fuel Price (F/L) — from Settings"} hint={`Coût carburant/trajet: ${fmtNum(Math.round(C2l.fuelCostPerTrip))} F (${Math.round(fuelLiters)}L)`}>
+                <div style={{display:"flex",gap:6}}>
+                  <Inp val={form.fuelPricePerLiter} onChange={v=>setForm(f=>({...f,fuelPricePerLiter:v}))}/>
+                  <button onClick={()=>setForm(f=>({...f,fuelPricePerLiter:fuelPriceSetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Paramètres":"Settings"}</button>
+                </div>
+              </Field>
+              <Field label={lang==="fr"?"Dépenses de route/trajet":"Road Expenses/trip"}>
+                <Inp val={form.roadExpensesPerTrip} onChange={v=>setForm(f=>({...f,roadExpensesPerTrip:v}))}/>
+              </Field>
+            </div>
+
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
+              <div style={{color:C.green,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>💰 {lang==="fr"?"Revenus & Opérations":"Revenue & Operations"}</div>
+              <Field label={lang==="fr"?"Revenu par trajet (F CFA)":"Revenue per Trip (F CFA)"}>
+                <Inp val={form.revenuePerTrip} onChange={v=>setForm(f=>({...f,revenuePerTrip:v}))}/>
+              </Field>
+              <Field label={lang==="fr"?"Coût camion location/trajet":"Rental Truck Cost/trip"}>
+                <Inp val={form.rentalCostPerTrip} onChange={v=>setForm(f=>({...f,rentalCostPerTrip:v}))}/>
+              </Field>
+              <Field label={lang==="fr"?"Salaire chauffeur/mois — Paramètres":"Driver Salary/month — from Settings"} hint={`Base + Bonus: ${fmtNum(driverSalarySetting)} F`}>
+                <div style={{display:"flex",gap:6}}>
+                  <Inp val={form.driverSalaryMonth} onChange={v=>setForm(f=>({...f,driverSalaryMonth:v}))}/>
+                  <button onClick={()=>setForm(f=>({...f,driverSalaryMonth:driverSalarySetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Paramètres":"Settings"}</button>
+                </div>
+              </Field>
+              <Field label={lang==="fr"?"Trajets par mois (défaut: 3)":"Trips per Month (default: 3)"}>
+                <select value={form.tripsPerMonth} onChange={e=>setForm(f=>({...f,tripsPerMonth:parseInt(e.target.value)}))}
+                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  {[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>{n} trips/month</option>)}
+                </select>
+              </Field>
+            </div>
+
+          </div>
+
+          {/* Right column: Live preview */}
+          <div style={{position:"sticky",top:20,alignSelf:"start"}}>
+            <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
+              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⚡ {lang==="fr"?"Aperçu en temps réel":"Live Preview"}</div>
+
+              {/* Own truck summary */}
+              <div style={{background:`${C.green}0d`,border:`1px solid ${C.green}25`,borderRadius:10,padding:14,marginBottom:10}}>
+                <div style={{color:C.green,fontWeight:700,fontSize:11,marginBottom:8}}>🚛 Own Trucks</div>
+                {[
+                  [lang==="fr"?"Carburant/trajet":"Fuel/trip", C2l.fuelCostPerTrip, "red"],
+                  [lang==="fr"?"Profit net/trajet":"Net profit/trip", C2l.ownNetProfitPerTrip, "green"],
+                  [lang==="fr"?"Profit/camion/mois":"Profit/truck/mo", C2l.ownProfitPerTruckMonth, "green"],
+                  [lang==="fr"?"Profit flotte/mois":"Fleet profit/mo", C2l.ownProfitFleetMonth, "green"],
+                  [lang==="fr"?"Profit flotte/an":"Fleet profit/yr", C2l.ownProfitFleetYear, "green"],
+                ].map(([l,v,col])=>(
+                  <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:`1px solid ${C.border}22`}}>
+                    <span style={{color:C.muted,fontSize:11}}>{l}</span>
+                    <span style={{color:col==="red"?C.red:C.green,fontWeight:700,fontSize:11}}>{col==="red"?"−":""}{fmtNum(Math.round(v))} F</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Rental summary */}
+              <div style={{background:`${C.red}0d`,border:`1px solid ${C.red}25`,borderRadius:10,padding:14,marginBottom:10}}>
+                <div style={{color:C.red,fontWeight:700,fontSize:11,marginBottom:8}}>📋 Rental Trucks</div>
+                {[
+                  [lang==="fr"?"Commission/trajet":"Commission/trip", C2l.rentalCommission, "green"],
+                  [lang==="fr"?"Profit/camion/mois":"Profit/truck/mo", C2l.rentalProfitPerTruckMonth, "green"],
+                  [lang==="fr"?"Profit flotte/mois":"Fleet profit/mo", C2l.rentalProfitFleetMonth, "green"],
+                ].map(([l,v])=>(
+                  <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:`1px solid ${C.border}22`}}>
+                    <span style={{color:C.muted,fontSize:11}}>{l}</span>
+                    <span style={{color:C.green,fontWeight:700,fontSize:11}}>{fmtNum(Math.round(v))} F</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Payback */}
+              <div style={{background:`${C.yellow}0d`,border:`1px solid ${C.yellow}25`,borderRadius:10,padding:14}}>
+                <div style={{color:C.yellow,fontWeight:700,fontSize:11,marginBottom:8}}>⏱ Payback</div>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                  <span style={{color:C.muted,fontSize:11}}>🚛 Own Trucks</span>
+                  <span style={{color:C.green,fontWeight:800,fontSize:13}}>~{Math.ceil(C2l.ownPaybackMonths)} months</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between"}}>
+                  <span style={{color:C.muted,fontSize:11}}>📋 Rental</span>
+                  <span style={{color:C.red,fontWeight:800,fontSize:13}}>~{Math.min(999,Math.ceil(C2l.rentalPaybackMonths))} months</span>
+                </div>
+                <div style={{marginTop:8,padding:"6px 10px",background:`${C.green}15`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700,textAlign:"center"}}>
+                  Own is {C2l.multiplier}× more profitable
+                </div>
+              </div>
+            </div>
+
+            <Btn onClick={saveProjection} variant="primary" icon="save" full>
+              {lang==="fr"?"Sauvegarder la projection":"Save Projection"}
+            </Btn>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── DETAIL VIEW ──────────────────────────────────────────────────
+  if(view==="detail"&&selProj){
+    const p=selProj;const c=calc(p);
+    const fuelLiters=Math.round((p.distanceKm/100)*p.fuelConsumptionPer100km);
+    const ownPbYrs=Math.floor(c.ownPaybackMonths/12);const ownPbMo=Math.round(c.ownPaybackMonths%12);
+    const renPbYrs=Math.floor(c.rentalPaybackMonths/12);const renPbMo=Math.round(c.rentalPaybackMonths%12);
+    const months12=Array.from({length:12},(_,i)=>({cum:c.ownProfitFleetMonth*(i+1),pct:((c.ownProfitFleetMonth*(i+1))/c.totalInvestment*100).toFixed(1)}));
+
+    return(
+      <div>
+        {/* Toolbar */}
+        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
+          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {lang==="fr"?"Liste":"List"}</button>
+          <div style={{flex:1}}>
+            <div style={{color:C.text,fontWeight:800,fontSize:16}}>{p.title||`${p.numTrucks} Trucks — ${p.country1}→${p.country2}`}</div>
+            <div style={{color:C.muted,fontSize:10,marginTop:1}}>{p.createdAt}</div>
+          </div>
+          {isAdmin&&<><Btn onClick={()=>{setForm({...p});setEditingId(p.id);setView("form");}} variant="ghost" icon="edit" small>Edit</Btn></>}
+          <Btn onClick={()=>doPrint(p,c)} variant="ghost" icon="print" small>Print</Btn>
+          <Btn onClick={()=>doDownload(p,c)} variant="orange" icon="download" small>Download</Btn>
+        </div>
+
+        {/* Cover banner */}
+        <div style={{background:`linear-gradient(135deg,${C.card},${C.surface})`,border:`1px solid ${C.blue}33`,borderRadius:16,padding:"28px 32px",marginBottom:16,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${C.blue},${C.yellow},${C.blue})`}}/>
+          <div style={{position:"absolute",right:24,top:"50%",transform:"translateY(-50%)",fontSize:80,opacity:.06,pointerEvents:"none"}}>🚛</div>
+          <div style={{color:C.blue,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:12}}>Fleet Investment Analysis</div>
+          <div style={{fontSize:22,fontWeight:900,color:C.text,marginBottom:6}}>Fleet Investment <span style={{color:C.yellow}}>Projection</span> — {p.numTrucks} Trucks</div>
+          <div style={{color:C.muted,fontSize:12,marginBottom:20}}>{p.country1} → {p.country2} corridor · {p.city1} · {fmtNum(p.distanceKm)} km</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
+            {[[lang==="fr"?"Invest. Total":"Total Investment",fmtNum(c.totalInvestment)+" F"],[lang==="fr"?"Distance":"Route Distance",fmtNum(p.distanceKm)+" km"],[lang==="fr"?"Flotte":"Fleet Size",p.numTrucks+" Trucks"]].map(([l,v])=>(
+              <div key={l}><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>{l}</div><div style={{color:C.yellow,fontSize:20,fontWeight:700}}>{v}</div></div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section 01: Investment banner */}
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"16px 20px",marginBottom:12,display:"flex",gap:0,overflowX:"auto"}}>
+          {[[lang==="fr"?"Prix/camion":"Price/truck",fmtNum(p.pricePerTruck)+" F",""],["Fleet Total",fmtNum(c.totalInvestment)+" F","Total capital"],["Route",`${p.country1}→${p.country2}`," "+p.city1+" · "+fmtNum(p.distanceKm)+"km"],["Trips/month",p.tripsPerMonth+" trips",""]].map(([l,v,s],i,arr)=>(
+            <div key={l} style={{flex:1,textAlign:"center",padding:"0 16px",borderRight:i<arr.length-1?`1px solid ${C.border}44`:""}} >
+              <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{l}</div>
+              <div style={{color:C.yellow,fontWeight:700,fontSize:15}}>{v}</div>
+              {s&&<div style={{color:C.muted,fontSize:9,marginTop:2}}>{s}</div>}
+            </div>
+          ))}
+        </div>
+
+        {/* Section 02: Compare cards */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+          {/* Own */}
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"14px 18px 12px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,borderRadius:8,background:`${C.green}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>🚛</div>
+              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>Own Trucks</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>Full operational model</div></div>
+            </div>
+            <div style={{padding:"14px 18px"}}>
+              {[[lang==="fr"?"Revenu/trajet":"Revenue/trip",fmtNum(p.revenuePerTrip)+" F","yellow"],
+                [`Fuel (${fuelLiters}L × ${fmtNum(p.fuelPricePerLiter)}F)`,`− ${fmtNum(Math.round(c.fuelCostPerTrip))} F`,"red"],
+                [lang==="fr"?"Dépenses route":"Road expenses",`− ${fmtNum(p.roadExpensesPerTrip)} F`,"red"],
+                [lang==="fr"?"Marge nette/trajet":"Net margin/trip",fmtNum(Math.round(c.netMarginPerTrip))+" F","green"],
+                [`Driver salary ÷ ${p.tripsPerMonth}`,`− ${fmtNum(Math.round(c.driverPerTrip))} F`,"red"],
+                [lang==="fr"?"Profit net/trajet":"Net profit/trip",fmtNum(Math.round(c.ownNetProfitPerTrip))+" F","green"],
+                [`× ${p.tripsPerMonth} trips/mo`,`× ${p.tripsPerMonth}`,"blue"],
+              ].map(([l,v,col])=>(
+                <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.border}22`}}>
+                  <span style={{color:C.muted,fontSize:11}}>{l}</span>
+                  <span style={{fontWeight:600,fontSize:12,color:col==="red"?C.red:col==="green"?C.green:col==="blue"?C.blue:C.yellow}}>{v}</span>
+                </div>
+              ))}
+              <div style={{marginTop:12,padding:"12px 14px",background:`${C.green}12`,border:`1px solid ${C.green}25`,borderRadius:8,display:"flex",justifyContent:"space-between"}}>
+                <span style={{fontSize:12,fontWeight:600}}>Profit / Truck / Month</span>
+                <span style={{color:C.green,fontWeight:800,fontSize:18}}>{fmtNum(Math.round(c.ownProfitPerTruckMonth))} F</span>
+              </div>
+            </div>
+          </div>
+          {/* Rental */}
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,overflow:"hidden"}}>
+            <div style={{padding:"14px 18px 12px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
+              <div style={{width:36,height:36,borderRadius:8,background:`${C.red}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>📋</div>
+              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>Rental Trucks</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>Commission-based model</div></div>
+            </div>
+            <div style={{padding:"14px 18px"}}>
+              {[[lang==="fr"?"Revenu/trajet":"Revenue/trip",fmtNum(p.revenuePerTrip)+" F","yellow"],
+                [lang==="fr"?"Coût location":"Rental cost",`− ${fmtNum(p.rentalCostPerTrip)} F`,"red"],
+                ["Our commission",fmtNum(Math.round(c.rentalCommission))+" F","green"],
+                ["No fuel costs","N/A","muted"],
+                ["No driver salary","N/A","muted"],
+                [lang==="fr"?"Commission/trajet":"Commission/trip",fmtNum(Math.round(c.rentalCommission))+" F","green"],
+                [`× ${p.tripsPerMonth} trips/mo`,`× ${p.tripsPerMonth}`,"blue"],
+              ].map(([l,v,col])=>(
+                <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.border}22`}}>
+                  <span style={{color:C.muted,fontSize:11}}>{l}</span>
+                  <span style={{fontWeight:600,fontSize:12,color:col==="muted"?C.muted:col==="red"?C.red:col==="green"?C.green:col==="blue"?C.blue:C.yellow}}>{v}</span>
+                </div>
+              ))}
+              <div style={{marginTop:12,padding:"12px 14px",background:`${C.red}12`,border:`1px solid ${C.red}25`,borderRadius:8,display:"flex",justifyContent:"space-between"}}>
+                <span style={{fontSize:12,fontWeight:600}}>Profit / Truck / Month</span>
+                <span style={{color:C.red,fontWeight:800,fontSize:18}}>{fmtNum(Math.round(c.rentalProfitPerTruckMonth))} F</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 03: Annual table */}
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12,overflowX:"auto"}}>
+          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{p.numTrucks}-Truck Annual Revenue</div>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+            <thead><tr>{["Metric","Per Truck/Mo",`${p.numTrucks} Trucks/Mo`,"Per Truck/Yr",`${p.numTrucks} Trucks/Yr`].map(h=><th key={h} style={{background:C.surface,padding:"8px 12px",textAlign:"left",color:C.yellow,fontSize:9,textTransform:"uppercase",fontWeight:700,borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+            <tbody>
+              <tr style={{borderBottom:`1px solid ${C.border}22`}}>
+                <td style={{padding:"8px 12px",fontWeight:700}}>🚛 Own Trucks</td>
+                {[c.ownProfitPerTruckMonth,c.ownProfitFleetMonth,c.ownProfitPerTruckMonth*12,c.ownProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.green,fontWeight:600}}>{fmtNum(Math.round(v))} F</td>)}
+              </tr>
+              <tr style={{borderBottom:`1px solid ${C.border}22`}}>
+                <td style={{padding:"8px 12px",fontWeight:700}}>📋 Rental</td>
+                {[c.rentalProfitPerTruckMonth,c.rentalProfitFleetMonth,c.rentalProfitPerTruckMonth*12,c.rentalProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.red,fontWeight:600}}>{fmtNum(Math.round(v))} F</td>)}
+              </tr>
+              <tr style={{background:C.surface}}>
+                <td style={{padding:"8px 12px",fontWeight:700,color:C.yellow}}>Difference</td>
+                {[c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth,c.ownProfitFleetMonth-c.rentalProfitFleetMonth,(c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth)*12,c.ownProfitFleetYear-c.rentalProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.yellow,fontWeight:700}}>+{fmtNum(Math.round(v))} F</td>)}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Section 04: Payback */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:12}}>
+          {[[true,"🚛 Own Trucks","Payback",Math.ceil(c.ownPaybackMonths),"months",`${fmtNum(Math.round(c.totalInvestment))} ÷ ${fmtNum(Math.round(c.ownProfitFleetMonth))}/mo = ${c.ownPaybackMonths.toFixed(1)} months`,C.green,`≈ ${ownPbYrs}y ${ownPbMo}mo`],
+           [false,"📋 Rental","Payback",Math.min(999,Math.ceil(c.rentalPaybackMonths)),"months",`÷ ${fmtNum(Math.round(c.rentalProfitFleetMonth))}/mo = ${c.rentalPaybackMonths>900?"∞":c.rentalPaybackMonths.toFixed(1)} months`,C.red,`≈ ${renPbYrs}y ${renPbMo}mo`]
+          ].map(([isOwn,name,,val,unit,sub,col,approx])=>(
+            <div key={name} style={{background:C.card,border:`1px solid ${isOwn?C.green:C.red}44`,borderRadius:12,padding:24,textAlign:"center",background:isOwn?`linear-gradient(135deg,${C.card},rgba(52,168,83,0.05))`:`linear-gradient(135deg,${C.card},rgba(234,67,53,0.05))`}}>
+              <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:10}}>{name} — Payback Period</div>
+              <div style={{fontSize:52,fontWeight:900,color:col,lineHeight:1,marginBottom:4}}>~{val}</div>
+              <div style={{color:col,fontWeight:600,marginBottom:6}}>{unit}</div>
+              <div style={{color:C.muted,fontSize:11}}>{sub}<br/><strong style={{color:col}}>{approx}</strong></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Recovery progress bars */}
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12}}>
+          <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{lang==="fr"?"Récupération sur 12 mois":"12-Month Recovery"}</div>
+          {[[`🚛 Own Trucks`,c.ownRecovery12,C.green,c.ownProfitFleetYear],[`📋 Rental`,c.rentalRecovery12,C.red,c.rentalProfitFleetYear]].map(([name,pct,col,earned])=>(
+            <div key={name} style={{marginBottom:16}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                <span style={{fontWeight:600,fontSize:12}}>{name}</span>
+                <span style={{fontWeight:700,fontSize:16,color:col}}>{pct.toFixed(1)}%</span>
+              </div>
+              <div style={{height:10,background:"rgba(255,255,255,0.06)",borderRadius:99,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${Math.min(100,pct).toFixed(1)}%`,background:`linear-gradient(90deg,${col},${col}aa)`,borderRadius:99,transition:"width 1s ease"}}/>
+              </div>
+              <div style={{color:C.muted,fontSize:10,marginTop:3}}>{fmtNum(Math.round(earned))} F recovered out of {fmtNum(Math.round(c.totalInvestment))} F investment</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Section 05: Month-by-month grid */}
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12}}>
+          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>Month-by-Month Cumulative Recovery (Own Trucks)</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:6}}>
+            {months12.map((m,i)=>{
+              const isLast=i===11;
+              const pctF=parseFloat(m.pct);
+              return(
+                <div key={i} style={{background:isLast?`rgba(52,168,83,0.1)`:C.surface,border:`1px solid ${isLast?"rgba(52,168,83,0.4)":C.border+"33"}`,borderRadius:8,padding:"10px 4px",textAlign:"center"}}>
+                  <div style={{color:isLast?C.green:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:4}}>Month {i+1}</div>
+                  <div style={{color:isLast?C.yellow:C.green,fontWeight:700,fontSize:11}}>{m.cum>=1e6?(m.cum/1e6).toFixed(1)+"M":(m.cum/1e3).toFixed(0)+"K"} F</div>
+                  <div style={{color:isLast?C.green:C.muted,fontSize:9,marginTop:2,fontWeight:isLast?700:400}}>{m.pct}%{isLast?" ✓":""}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Verdict */}
+        <div style={{background:`linear-gradient(135deg,#0f1e12,#122018)`,border:`1px solid ${C.green}44`,borderRadius:12,padding:"28px 32px",marginBottom:12,position:"relative",overflow:"hidden"}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${C.green},transparent)`}}/>
+          <div style={{color:C.green,fontWeight:800,fontSize:20,marginBottom:12}}>✅ {lang==="fr"?"Verdict : Own Fleet gagne":"Verdict: Own Fleet Wins"}</div>
+          <div style={{color:C.muted,fontSize:12,lineHeight:1.9,maxWidth:700}}>
+            Operating with <strong style={{color:C.text}}>own trucks generates {c.multiplier}× more monthly revenue</strong> than a rental model on the {p.country1}–{p.country2} corridor. With {p.numTrucks} trucks, the fleet earns <strong style={{color:C.text}}>{fmtNum(Math.round(c.ownProfitFleetYear))} F annually</strong>, recovering <strong style={{color:C.text}}>{c.ownRecovery12.toFixed(1)}% of the full investment within the first 12 months</strong> — and reaching full payback in approximately <strong style={{color:C.text}}>{Math.ceil(c.ownPaybackMonths)} months ({ownPbYrs} years {ownPbMo} months)</strong>.<br/><br/>
+            By contrast, rental operations yield only {fmtNum(Math.round(c.rentalProfitFleetYear))} F per year — recovering just <strong style={{color:C.text}}>{c.rentalRecovery12.toFixed(1)}%</strong> in Year 1, with a payback stretching to nearly <strong style={{color:C.text}}>{renPbYrs} years</strong>.
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+}
+
 
 function Forecast({data,setData,session,t,lang}){
   const C=_C;
@@ -4978,6 +5716,7 @@ export default function App(){
     {key:"audit",     icon:"audit",     label:t.nav.audit,      color:C.green,  show:can(session,"view_audit")},
     {key:"categories",icon:"activity",  label:t.nav.categories, color:"#FBBC05", show:true, hasSub:true},
     {key:"forecast",  icon:"forecast",  label:t.nav.forecast,   color:"#9C27B0", show:role==="admin"||role==="investor"},
+    {key:"fleet_projection", icon:"truck", label:lang==="fr"?"Projection Flottes":"Fleet Projection", color:C.blue, show:role==="admin"||role==="investor"},
     {key:"settings",  icon:"settings",  label:t.nav.settings,   color:C.green,  show:true},
   ].filter(n=>n.show);
 
@@ -4989,6 +5728,7 @@ export default function App(){
     users:     can(session,"manage_users")?<UsersPanel data={data} setData={setData} session={session} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     audit:     can(session,"view_audit")?<AuditLog data={data} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     forecast:  <Forecast data={data} setData={setData} session={session} t={t} lang={lang}/>,
+    fleet_projection: <FleetProjection data={data} setData={setData} session={session} t={t} lang={lang}/>,
     category_detail: <CategoryDetail category={selCategory} lang={lang} data={data} session={session} onBack={()=>setView('dashboard')}/>,
     settings:  <Settings   data={data} setData={setData} session={session} t={t} lang={lang} setLang={setLang} theme={theme} setTheme={setTheme}/>,
   };
