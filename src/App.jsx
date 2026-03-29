@@ -2422,6 +2422,182 @@ function UsersPanel({data,setData,session,t}){
 }
 
 // ── SETTINGS ─────────────────────────────────────────────────────────────────────
+// ── PaymentMethodsCard (Investor Settings) ────────────────────────────────────
+function PaymentMethodsCard({data,setData,session,lang,C}){
+  const inv=data.investors.find(i=>i.id===session.investorId);
+  if(!inv) return null;
+  const pms=inv.paymentMethods||[];
+
+  const PTYPES=[
+    {key:"bank_transfer", label:lang==="fr"?"Virement bancaire":"Bank Transfer", icon:"🏦",
+     fields:[
+       {id:"iban",  label:"IBAN",  ph:"FR76 3000 6000 0112 3456 7890 189"},
+       {id:"swift", label:"SWIFT / BIC",ph:"BNPAFRPPXXX"},
+       {id:"name",  label:lang==="fr"?"Titulaire du compte":"Account holder",ph:"John Doe"},
+     ]},
+    {key:"orange_money", label:"Orange Money",  icon:"🟠",
+     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+    {key:"mtn_money",    label:"MTN Money",     icon:"🟡",
+     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+233 24 000 0000"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+    {key:"wave",         label:"Wave",          icon:"🌊",
+     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+    {key:"moov",         label:"Moov",          icon:"🔵",
+     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 01 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+    {key:"djamo",        label:"Djamo",         icon:"💳",
+     fields:[
+       {id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},
+       {id:"iban", label:"IBAN Djamo",ph:"CI00 ..."},
+       {id:"name", label:lang==="fr"?"Titulaire":"Account holder",ph:""},
+     ]},
+  ];
+
+  const [selType,setSelType]=useState("bank_transfer");
+  const [fields,setFields]=useState({});
+  const [showForm,setShowForm]=useState(false);
+  const [editId,setEditId]=useState(null);
+  const [confirmDel,setConfirmDel]=useState(null);
+
+  const ptype=PTYPES.find(p=>p.key===selType)||PTYPES[0];
+
+  const savePayMethod=()=>{
+    const hasRequired=ptype.fields.some(f=>fields[f.id]?.trim());
+    if(!hasRequired)return;
+    const pm={id:editId||Date.now(),type:selType,label:ptype.label,icon:ptype.icon,...fields};
+    setData(d=>({...d,investors:d.investors.map(i=>i.id===session.investorId
+      ?{...i,paymentMethods:editId
+          ?(i.paymentMethods||[]).map(p=>p.id===editId?pm:p)
+          :[...(i.paymentMethods||[]),pm]
+      }:i
+    )}));
+    setFields({});setShowForm(false);setEditId(null);
+  };
+
+  const startEdit=(pm)=>{
+    setSelType(pm.type);
+    const flds={};PTYPES.find(p=>p.key===pm.type)?.fields.forEach(f=>{flds[f.id]=pm[f.id]||"";});
+    setFields(flds);setEditId(pm.id);setShowForm(true);
+  };
+
+  const summary=(pm)=>{
+    if(pm.type==="bank_transfer") return pm.iban||(pm.swift?`SWIFT/BIC: ${pm.swift}`:"");
+    return pm.phone||"";
+  };
+
+  return(
+    <div style={{background:_C.card,border:`1px solid ${_C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+      <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
+        <span style={{fontSize:16}}>💳</span>
+        <span style={{color:_C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Mes moyens de paiement":"My payment methods"}</span>
+        <span style={{color:_C.muted,fontSize:10,marginLeft:4}}>{lang==="fr"?"(utilisés pour les retraits)":"(used for withdrawals)"}</span>
+        <button onClick={()=>{setShowForm(v=>!v);setEditId(null);setFields({});}}
+          style={{marginLeft:"auto",padding:"5px 14px",background:showForm&&!editId?`${_C.blue}28`:`${_C.blue}18`,border:`1px solid ${_C.blue}44`,borderRadius:7,color:_C.blue,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>
+          {showForm&&!editId?"▲ "+( lang==="fr"?"Annuler":"Cancel"):"＋ "+(lang==="fr"?"Ajouter":"Add")}
+        </button>
+      </div>
+
+      {/* Add / Edit form */}
+      {showForm&&(
+        <div style={{background:_C.surface,border:`1px solid ${_C.border}33`,borderRadius:10,padding:16,marginBottom:16}}>
+          <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{editId?(lang==="fr"?"Modifier":"Edit"):(lang==="fr"?"Nouveau moyen de paiement":"New payment method")}</div>
+
+          {/* Type selector */}
+          <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+            {PTYPES.map(pt=>(
+              <button key={pt.key} onClick={()=>{setSelType(pt.key);setFields({});}}
+                style={{padding:"6px 12px",background:selType===pt.key?`${_C.blue}25`:`rgba(255,255,255,0.04)`,border:`1px solid ${selType===pt.key?_C.blue:_C.border}44`,borderRadius:7,color:selType===pt.key?_C.blue:_C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:selType===pt.key?700:400,display:"flex",alignItems:"center",gap:5}}>
+                {pt.icon} {pt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Fields for selected type */}
+          <div style={{display:"grid",gridTemplateColumns:ptype.fields.length>2?"1fr 1fr":"1fr 1fr",gap:10,marginBottom:12}}>
+            {ptype.fields.map(f=>(
+              <div key={f.id}>
+                <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:4}}>{f.label}{f.id!=="name"&&" *"}</div>
+                <input value={fields[f.id]||""} onChange={e=>setFields(fs=>({...fs,[f.id]:e.target.value}))} placeholder={f.ph}
+                  style={{width:"100%",background:_C.bg,border:`1px solid ${_C.border}44`,borderRadius:6,padding:"6px 9px",color:_C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
+              </div>
+            ))}
+          </div>
+
+          {/* Bank transfer special info box */}
+          {selType==="bank_transfer"&&(
+            <div style={{background:`rgba(66,133,244,0.06)`,border:`1px solid rgba(66,133,244,0.2)`,borderRadius:7,padding:"8px 12px",marginBottom:12,fontSize:10,color:_C.muted}}>
+              ℹ️ {lang==="fr"
+                ?"IBAN (ex: FR76 3000...) — BIC/SWIFT identifie votre banque (ex: BNPAFRPP). Délai de virement: 3 jours ouvrables."
+                :"IBAN (e.g. FR76 3000...) — BIC/SWIFT identifies your bank (e.g. BNPAFRPP). Processing: 3 business days."}
+            </div>
+          )}
+
+          <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+            <button onClick={()=>{setShowForm(false);setEditId(null);setFields({});}}
+              style={{padding:"6px 16px",background:"transparent",border:`1px solid ${_C.border}44`,borderRadius:7,color:_C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>
+              {lang==="fr"?"Annuler":"Cancel"}
+            </button>
+            <button onClick={savePayMethod}
+              disabled={!ptype.fields.filter(f=>f.id!=="name").some(f=>fields[f.id]?.trim())}
+              style={{padding:"6px 16px",background:_C.blue,border:"none",borderRadius:7,color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>
+              {editId?(lang==="fr"?"Mettre à jour":"Update"):(lang==="fr"?"Ajouter":"Add")} {ptype.icon}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* List of saved payment methods */}
+      {pms.length===0?(
+        <div style={{textAlign:"center",padding:"20px",color:_C.muted,fontSize:12}}>
+          {lang==="fr"?"Aucun moyen de paiement enregistré. Ajoutez-en un pour pouvoir faire des demandes de retrait.":"No payment method saved. Add one to make withdrawal requests."}
+        </div>
+      ):(
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {pms.map(pm=>(
+            <div key={pm.id} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 14px",background:_C.surface,border:`1px solid ${_C.border}33`,borderRadius:9}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor=_C.blue+"44"}
+              onMouseLeave={e=>e.currentTarget.style.borderColor=_C.border+"33"}>
+              <span style={{fontSize:22,flexShrink:0}}>{pm.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{color:_C.text,fontWeight:700,fontSize:12}}>{pm.label}</div>
+                <div style={{color:_C.muted,fontSize:10,marginTop:2}}>
+                  {pm.type==="bank_transfer"?(<>
+                    {pm.iban&&<span style={{marginRight:8}}>IBAN: <strong style={{color:_C.dim}}>{pm.iban}</strong></span>}
+                    {pm.swift&&<span>SWIFT/BIC: <strong style={{color:_C.dim}}>{pm.swift}</strong></span>}
+                  </>):(
+                    <span>{pm.phone||"—"}</span>
+                  )}
+                  {pm.name&&<span style={{marginLeft:8,color:_C.muted}}>· {pm.name}</span>}
+                </div>
+              </div>
+              <div style={{display:"flex",gap:5,flexShrink:0}}>
+                <button onClick={()=>startEdit(pm)}
+                  style={{width:28,height:28,borderRadius:6,background:`${_C.blue}18`,border:`1px solid ${_C.blue}33`,color:_C.blue,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
+                <button onClick={()=>setConfirmDel(pm)}
+                  style={{width:28,height:28,borderRadius:6,background:`${_C.red}18`,border:`1px solid ${_C.red}33`,color:_C.red,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Delete confirmation */}
+      {confirmDel&&(
+        <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:16,width:"min(400px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
+            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:8}}>🗑️ {lang==="fr"?"Supprimer ce moyen de paiement ?":"Delete this payment method?"}</div>
+            <div style={{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:16}}>{confirmDel.icon} {confirmDel.label} — {summary(confirmDel)}</div>
+            <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+              <button onClick={()=>setConfirmDel(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button onClick={()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===session.investorId?{...i,paymentMethods:(i.paymentMethods||[]).filter(p=>p.id!==confirmDel.id)}:i)}));setConfirmDel(null);}}
+                style={{padding:"7px 18px",background:"#EA4335",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>✕ {lang==="fr"?"Supprimer":"Delete"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
   const C=_C;
   const canEdit=can(session,"edit_settings");
@@ -2846,6 +3022,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
     return(<div>
       <h2 style={{color:C.text,fontSize:20,fontWeight:800,marginBottom:18}}>{t.settings.title}</h2>
       {profileCard}
+      <PaymentMethodsCard data={data} setData={setData} session={session} lang={lang} C={_C}/>
 
       {/* Read-only Exchange Rates */}
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
