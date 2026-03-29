@@ -82,6 +82,7 @@ const INIT={
     routeDistances:[
       {id:1,fromId:1,toId:1,distanceKm:1087}
     ],
+    minWithdrawProfit:500000,
     fuelByCountry:[
       {id:1,country:"Ghana",pricePerLiter:675},
       {id:2,country:"Côte d'Ivoire",pricePerLiter:700},
@@ -91,6 +92,7 @@ const INIT={
   users:[...INIT_USERS],pendingUsers:[],
   projections:[],
   fleetProjections:[],
+  withdrawals:[],  // [{id,investorId,date,type,amount,status,evidence,rejectionReason,claimText,claimEvidence,claimStatus,processedAt}]
   notifications:[
     {id:1,type:"info",msg:"Rapport Février 2026 disponible",date:"2026-02-14",read:false},
     {id:2,type:"success",msg:"Nouveau profit enregistré : +1 650 000 F CFA",date:"2026-02-14",read:false},
@@ -3374,6 +3376,14 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       {/* ── Operational Defaults Card ── */}
       {canEdit&&(
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
+        {/* Min withdraw profit setting */}
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,padding:"10px 14px",background:`${C.red}08`,border:`1px solid ${C.red}22`,borderRadius:8}}>
+          <span style={{color:C.red,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",whiteSpace:"nowrap"}}>💰 {lang==="fr"?"Profit minimum requis (retrait)":"Min. profit required (withdrawal)"}</span>
+          <input type="number" value={s.minWithdrawProfit||500000}
+            onChange={e=>{const v=parseFloat(e.target.value)||0;setData(d=>({...d,settings:{...d.settings,minWithdrawProfit:v}}));}}
+            style={{width:140,background:C.bg,border:`1px solid ${C.red}44`,borderRadius:6,padding:"5px 8px",color:C.red,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+          <span style={{color:C.muted,fontSize:10}}>{fmtNum(s.minWithdrawProfit||500000)} F CFA</span>
+        </div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
           <span style={{fontSize:14}}>⚙️</span>
           <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Paramètres opérationnels":"Operational Defaults"}</span>
@@ -4378,6 +4388,476 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 // ── FORECAST / PROJECTIONS ───────────────────────────────────────────────────────
 const MONTHS_FR=["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+// ── WithdrawPage Component ────────────────────────────────────────────────────
+function WithdrawPage({data,setData,session,t,lang}){
+  const C=_C;
+  const isAdmin=session.role==="admin"||session.role==="manager";
+  const isInvestor=session.role==="investor";
+  const s=data.settings;
+
+  // ── Investor identification ─────────────────────────────────────────────────
+  const myInvestorId=session.investorId;
+  const myInvestor=data.investors.find(i=>i.id===myInvestorId)||null;
+  const allInvestors=data.investors||[];
+
+  // ── Calculate available profit for an investor ──────────────────────────────
+  const getAvailableProfit=(invId)=>{
+    const reps=(data.reports||[]).filter(r=>r.investorId===invId);
+    const totalProfit=reps.reduce((s,r)=>s+calcReport(r).netProfit,0);
+    const accepted=(data.withdrawals||[]).filter(w=>w.investorId===invId&&w.status==="accepted");
+    const withdrawn=accepted.reduce((s,w)=>s+w.amount,0);
+    return totalProfit-withdrawn;
+  };
+  const minProfit=s.minWithdrawProfit||500000;
+
+  // ── Local state ─────────────────────────────────────────────────────────────
+  const [withdrawType,setWithdrawType]=useState("bank_transfer");
+  const [withdrawAmount,setWithdrawAmount]=useState("");
+  const [selPayMethod,setSelPayMethod]=useState("");
+  const [filterStatus,setFilterStatus]=useState("all");
+  const [sortCol,setSortCol]=useState("date");
+  const [sortDir,setSortDir]=useState("desc");
+  const [rejectModal,setRejectModal]=useState(null); // {withdrawal}
+  const [rejectReason,setRejectReason]=useState("");
+  const [claimModal,setClaimModal]=useState(null); // {withdrawal}
+  const [claimText,setClaimText]=useState("");
+  const [adminViewInv,setAdminViewInv]=useState(myInvestorId||allInvestors[0]?.id||null);
+  const [payMethodModal,setPayMethodModal]=useState(false);
+  const [newPayMethod,setNewPayMethod]=useState({type:"bank_transfer",number:"",name:""});
+  const [confirmDelW,setConfirmDelW]=useState(null);
+
+  const TYPES=[
+    {key:"bank_transfer",label:lang==="fr"?"Virement bancaire":"Bank Transfer",icon:"🏦",delay:lang==="fr"?"3 jours ouvrables":"3 business days"},
+    {key:"orange_money",  label:"Orange Money",  icon:"🟠",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+    {key:"mtn_money",     label:"MTN Money",     icon:"🟡",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+    {key:"wave",          label:"Wave",          icon:"🌊",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+    {key:"moov",          label:"Moov",          icon:"🔵",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+    {key:"djamo",         label:"Djamo",         icon:"💳",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+  ];
+
+  const typeLabel=(k)=>TYPES.find(t=>t.key===k)?.label||k;
+  const typeIcon=(k)=>TYPES.find(t=>t.key===k)?.icon||"💰";
+
+  const STATUS_COLORS={pending:C.yellow,in_process:C.blue,accepted:C.green,rejected:C.red};
+  const STATUS_LABELS={
+    pending:    lang==="fr"?"En attente":"Pending",
+    in_process: lang==="fr"?"En cours":"In Process",
+    accepted:   lang==="fr"?"Accepté":"Accepted",
+    rejected:   lang==="fr"?"Rejeté":"Rejected",
+  };
+
+  // ── Withdrawals list (filtered by investor for non-admin) ────────────────────
+  const viewInvId=isAdmin?adminViewInv:myInvestorId;
+  const allW=(data.withdrawals||[]).filter(w=>w.investorId===viewInvId);
+  const filtered=filterStatus==="all"?allW:allW.filter(w=>w.status===filterStatus);
+  const sorted=[...filtered].sort((a,b)=>{
+    let va=a[sortCol],vb=b[sortCol];
+    if(sortCol==="amount"||sortCol==="status"){
+      if(sortCol==="status"){va=Object.keys(STATUS_LABELS).indexOf(va);vb=Object.keys(STATUS_LABELS).indexOf(vb);}
+      return sortDir==="asc"?va-vb:vb-va;
+    }
+    return sortDir==="asc"?va.localeCompare(vb):vb.localeCompare(va);
+  });
+
+  // ── Available profit for current view ────────────────────────────────────────
+  const avail=viewInvId?getAvailableProfit(viewInvId):0;
+  const blocked=avail<=minProfit;
+
+  // ── Actions ──────────────────────────────────────────────────────────────────
+  const submitWithdrawal=()=>{
+    const amt=parseFloat(withdrawAmount)||0;
+    if(!amt||amt<=0)return;
+    if(avail-amt<minProfit){alert(lang==="fr"?"Montant dépasse le profit disponible après minimum requis.":"Amount exceeds available profit after minimum threshold.");return;}
+    const w={id:Date.now(),investorId:viewInvId,date:fmtDateTime(),type:withdrawType,payMethod:selPayMethod,amount:amt,status:"pending",evidence:null,rejectionReason:null,claimText:null,claimEvidence:null,claimStatus:null};
+    setData(d=>({...d,withdrawals:[...(d.withdrawals||[]),w]}));
+    addAudit(setData,session,lang==="fr"?"Demande retrait":"Withdrawal request",fmtNum(amt)+" F","create");
+    setWithdrawAmount("");setSelPayMethod("");
+  };
+
+  const updateStatus=(wid,status,extra={})=>{
+    setData(d=>({...d,withdrawals:(d.withdrawals||[]).map(w=>w.id===wid?{...w,status,...extra,processedAt:fmtDateTime()}:w)}));
+  };
+
+  const uploadEvidence=(wid,isAdmin)=>{
+    const inp=document.createElement("input");
+    inp.type="file";inp.accept="image/*,.pdf,.csv,.xml";
+    inp.onchange=e=>{
+      const f=e.target.files[0];if(!f)return;
+      const r=new FileReader();
+      r.onload=ev=>{
+        const ev2={name:f.name,data:ev.target.result,type:f.type,uploadedAt:fmtDateTime(),by:isAdmin?"admin":session.username};
+        setData(d=>({...d,withdrawals:(d.withdrawals||[]).map(w=>{
+          if(w.id!==wid)return w;
+          const newW={...w,evidence:[...(w.evidence||[]),ev2]};
+          // Auto-accept if admin uploads evidence and status is in_process
+          if(isAdmin&&newW.status==="in_process"){newW.status="accepted";newW.processedAt=fmtDateTime();}
+          return newW;
+        })}));
+      };
+      r.readAsDataURL(f);
+    };
+    inp.click();
+  };
+
+  const cancelWithdrawal=(wid)=>{
+    setData(d=>({...d,withdrawals:(d.withdrawals||[]).map(w=>w.id===wid?{...w,status:"pending"}:w)}));
+  };
+  const deleteWithdrawal=(wid)=>{
+    setData(d=>({...d,withdrawals:(d.withdrawals||[]).filter(w=>w.id!==wid)}));
+  };
+
+  const submitClaim=(w)=>{
+    setData(d=>({...d,withdrawals:(d.withdrawals||[]).map(x=>x.id===w.id?{...x,claimText,claimStatus:"pending_review"}:x)}));
+    setClaimModal(null);setClaimText("");
+  };
+
+  // ── Payment methods (stored on investor) ─────────────────────────────────────
+  const getPayMethods=(invId)=>{
+    const inv=data.investors.find(i=>i.id===invId);
+    return inv?.paymentMethods||[];
+  };
+  const addPayMethod=()=>{
+    if(!newPayMethod.number.trim())return;
+    const pm={id:Date.now(),...newPayMethod};
+    setData(d=>({...d,investors:d.investors.map(i=>i.id===viewInvId?{...i,paymentMethods:[...(i.paymentMethods||[]),pm]}:i)}));
+    setNewPayMethod({type:"bank_transfer",number:"",name:""});
+  };
+  const removePayMethod=(pmid)=>{
+    setData(d=>({...d,investors:d.investors.map(i=>i.id===viewInvId?{...i,paymentMethods:(i.paymentMethods||[]).filter(p=>p.id!==pmid)}:i)}));
+  };
+
+  // ── Sort helper ───────────────────────────────────────────────────────────────
+  const SortTh=({col,children})=>(
+    <th onClick={()=>{if(sortCol===col)setSortDir(d=>d==="asc"?"desc":"asc");else{setSortCol(col);setSortDir("desc");}}}
+      style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`,cursor:"pointer",userSelect:"none",whiteSpace:"nowrap"}}>
+      {children}{sortCol===col&&<span style={{marginLeft:3}}>{sortDir==="asc"?"↑":"↓"}</span>}
+    </th>
+  );
+  const payMethods=getPayMethods(viewInvId);
+
+  return(
+    <div>
+      {/* Header */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
+        <div>
+          <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{lang==="fr"?"Retrait de profits":"Profit Withdrawal"}</h2>
+          <div style={{color:C.muted,fontSize:12,marginTop:2}}>{lang==="fr"?"Gérez vos demandes de retrait de profits":"Manage your profit withdrawal requests"}</div>
+        </div>
+        {isAdmin&&(
+          <select value={adminViewInv||""} onChange={e=>setAdminViewInv(parseInt(e.target.value))}
+            style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:8,padding:"7px 12px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+            <option value="">{lang==="fr"?"— Sélectionner investisseur —":"— Select investor —"}</option>
+            {allInvestors.map(i=><option key={i.id} value={i.id}>{i.name}</option>)}
+          </select>
+        )}
+      </div>
+
+      {viewInvId&&(
+      <>
+        {/* Profit overview banner */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+          {[
+            [lang==="fr"?"Profit disponible":"Available Profit",avail,C.green],
+            [lang==="fr"?"Minimum requis":"Required Minimum",minProfit,C.yellow],
+            [lang==="fr"?"Retraits acceptés":"Accepted Withdrawals",(data.withdrawals||[]).filter(w=>w.investorId===viewInvId&&w.status==="accepted").reduce((s,w)=>s+w.amount,0),C.red],
+          ].map(([label,val,col])=>(
+            <div key={label} style={{background:C.card,border:`1px solid ${col}33`,borderRadius:10,padding:"14px 16px"}}>
+              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
+              <div style={{color:col,fontSize:18,fontWeight:800}}>{fmtNum(val)} F</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Blocked warning */}
+        {blocked&&(
+          <div style={{background:`${C.red}10`,border:`1px solid ${C.red}33`,borderRadius:8,padding:"10px 14px",marginBottom:12,display:"flex",gap:8,alignItems:"center"}}>
+            <span style={{fontSize:16}}>⚠️</span>
+            <span style={{color:C.red,fontSize:12,fontWeight:600}}>
+              {lang==="fr"?"Vous avez atteint le minimum de profit requis. Retrait impossible.":"You have reached the required minimum profit. Withdrawal not possible."}
+            </span>
+          </div>
+        )}
+
+        {/* New withdrawal form */}
+        {(isInvestor||isAdmin)&&!blocked&&(
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:18,marginBottom:14}}>
+            <div style={{color:C.text,fontSize:13,fontWeight:700,marginBottom:14}}>
+              ➕ {lang==="fr"?"Nouvelle demande de retrait":"New withdrawal request"}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr auto",gap:10,alignItems:"end"}}>
+              {/* Payment type */}
+              <div>
+                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Moyen de paiement":"Payment method"}</div>
+                <select value={withdrawType} onChange={e=>setWithdrawType(e.target.value)}
+                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  {TYPES.map(tp=><option key={tp.key} value={tp.key}>{tp.icon} {tp.label}</option>)}
+                </select>
+                <div style={{color:C.muted,fontSize:9,marginTop:2}}>⏱ {TYPES.find(tp=>tp.key===withdrawType)?.delay}</div>
+              </div>
+              {/* Saved payment method */}
+              <div>
+                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Compte sauvegardé":"Saved account"}</div>
+                <select value={selPayMethod} onChange={e=>setSelPayMethod(e.target.value)}
+                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                  <option value="">{lang==="fr"?"— Sélectionner —":"— Select —"}</option>
+                  {payMethods.filter(p=>p.type===withdrawType).map(p=>(
+                    <option key={p.id} value={p.id}>{p.name||p.number}</option>
+                  ))}
+                </select>
+              </div>
+              {/* Amount */}
+              <div>
+                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Montant (F CFA)":"Amount (F CFA)"}</div>
+                <input type="number" value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}
+                  placeholder={lang==="fr"?"Ex: 500 000":"Ex: 500,000"}
+                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
+                {withdrawAmount&&avail-(parseFloat(withdrawAmount)||0)<minProfit&&(
+                  <div style={{color:C.red,fontSize:9,marginTop:2}}>⚠ {lang==="fr"?"Dépasse le seuil min":"Exceeds minimum threshold"}</div>
+                )}
+              </div>
+              <button
+                disabled={!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit}
+                onClick={submitWithdrawal}
+                style={{padding:"8px 18px",background:(!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit)?`rgba(255,255,255,0.1)`:C.green,border:"none",borderRadius:8,color:(!withdrawAmount||parseFloat(withdrawAmount)<=0)?`rgba(255,255,255,0.3)`:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                {lang==="fr"?"Soumettre":"Submit"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Payment methods manager (for investor) */}
+        {(isInvestor||isAdmin)&&(
+          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:14,marginBottom:14}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <span style={{color:C.text,fontSize:12,fontWeight:700}}>💳 {lang==="fr"?"Mes moyens de paiement":"Payment methods"}</span>
+              <button onClick={()=>setPayMethodModal(v=>!v)} style={{marginLeft:"auto",padding:"4px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:6,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>
+                {payMethodModal?"▲":"＋ "+( lang==="fr"?"Ajouter":"Add")}
+              </button>
+            </div>
+            {payMethodModal&&(
+              <div style={{display:"flex",gap:7,marginBottom:10,flexWrap:"wrap",alignItems:"flex-end"}}>
+                <div>
+                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>Type</div>
+                  <select value={newPayMethod.type} onChange={e=>setNewPayMethod(m=>({...m,type:e.target.value}))}
+                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                    {TYPES.map(tp=><option key={tp.key} value={tp.key}>{tp.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>{lang==="fr"?"Numéro/Compte":"Number/Account"}</div>
+                  <input value={newPayMethod.number} onChange={e=>setNewPayMethod(m=>({...m,number:e.target.value}))} placeholder="0123456789"
+                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",width:150}}/>
+                </div>
+                <div>
+                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>{lang==="fr"?"Libellé (optionnel)":"Label (optional)"}</div>
+                  <input value={newPayMethod.name} onChange={e=>setNewPayMethod(m=>({...m,name:e.target.value}))} placeholder={lang==="fr"?"Mon compte Orange":"My Orange account"}
+                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",width:160}}/>
+                </div>
+                <button onClick={addPayMethod} disabled={!newPayMethod.number.trim()}
+                  style={{padding:"4px 14px",background:newPayMethod.number.trim()?C.blue:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:newPayMethod.number.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
+              </div>
+            )}
+            {payMethods.length===0
+              ?<div style={{color:C.muted,fontSize:11}}>{lang==="fr"?"Aucun moyen de paiement sauvegardé.":"No payment methods saved."}</div>
+              :<div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {payMethods.map(pm=>(
+                  <div key={pm.id} style={{display:"flex",alignItems:"center",gap:6,padding:"4px 10px",background:`${C.surface}`,border:`1px solid ${C.border}44`,borderRadius:6}}>
+                    <span style={{fontSize:13}}>{typeIcon(pm.type)}</span>
+                    <span style={{color:C.text,fontSize:11,fontWeight:600}}>{pm.name||pm.number}</span>
+                    <span style={{color:C.muted,fontSize:10}}>{typeLabel(pm.type)}</span>
+                    <button onClick={()=>removePayMethod(pm.id)} style={{width:16,height:16,borderRadius:3,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                  </div>
+                ))}
+              </div>
+            }
+          </div>
+        )}
+
+        {/* Filter bar */}
+        <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
+          <span style={{color:C.muted,fontSize:11}}>Filtrer :</span>
+          {["all","pending","in_process","accepted","rejected"].map(s=>(
+            <button key={s} onClick={()=>setFilterStatus(s)}
+              style={{padding:"4px 12px",background:filterStatus===s?STATUS_COLORS[s]||C.blue:(STATUS_COLORS[s]||C.blue)+"18",border:`1px solid ${STATUS_COLORS[s]||C.blue}44`,borderRadius:6,color:filterStatus===s?"#fff":STATUS_COLORS[s]||C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:filterStatus===s?700:400}}>
+              {s==="all"?(lang==="fr"?"Tous":"All"):STATUS_LABELS[s]}
+              {s!=="all"&&<span style={{marginLeft:4,background:"rgba(255,255,255,0.2)",borderRadius:3,padding:"0 5px",fontSize:9}}>{(data.withdrawals||[]).filter(w=>w.investorId===viewInvId&&w.status===s).length}</span>}
+            </button>
+          ))}
+        </div>
+
+        {/* Table */}
+        <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,overflow:"hidden"}}>
+          <div style={{overflowX:"auto"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
+              <thead>
+                <tr>
+                  <SortTh col="date">{lang==="fr"?"Date":"Date"}</SortTh>
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Type":"Type"}</th>
+                  <SortTh col="amount">{lang==="fr"?"Montant":"Amount"}</SortTh>
+                  <SortTh col="status">{lang==="fr"?"Statut":"Status"}</SortTh>
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Preuve":"Evidence"}</th>
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Actions":"Actions"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.length===0&&(
+                  <tr><td colSpan={6} style={{padding:"30px",textAlign:"center",color:C.muted}}>
+                    {lang==="fr"?"Aucune demande de retrait.":"No withdrawal requests."}
+                  </td></tr>
+                )}
+                {sorted.map(w=>{
+                  const sc=STATUS_COLORS[w.status]||C.muted;
+                  const evidenceCount=(w.evidence||[]).length;
+                  return(
+                    <tr key={w.id} style={{borderBottom:`1px solid ${C.border}22`}}
+                      onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.02)"}
+                      onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+                      <td style={{padding:"8px 10px",color:C.muted,fontSize:10,whiteSpace:"nowrap"}}>{w.date}</td>
+                      <td style={{padding:"8px 10px"}}>
+                        <span style={{display:"flex",alignItems:"center",gap:5}}>
+                          <span style={{fontSize:14}}>{typeIcon(w.type)}</span>
+                          <span style={{color:C.text,fontWeight:600}}>{typeLabel(w.type)}</span>
+                        </span>
+                      </td>
+                      <td style={{padding:"8px 10px",color:C.yellow,fontWeight:700}}>{fmtNum(w.amount)} F</td>
+                      <td style={{padding:"8px 10px"}}>
+                        <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}>
+                          <span style={{padding:"3px 8px",background:sc+"18",border:`1px solid ${sc}44`,borderRadius:5,color:sc,fontSize:10,fontWeight:700,whiteSpace:"nowrap"}}>
+                            {STATUS_LABELS[w.status]}
+                          </span>
+                          {w.status==="rejected"&&w.rejectionReason&&(
+                            <button onClick={()=>setRejectModal({...w,showReason:true})}
+                              style={{padding:"2px 7px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
+                              👁 {lang==="fr"?"Raison":"Reason"}
+                            </button>
+                          )}
+                          {w.claimStatus==="pending_review"&&(
+                            <span style={{padding:"2px 7px",background:`${C.yellow}18`,color:C.yellow,borderRadius:4,fontSize:9,fontWeight:700}}>⚖ Claim</span>
+                          )}
+                        </div>
+                        {/* Admin status changer */}
+                        {isAdmin&&w.status==="pending"&&(
+                          <div style={{display:"flex",gap:4,marginTop:5}}>
+                            <button onClick={()=>updateStatus(w.id,"in_process")}
+                              style={{padding:"2px 8px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:4,color:C.blue,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>→ In Process</button>
+                            <button onClick={()=>{setRejectModal(w);setRejectReason("");}}
+                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✕ Reject</button>
+                          </div>
+                        )}
+                        {isAdmin&&w.status==="in_process"&&(
+                          <div style={{display:"flex",gap:4,marginTop:5}}>
+                            <button onClick={()=>uploadEvidence(w.id,true)}
+                              style={{padding:"2px 8px",background:`${C.green}18`,border:`1px solid ${C.green}33`,borderRadius:4,color:C.green,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✓ Accept + Proof</button>
+                            <button onClick={()=>{setRejectModal(w);setRejectReason("");}}
+                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✕ Reject</button>
+                          </div>
+                        )}
+                      </td>
+                      {/* Evidence */}
+                      <td style={{padding:"8px 10px"}}>
+                        <div style={{display:"flex",gap:4,alignItems:"center",flexWrap:"wrap"}}>
+                          <button onClick={()=>uploadEvidence(w.id,isAdmin)}
+                            title={lang==="fr"?"Ajouter preuve":"Add evidence"}
+                            style={{width:26,height:26,borderRadius:6,background:`${C.teal}18`,border:`1px solid ${C.teal}33`,color:C.teal,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>📎</button>
+                          {evidenceCount>0&&(
+                            <span style={{color:C.teal,fontSize:10,fontWeight:700,background:`${C.teal}12`,padding:"1px 6px",borderRadius:4}}>{evidenceCount}</span>
+                          )}
+                          {(w.evidence||[]).map((ev,i)=>(
+                            <a key={i} href={ev.data} download={ev.name} title={ev.name+" ("+ev.by+")"}
+                              style={{width:22,height:22,borderRadius:5,background:`${C.green}18`,border:`1px solid ${C.green}33`,color:C.green,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,textDecoration:"none"}}>⬇</a>
+                          ))}
+                        </div>
+                      </td>
+                      {/* Actions */}
+                      <td style={{padding:"8px 10px"}}>
+                        <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+                          {w.status==="in_process"&&(isInvestor||isAdmin)&&(
+                            <button onClick={()=>cancelWithdrawal(w.id)}
+                              style={{padding:"2px 8px",background:`${C.yellow}18`,border:`1px solid ${C.yellow}33`,borderRadius:4,color:C.yellow,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
+                              {lang==="fr"?"Annuler":"Cancel"}
+                            </button>
+                          )}
+                          {w.status==="pending"&&(
+                            <button onClick={()=>setConfirmDelW(w)}
+                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
+                              {lang==="fr"?"Supprimer":"Delete"}
+                            </button>
+                          )}
+                          {w.status==="rejected"&&!w.claimText&&isInvestor&&(
+                            <button onClick={()=>{setClaimModal(w);setClaimText("");}}
+                              style={{padding:"2px 8px",background:`${C.purple}18`,border:`1px solid ${C.purple}33`,borderRadius:4,color:C.purple,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
+                              ⚖ {lang==="fr"?"Réclamation":"Claim"}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </>
+      )}
+
+      {/* Rejection modal (set reason OR show reason) */}
+      {rejectModal&&(
+        <div onClick={()=>setRejectModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(440px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
+            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:12}}>
+              {rejectModal.showReason?(lang==="fr"?"Raison du rejet":"Rejection reason"):(lang==="fr"?"Rejeter la demande":"Reject request")}
+            </div>
+            {rejectModal.showReason?(
+              <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"10px 14px",color:C.red,fontSize:12}}>{rejectModal.rejectionReason}</div>
+            ):(
+              <>
+                <textarea value={rejectReason} onChange={e=>setRejectReason(e.target.value)} rows={3}
+                  placeholder={lang==="fr"?"Motif du rejet...":"Reason for rejection..."}
+                  style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 10px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",resize:"vertical",marginBottom:12}}/>
+                <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+                  <button onClick={()=>setRejectModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
+                    {lang==="fr"?"Annuler":"Cancel"}
+                  </button>
+                  <button disabled={!rejectReason.trim()} onClick={()=>{updateStatus(rejectModal.id,"rejected",{rejectionReason:rejectReason});setRejectModal(null);}}
+                    style={{padding:"7px 18px",background:rejectReason.trim()?C.red:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:rejectReason.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
+                    ✕ {lang==="fr"?"Confirmer rejet":"Confirm Reject"}
+                  </button>
+                </div>
+              </>
+            )}
+            {rejectModal.showReason&&<button onClick={()=>setRejectModal(null)} style={{marginTop:12,width:"100%",padding:"8px",background:"rgba(255,255,255,0.08)",border:"none",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Fermer":"Close"}</button>}
+          </div>
+        </div>
+      )}
+
+      {/* Claim modal */}
+      {claimModal&&(
+        <div onClick={()=>setClaimModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(156,39,176,0.3)",borderRadius:18,width:"min(440px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
+            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:4}}>⚖ {lang==="fr"?"Déposer une réclamation":"Submit a claim"}</div>
+            <div style={{color:"rgba(255,255,255,0.4)",fontSize:11,marginBottom:14}}>{lang==="fr"?"Expliquez le problème et joignez une preuve de non-réception.":"Explain the issue and attach proof of non-receipt."}</div>
+            <textarea value={claimText} onChange={e=>setClaimText(e.target.value)} rows={4}
+              placeholder={lang==="fr"?"Décrivez votre réclamation...":"Describe your claim..."}
+              style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 10px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",resize:"vertical",marginBottom:12}}/>
+            <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
+              <button onClick={()=>setClaimModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button disabled={!claimText.trim()} onClick={()=>submitClaim(claimModal)}
+                style={{padding:"7px 18px",background:claimText.trim()?C.purple:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:claimText.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
+                ⚖ {lang==="fr"?"Soumettre":"Submit"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirm */}
+      <ConfirmModal open={!!confirmDelW} lang={lang} itemType={lang==="fr"?"Demande de retrait":"Withdrawal request"} itemName={confirmDelW?fmtNum(confirmDelW.amount)+" F — "+typeLabel(confirmDelW.type):""} onConfirm={()=>{deleteWithdrawal(confirmDelW.id);setConfirmDelW(null);}} onCancel={()=>setConfirmDelW(null)}/>
+    </div>
+  );
+}
+
 
 // ── FleetProjection form helpers (top-level to prevent focus loss) ──
 function FPField({label,children,hint}){
@@ -5841,6 +6321,7 @@ export default function App(){
   const [showUserMenu,setShowUserMenu]=useState(false);
   const [showCatMenu,setShowCatMenu]=useState(false);
   const [showProjMenu,setShowProjMenu]=useState(false);
+  const [showFinMenu,setShowFinMenu]=useState(false);
   const [selCategory,setSelCategory]=useState(null);
 
   // Apply theme globally
@@ -5999,7 +6480,10 @@ export default function App(){
   const navTabs=[
     {key:"dashboard",icon:"dashboard",label:t.nav.dashboard,color:C.blue,show:true},
     {key:"analytics", icon:"analytics", label:t.nav.analytics, color:C.teal, show:true},
-    {key:"reports",   icon:"reports",   label:role==="investor"?t.report.myReports:t.nav.reports, color:C.red, show:true},
+    {key:"finance", icon:"reports", label:lang==="fr"?"Finance":"Finance", color:C.red, show:true, hasDropdown:true, subItems:[
+      {key:"reports",  label:lang==="fr"?"Rapports":t.nav.reports,          icon:"reports"},
+      {key:"withdraw", label:lang==="fr"?"Retrait":"Withdraw",               icon:"money"},
+    ]},
     {key:"investors", icon:"investors", label:t.nav.investors,  color:C.yellow, show:true},
     {key:"users",     icon:"users",     label:t.nav.users,      color:C.purple, show:can(session,"manage_users")},
     {key:"audit",     icon:"audit",     label:t.nav.audit,      color:C.green,  show:can(session,"view_audit")},
@@ -6018,6 +6502,7 @@ export default function App(){
     investors: <Investors  data={data} setData={setData} session={session} t={t} lang={lang}/>,
     users:     can(session,"manage_users")?<UsersPanel data={data} setData={setData} session={session} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     audit:     can(session,"view_audit")?<AuditLog data={data} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
+    withdraw:  <WithdrawPage data={data} setData={setData} session={session} t={t} lang={lang}/>,
     forecast:  <Forecast data={data} setData={setData} session={session} t={t} lang={lang}/>,
     fleet_projection: <FleetProjection data={data} setData={setData} session={session} t={t} lang={lang}/>,
     category_detail: <CategoryDetail category={selCategory} lang={lang} data={data} session={session} onBack={()=>setView('dashboard')}/>,
@@ -6028,7 +6513,7 @@ export default function App(){
   const AVATAR_SRC=(data.users.find(u=>u.username===session.username)?.avatar)||DEFAULT_AVATAR;
 
   return(
-    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>{setShowCatMenu(false);setShowProjMenu(false);}}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}} onClick={()=>{setShowCatMenu(false);setShowProjMenu(false);setShowFinMenu(false);}}>
       <style>{`*{box-sizing:border-box;margin:0;padding:0;}input,select{color-scheme:${theme};}input:focus,select:focus{border-color:${C.blue}!important;outline:none;box-shadow:0 0 0 2px ${C.blue}22;}button{transition:filter .15s,background .15s;}button:not(:disabled):hover{filter:brightness(1.12);}.nav-btn:hover{background:var(--nav-color-bg)!important;color:var(--nav-color)!important;border-bottom-color:var(--nav-color)!important;filter:none!important;}.nav-btn:hover .nav-icon{color:var(--nav-color)!important;}::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:${C.surface};}::-webkit-scrollbar-thumb{background:${C.border2};border-radius:3px;}`}</style>
 
       <header style={{background:C.surface,borderBottom:`1px solid ${C.border}44`,padding:"0 18px",display:"flex",alignItems:"center",gap:14,height:54,position:"sticky",top:0,zIndex:100}}>
@@ -6041,7 +6526,7 @@ export default function App(){
         </div>
 
         <nav style={{display:"flex",gap:1,flex:1,justifyContent:"center",flexWrap:"wrap",position:"relative"}}>
-          {navTabs.map(n=>{const active=view===n.key||(n.key==="categories"&&showCatMenu)||(n.key==="projections"&&showProjMenu);
+          {navTabs.map(n=>{const active=view===n.key||(n.key==="categories"&&showCatMenu)||(n.key==="projections"&&showProjMenu)||(n.key==="finance"&&showFinMenu);
             if(n.key==="categories") return(
               <div key="categories" style={{position:"relative"}}>
                 <button onClick={e=>{e.stopPropagation();setShowCatMenu(v=>!v);}}
@@ -6081,9 +6566,32 @@ export default function App(){
                 )}
               </div>
             );
+            if(n.key==="finance") return(
+              <div key="finance" style={{position:"relative"}}>
+                <button onClick={e=>{e.stopPropagation();setShowFinMenu(v=>!v);setShowCatMenu(false);setShowProjMenu(false);}}
+                  className="nav-btn"
+                  style={{"--nav-color":C.red,"--nav-color-bg":C.red+"18",padding:"0 10px",height:36,border:"none",background:showFinMenu?C.red+"18":"transparent",color:showFinMenu?C.red:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showFinMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showFinMenu?`2px solid ${C.red}`:"2px solid transparent",transition:"all .15s"}}>
+                  <Icon name="reports" size={12} color={showFinMenu?C.red:C.muted}/>{lang==="fr"?"Finance":"Finance"}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showFinMenu?"▲":"▼"}</span>
+                </button>
+                {showFinMenu&&(
+                  <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:"6px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:200}} onClick={e=>e.stopPropagation()}>
+                    {[
+                      {key:"reports",  label:lang==="fr"?"Rapports":"Reports",  icon:"reports"},
+                      {key:"withdraw", label:lang==="fr"?"Retrait":"Withdraw",  icon:"money"},
+                    ].map(sub=>(
+                      <button key={sub.key} onClick={()=>{setView(sub.key);setShowFinMenu(false);}}
+                        style={{width:"100%",padding:"9px 16px",background:view===sub.key?C.red+"18":"transparent",border:"none",color:view===sub.key?C.red:C.text,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:view===sub.key?700:400,display:"flex",alignItems:"center",gap:8,textAlign:"left"}}>
+                        <Icon name={sub.icon} size={12} color={view===sub.key?C.red:C.muted}/>{sub.label}
+                        {view===sub.key&&<span style={{marginLeft:"auto",color:C.red,fontSize:9}}>●</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
             if(n.key==="projections") return(
               <div key="projections" style={{position:"relative"}}>
-                <button onClick={e=>{e.stopPropagation();setShowProjMenu(v=>!v);setShowCatMenu(false);}}
+                <button onClick={e=>{e.stopPropagation();setShowProjMenu(v=>!v);setShowCatMenu(false);setShowFinMenu(false);}}
                   className="nav-btn"
                   style={{"--nav-color":"#9C27B0","--nav-color-bg":"#9C27B018",padding:"0 10px",height:36,border:"none",background:showProjMenu?"#9C27B018":"transparent",color:showProjMenu?"#9C27B0":C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showProjMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showProjMenu?"2px solid #9C27B0":"2px solid transparent",transition:"all .15s"}}>
                   <Icon name="forecast" size={12} color={showProjMenu?"#9C27B0":C.muted}/>{lang==="fr"?"Projections":"Projections"}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showProjMenu?"▲":"▼"}</span>
@@ -6105,7 +6613,7 @@ export default function App(){
               </div>
             );
             return(
-            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);setShowProjMenu(false);}}
+            <button key={n.key} onClick={()=>{setView(n.key);setShowCatMenu(false);setShowProjMenu(false);setShowFinMenu(false);}}
               className="nav-btn"
               style={{"--nav-color":n.color,"--nav-color-bg":n.color+"18",padding:"0 10px",height:36,border:"none",background:active?n.color+"18":"transparent",color:active?n.color:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:active?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:active?`2px solid ${n.color}`:"2px solid transparent",transition:"all .15s"}}>
               <span className="nav-icon" style={{color:active?n.color:C.muted,display:"flex"}}><Icon name={n.icon} size={12} color={active?n.color:C.muted}/></span>{n.label}
