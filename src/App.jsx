@@ -4762,26 +4762,35 @@ function WithdrawPage({data,setData,session,t,lang}){
             <div style={{color:C.text,fontSize:13,fontWeight:700,marginBottom:14}}>
               ➕ {lang==="fr"?"Nouvelle demande de retrait":"New withdrawal request"}
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr auto",gap:10,alignItems:"end"}}>
-              {/* Payment type */}
+            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr auto",gap:10,alignItems:"end"}}>
+              {/* Single unified payment method selector from investor's saved methods */}
               <div>
                 <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Moyen de paiement":"Payment method"}</div>
-                <select value={withdrawType} onChange={e=>setWithdrawType(e.target.value)}
-                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  {TYPES.map(tp=><option key={tp.key} value={tp.key}>{tp.icon} {tp.label}</option>)}
-                </select>
-                <div style={{color:C.muted,fontSize:9,marginTop:2}}>⏱ {TYPES.find(tp=>tp.key===withdrawType)?.delay}</div>
-              </div>
-              {/* Saved payment method */}
-              <div>
-                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Compte sauvegardé":"Saved account"}</div>
-                <select value={selPayMethod} onChange={e=>setSelPayMethod(e.target.value)}
-                  style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  <option value="">{lang==="fr"?"— Sélectionner —":"— Select —"}</option>
-                  {payMethods.filter(p=>p.type===withdrawType).map(p=>(
-                    <option key={p.id} value={p.id}>{p.name||p.number}</option>
-                  ))}
-                </select>
+                {payMethods.length===0?(
+                  <div style={{background:`${C.yellow}10`,border:`1px solid ${C.yellow}33`,borderRadius:7,padding:"8px 12px",display:"flex",alignItems:"center",gap:7}}>
+                    <span style={{fontSize:13}}>⚠️</span>
+                    <span style={{color:C.yellow,fontSize:11}}>
+                      {lang==="fr"?"Ajouter un moyen de paiement dans votre page paramètres":"Add a payment method in your settings page"}
+                    </span>
+                  </div>
+                ):(
+                  <>
+                    <select value={selPayMethod} onChange={e=>{
+                        const pm=payMethods.find(p=>String(p.id)===e.target.value);
+                        setSelPayMethod(e.target.value);
+                        if(pm) setWithdrawType(pm.type);
+                      }}
+                      style={{width:"100%",background:C.bg,border:`1px solid ${selPayMethod?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                      <option value="">{lang==="fr"?"— Sélectionner un compte —":"— Select an account —"}</option>
+                      {payMethods.map(p=>{
+                        const pt=TYPES.find(t=>t.key===p.type);
+                        const detail=p.type==="bank_transfer"?(p.iban?" · IBAN: "+p.iban.slice(0,12)+"...":p.swift?" · SWIFT: "+p.swift:""):(p.phone?" · "+p.phone:"");
+                        return(<option key={p.id} value={p.id}>{pt?.icon||"💰"} {p.label||pt?.label} {p.name?"("+ p.name+")":""}{detail}</option>);
+                      })}
+                    </select>
+                    {selPayMethod&&(()=>{const pm=payMethods.find(p=>String(p.id)===String(selPayMethod));const pt=TYPES.find(t=>t.key===pm?.type);return pt?<div style={{color:C.muted,fontSize:9,marginTop:2}}>⏱ {pt.delay}</div>:null;})()}
+                  </>
+                )}
               </div>
               {/* Amount */}
               <div>
@@ -4794,60 +4803,12 @@ function WithdrawPage({data,setData,session,t,lang}){
                 )}
               </div>
               <button
-                disabled={!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit}
+                disabled={!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit}
                 onClick={submitWithdrawal}
-                style={{padding:"8px 18px",background:(!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit)?`rgba(255,255,255,0.1)`:C.green,border:"none",borderRadius:8,color:(!withdrawAmount||parseFloat(withdrawAmount)<=0)?`rgba(255,255,255,0.3)`:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
+                style={{padding:"8px 18px",background:(!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit)?`rgba(255,255,255,0.1)`:C.green,border:"none",borderRadius:8,color:(!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0)?`rgba(255,255,255,0.3)`:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
                 {lang==="fr"?"Soumettre":"Submit"}
               </button>
             </div>
-          </div>
-        )}
-
-        {/* Payment methods manager (for investor) */}
-        {(isInvestor||isAdmin)&&(
-          <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:14,marginBottom:14}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-              <span style={{color:C.text,fontSize:12,fontWeight:700}}>💳 {lang==="fr"?"Mes moyens de paiement":"Payment methods"}</span>
-              <button onClick={()=>setPayMethodModal(v=>!v)} style={{marginLeft:"auto",padding:"4px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:6,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>
-                {payMethodModal?"▲":"＋ "+( lang==="fr"?"Ajouter":"Add")}
-              </button>
-            </div>
-            {payMethodModal&&(
-              <div style={{display:"flex",gap:7,marginBottom:10,flexWrap:"wrap",alignItems:"flex-end"}}>
-                <div>
-                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>Type</div>
-                  <select value={newPayMethod.type} onChange={e=>setNewPayMethod(m=>({...m,type:e.target.value}))}
-                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                    {TYPES.map(tp=><option key={tp.key} value={tp.key}>{tp.label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>{lang==="fr"?"Numéro/Compte":"Number/Account"}</div>
-                  <input value={newPayMethod.number} onChange={e=>setNewPayMethod(m=>({...m,number:e.target.value}))} placeholder="0123456789"
-                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",width:150}}/>
-                </div>
-                <div>
-                  <div style={{color:C.muted,fontSize:8,textTransform:"uppercase",marginBottom:3}}>{lang==="fr"?"Libellé (optionnel)":"Label (optional)"}</div>
-                  <input value={newPayMethod.name} onChange={e=>setNewPayMethod(m=>({...m,name:e.target.value}))} placeholder={lang==="fr"?"Mon compte Orange":"My Orange account"}
-                    style={{background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none",width:160}}/>
-                </div>
-                <button onClick={addPayMethod} disabled={!newPayMethod.number.trim()}
-                  style={{padding:"4px 14px",background:newPayMethod.number.trim()?C.blue:"rgba(255,255,255,0.1)",border:"none",borderRadius:5,color:newPayMethod.number.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>＋</button>
-              </div>
-            )}
-            {payMethods.length===0
-              ?<div style={{color:C.muted,fontSize:11}}>{lang==="fr"?"Aucun moyen de paiement sauvegardé.":"No payment methods saved."}</div>
-              :<div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-                {payMethods.map(pm=>(
-                  <div key={pm.id} style={{display:"flex",alignItems:"center",gap:6,padding:"4px 10px",background:`${C.surface}`,border:`1px solid ${C.border}44`,borderRadius:6}}>
-                    <span style={{fontSize:13}}>{typeIcon(pm.type)}</span>
-                    <span style={{color:C.text,fontSize:11,fontWeight:600}}>{pm.name||pm.number}</span>
-                    <span style={{color:C.muted,fontSize:10}}>{typeLabel(pm.type)}</span>
-                    <button onClick={()=>removePayMethod(pm.id)} style={{width:16,height:16,borderRadius:3,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
-                  </div>
-                ))}
-              </div>
-            }
           </div>
         )}
 
