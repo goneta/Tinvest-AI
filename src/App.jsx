@@ -4629,11 +4629,17 @@ function WithdrawPage({data,setData,session,t,lang}){
   const allW=(data.withdrawals||[]).filter(w=>w.investorId===viewInvId);
   const filtered=filterStatus==="all"?allW:allW.filter(w=>w.status===filterStatus);
   const sorted=[...filtered].sort((a,b)=>{
-    let va=a[sortCol],vb=b[sortCol];
     if(sortCol==="amount"||sortCol==="status"){
+      let va=a[sortCol],vb=b[sortCol];
       if(sortCol==="status"){va=Object.keys(STATUS_LABELS).indexOf(va);vb=Object.keys(STATUS_LABELS).indexOf(vb);}
       return sortDir==="asc"?va-vb:vb-va;
     }
+    if(sortCol==="investorName"){
+      const na=(allInvestors.find(i=>i.id===a.investorId)?.name||"");
+      const nb=(allInvestors.find(i=>i.id===b.investorId)?.name||"");
+      return sortDir==="asc"?na.localeCompare(nb):nb.localeCompare(na);
+    }
+    const va=a[sortCol]||"";const vb=b[sortCol]||"";
     return sortDir==="asc"?va.localeCompare(vb):vb.localeCompare(va);
   });
 
@@ -4762,10 +4768,13 @@ function WithdrawPage({data,setData,session,t,lang}){
             <div style={{color:C.text,fontSize:13,fontWeight:700,marginBottom:14}}>
               ➕ {lang==="fr"?"Nouvelle demande de retrait":"New withdrawal request"}
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"2fr 1fr auto",gap:10,alignItems:"end"}}>
+            <div style={{display:"grid",gridTemplateColumns:"1.6fr 0.8fr auto",gap:10,alignItems:"end"}}>
               {/* Single unified payment method selector from investor's saved methods */}
               <div>
-                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Moyen de paiement":"Payment method"}</div>
+                <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}>
+                  <span style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"Moyen de paiement":"Payment method"}</span>
+                  {selPayMethod&&(()=>{const pm=payMethods.find(p=>String(p.id)===String(selPayMethod));const pt=TYPES.find(t=>t.key===pm?.type);return pt?<span style={{color:C.muted,fontSize:9,background:`${C.border}44`,borderRadius:4,padding:"1px 6px"}}>⏱ {pt.delay}</span>:null;})()}
+                </div>
                 {payMethods.length===0?(
                   <div style={{background:`${C.yellow}10`,border:`1px solid ${C.yellow}33`,borderRadius:7,padding:"8px 12px",display:"flex",alignItems:"center",gap:7}}>
                     <span style={{fontSize:13}}>⚠️</span>
@@ -4774,22 +4783,19 @@ function WithdrawPage({data,setData,session,t,lang}){
                     </span>
                   </div>
                 ):(
-                  <>
-                    <select value={selPayMethod} onChange={e=>{
-                        const pm=payMethods.find(p=>String(p.id)===e.target.value);
-                        setSelPayMethod(e.target.value);
-                        if(pm) setWithdrawType(pm.type);
-                      }}
-                      style={{width:"100%",background:C.bg,border:`1px solid ${selPayMethod?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                      <option value="">{lang==="fr"?"— Sélectionner un compte —":"— Select an account —"}</option>
-                      {payMethods.map(p=>{
-                        const pt=TYPES.find(t=>t.key===p.type);
-                        const detail=p.type==="bank_transfer"?(p.iban?" · IBAN: "+p.iban.slice(0,12)+"...":p.swift?" · SWIFT: "+p.swift:""):(p.phone?" · "+p.phone:"");
-                        return(<option key={p.id} value={p.id}>{pt?.icon||"💰"} {p.label||pt?.label} {p.name?"("+ p.name+")":""}{detail}</option>);
-                      })}
-                    </select>
-                    {selPayMethod&&(()=>{const pm=payMethods.find(p=>String(p.id)===String(selPayMethod));const pt=TYPES.find(t=>t.key===pm?.type);return pt?<div style={{color:C.muted,fontSize:9,marginTop:2}}>⏱ {pt.delay}</div>:null;})()}
-                  </>
+                  <select value={selPayMethod} onChange={e=>{
+                      const pm=payMethods.find(p=>String(p.id)===e.target.value);
+                      setSelPayMethod(e.target.value);
+                      if(pm) setWithdrawType(pm.type);
+                    }}
+                    style={{width:"100%",background:C.bg,border:`1px solid ${selPayMethod?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
+                    <option value="">{lang==="fr"?"— Sélectionner un compte —":"— Select an account —"}</option>
+                    {payMethods.map(p=>{
+                      const pt=TYPES.find(t=>t.key===p.type);
+                      const detail=p.type==="bank_transfer"?(p.iban?" · "+p.iban.slice(0,10)+"…":p.swift?" · "+p.swift:""):(p.phone?" · "+p.phone:"");
+                      return(<option key={p.id} value={p.id}>{pt?.icon||"💰"} {p.label||pt?.label}{p.name?" ("+p.name+")":""}{ detail}</option>);
+                    })}
+                  </select>
                 )}
               </div>
               {/* Amount */}
@@ -4831,6 +4837,7 @@ function WithdrawPage({data,setData,session,t,lang}){
               <thead>
                 <tr>
                   <SortTh col="date">{lang==="fr"?"Date":"Date"}</SortTh>
+                  {isAdmin&&<SortTh col="investorName">{lang==="fr"?"Investisseur":"Investor"}</SortTh>}
                   <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Type":"Type"}</th>
                   <SortTh col="amount">{lang==="fr"?"Montant":"Amount"}</SortTh>
                   <SortTh col="status">{lang==="fr"?"Statut":"Status"}</SortTh>
@@ -4840,7 +4847,7 @@ function WithdrawPage({data,setData,session,t,lang}){
               </thead>
               <tbody>
                 {sorted.length===0&&(
-                  <tr><td colSpan={6} style={{padding:"30px",textAlign:"center",color:C.muted}}>
+                  <tr><td colSpan={isAdmin?7:6} style={{padding:"30px",textAlign:"center",color:C.muted}}>
                     {lang==="fr"?"Aucune demande de retrait.":"No withdrawal requests."}
                   </td></tr>
                 )}
@@ -4852,6 +4859,11 @@ function WithdrawPage({data,setData,session,t,lang}){
                       onMouseEnter={e=>e.currentTarget.style.background="rgba(255,255,255,0.02)"}
                       onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                       <td style={{padding:"8px 10px",color:C.muted,fontSize:10,whiteSpace:"nowrap"}}>{w.date}</td>
+                      {isAdmin&&(()=>{const inv=allInvestors.find(i=>i.id===w.investorId);return(
+                        <td style={{padding:"8px 10px",maxWidth:140}}>
+                          <div style={{color:C.text,fontWeight:600,fontSize:11,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{inv?.name||"—"}</div>
+                        </td>
+                      );})()}
                       <td style={{padding:"8px 10px"}}>
                         <span style={{display:"flex",alignItems:"center",gap:5}}>
                           <span style={{fontSize:14}}>{typeIcon(w.type)}</span>
