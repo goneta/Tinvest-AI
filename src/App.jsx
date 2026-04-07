@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 // ── THEME SYSTEM ────────────────────────────────────────────────────────────────
 const DARK = {
@@ -1069,28 +1069,54 @@ Date demande      : ${fmtDateTime()}
   );
 }
 
+// ── ErrorBoundary ───────────────────────────────────────────────────────────────
+class ErrorBoundary extends React.Component {
+  constructor(props){super(props);this.state={error:null};}
+  static getDerivedStateFromError(e){return{error:e};}
+  componentDidCatch(e,info){console.error("Component error:",e,info);}
+  render(){
+    if(this.state.error){
+      return(
+        <div style={{padding:40,textAlign:"center"}}>
+          <div style={{fontSize:40,marginBottom:16}}>⚠️</div>
+          <div style={{color:"#EA4335",fontWeight:700,fontSize:16,marginBottom:8}}>Erreur de rendu</div>
+          <div style={{color:"#6b7280",fontSize:12,marginBottom:20}}>{this.state.error?.message||"Erreur inconnue"}</div>
+          <button onClick={()=>this.setState({error:null})} style={{padding:"8px 20px",background:"#4285F4",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit"}}>Réessayer</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // ── ANALYTICS PAGE ──────────────────────────────────────────────────────────────
 function Analytics({data,session,t,lang}){
-  const C=_C;const s=data.settings;
-  const reports=session.role==="investor"?data.reports.filter(r=>r.investorId===session.investorId):data.reports;
+  const C=_C;
+  const s=data?.settings||{};
+  const allReports=data?.reports||[];
+  const reports=session.role==="investor"?allReports.filter(r=>r.investorId===session.investorId):allReports;
   const calcs=reports.map(r=>({...r,...calcReport(r)}));
   const [extraInv,setExtraInv]=useState(0);
-  const [cmpA,setCmpA]=useState(reports[reports.length-2]?.id||reports[0]?.id);
-  const [cmpB,setCmpB]=useState(reports[reports.length-1]?.id);
+  const [cmpA,setCmpA]=useState(reports[reports.length-2]?.id||reports[0]?.id||null);
+  const [cmpB,setCmpB]=useState(reports[reports.length-1]?.id||null);
 
-  // Profit curve data
-  const lineData=calcs.map(r=>({label:r.label.substring(0,8),value:r.newInvestment}));
-  const profitLine=calcs.map(r=>({label:r.label.substring(0,8),value:r.netProfit}));
+  // Profit curve data — guard against undefined labels
+  const safeLabel=(r,n)=>(r?.label||"").substring(0,n)||"—";
+  const lineData=calcs.map(r=>({label:safeLabel(r,8),value:r.newInvestment||0}));
+  const profitLine=calcs.map(r=>({label:safeLabel(r,8),value:r.netProfit||0}));
   // Revenue vs Expenses bar data
-  const barData=calcs.map(r=>({label:r.label.substring(0,7),rev:r.totalRevenue,exp:r.totalExpenses}));
+  const barData=calcs.map(r=>({label:safeLabel(r,7),rev:r.totalRevenue||0,exp:r.totalExpenses||0}));
   // Expenses pie
   const expCats={};
-  reports.forEach(r=>{r.activities.forEach(a=>{if(a.expenses>0){expCats[a.category]=(expCats[a.category]||0)+a.expenses;}});r.additionalExpenses.forEach(e=>{expCats[e.label.substring(0,15)]=(expCats[e.label.substring(0,15)]||0)+e.amount;});});
+  reports.forEach(r=>{
+    (r.activities||[]).forEach(a=>{if((a.expenses||0)>0){expCats[a.category||"?"]=(expCats[a.category||"?"]||0)+a.expenses;}});
+    (r.additionalExpenses||[]).forEach(e=>{if(e?.label){const k=e.label.substring(0,15);expCats[k]=(expCats[k]||0)+(e.amount||0);}});
+  });
   const pieColors=["#4285F4","#EA4335","#FBBC05","#34A853","#9C27B0","#FF5722","#00BCD4"];
   const pieData=Object.entries(expCats).map(([label,value],i)=>({label,value,color:pieColors[i%pieColors.length]}));
 
   // Projection
-  const avgRate=calcs.length?calcs.reduce((s,r)=>s+(r.netProfit/r.openingInvestment),0)/calcs.length:0.05;
+  const avgRate=calcs.length?calcs.reduce((s,r)=>s+(r.openingInvestment>0?(r.netProfit||0)/(r.openingInvestment):0),0)/calcs.length:0.05;
   const baseInv=calcs.length?calcs[calcs.length-1].newInvestment:0;
   const projInv=baseInv+parseFloat(extraInv||0);
   const projProfit6=(projInv*avgRate*6).toFixed(0);
@@ -1107,15 +1133,7 @@ function Analytics({data,session,t,lang}){
   <h1 style="color:white;font-size:22px;margin:0"><span style="color:#4285F4">Th</span><span style="color:#EA4335">un</span><span style="color:#FBBC05">der</span><span style="color:#34A853">fam</span> Investment</h1>
   <p style="color:rgba(255,255,255,0.7);margin:6px 0 0;font-size:12px">${t.analytics.emailSummary} — ${fmtDate()}</p>
 </div>
-<div style="padding:28px;">${calcs.slice(-3).map(r=>`
-<div style="background:#f8f9ff;border-radius:8px;padding:16px;margin-bottom:12px;border-left:4px solid #4285F4;">
-  <div style="font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:10px;">${r.label}</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px;text-align:center;">
-    <div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">${t.activity.revenue}</div><div style="color:#34A853;font-weight:700">${fmtNum(r.totalRevenue)} F</div></div>
-    <div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">${t.activity.expenses}</div><div style="color:#EA4335;font-weight:700">${fmtNum(r.totalExpenses)} F</div></div>
-    <div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">${t.report.netProfit}</div><div style="color:#FBBC05;font-weight:700">${fmtNum(r.netProfit)} F</div></div>
-  </div>
-</div>`).join("")}
+<div style="padding:28px;">${calcs.slice(-3).map(r=>'<div style="background:#f8f9ff;border-radius:8px;padding:16px;margin-bottom:12px;border-left:4px solid #4285F4;"><div style="font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:10px;">'+(r.label||'—')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px;text-align:center;"><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.revenue+'</div><div style="color:#34A853;font-weight:700">'+fmtNum(r.totalRevenue)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.expenses+'</div><div style="color:#EA4335;font-weight:700">'+fmtNum(r.totalExpenses)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.report.netProfit+'</div><div style="color:#FBBC05;font-weight:700">'+fmtNum(r.netProfit)+' F</div></div></div></div>').join("")}
 </div>
 <div style="background:#f0f4ff;padding:16px;text-align:center;font-size:10px;color:#888;">© 2026 Thunderfam Investment — Côte d'Ivoire</div>
 </div></body></html>`;
@@ -1175,8 +1193,8 @@ function Analytics({data,session,t,lang}){
       {/* Period comparison */}
       <Section title={t.analytics.compare} icon="analytics" color={C.purple}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-          <DDrop label={t.analytics.period1} value={cmpA} onChange={setCmpA} options={reports.map(r=>({value:r.id,label:r.label.substring(0,18)}))}/>
-          <DDrop label={t.analytics.period2} value={cmpB} onChange={setCmpB} options={reports.map(r=>({value:r.id,label:r.label.substring(0,18)}))}/>
+          <DDrop label={t.analytics.period1} value={cmpA} onChange={setCmpA} options={reports.map(r=>({value:r.id,label:(r.label||'—').substring(0,18)}))}/>
+          <DDrop label={t.analytics.period2} value={cmpB} onChange={setCmpB} options={reports.map(r=>({value:r.id,label:(r.label||'—').substring(0,18)}))}/>
         </div>
         {cA&&cB&&(<>
           {diffPct!==null&&(
@@ -6646,9 +6664,9 @@ export default function App(){
   ].filter(n=>n.show);
 
   const views={
-    dashboard: <Dashboard  data={data} session={session} t={t}/>,
-    analytics: <Analytics  data={data} session={session} t={t} lang={lang}/>,
-    reports:   <Reports    data={data} setData={setData} session={session} t={t} lang={lang}/>,
+    dashboard: <ErrorBoundary><Dashboard  data={data} session={session} t={t}/></ErrorBoundary>,
+    analytics: <ErrorBoundary><Analytics  data={data} session={session} t={t} lang={lang}/></ErrorBoundary>,
+    reports:   <ErrorBoundary><Reports    data={data} setData={setData} session={session} t={t} lang={lang}/></ErrorBoundary>,
     investors: <Investors  data={data} setData={setData} session={session} t={t} lang={lang}/>,
     users:     can(session,"manage_users")?<UsersPanel data={data} setData={setData} session={session} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
     audit:     can(session,"view_audit")?<AuditLog data={data} t={t}/>:<div style={{padding:40,textAlign:"center",color:C.red}}>{t.accessDenied}</div>,
