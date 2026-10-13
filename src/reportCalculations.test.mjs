@@ -58,3 +58,19 @@ test('reconciliation is idempotent and handles empty history',()=>{
   assert.equal(reconcileReportCapital(fixed),fixed);
   assert.equal(calcReport(fixed.reports[1]).newInvestment,1000);
 });
+
+test('every next opening equals previous new investment after repeated edits and reload',()=>{
+  let data={reports:[report('june',18993340,0),report('other-june',5000,100,2),report('july',18993340,200000),report('august',19193340,300000),report('other-july',5100,50,2)]};
+  for(const juneProfit of [-1050000,250000,-20000000,0]){
+    data=reconcileReportCapital({...data,reports:data.reports.map(r=>r.id==='june'?{...r,activities:[{revenue:juneProfit}]}:r)});
+    data=reconcileReportCapital(JSON.parse(JSON.stringify(data)));
+    const previousByInvestor=new Map();
+    for(const current of data.reports){
+      const previous=previousByInvestor.get(current.investorId);
+      if(previous)assert.equal(current.openingInvestment,calcReport(previous).newInvestment);
+      previousByInvestor.set(current.investorId,current);
+    }
+    assert.equal(data.reports[1].openingInvestment,5000);
+    assert.equal(data.reports[4].openingInvestment,5100);
+  }
+});
