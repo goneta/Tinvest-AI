@@ -171,6 +171,10 @@ function calcReport(r){
   const newInvestment=r.openingInvestment+netProfit;
   return{totalRevenue,totalInvested,actExp,addExp,totalExpenses,netProfit,newInvestment};
 }
+function getNextOpeningInvestment(reports,investorId){
+  const previous=reports.findLast(r=>r.investorId===investorId);
+  return previous?calcReport(previous).newInvestment:0;
+}
 function getCurrencyLines(n,settings){
   return ALL_CURRENCIES
     .filter(c=>(settings.selectedCurrencies||[]).includes(c.code))
@@ -1498,6 +1502,8 @@ function Reports({data,setData,session,t,lang}){
   };
   const partnerCompanies=(data.settings.partnerCompanies||[]).map(c=>typeof c==="string"?c:c.name);
   const report=data.reports.find(r=>r.id===selId);
+  const newReportInvestorId=session.investorId??report?.investorId??1;
+  const nextOpeningInvestment=getNextOpeningInvestment(data.reports,newReportInvestorId);
   const calc=report?calcReport(report):null;
   const locked=report?.status==="closed";
   const canEdit=can(session,"add_activity")&&!locked;
@@ -1538,7 +1544,18 @@ function Reports({data,setData,session,t,lang}){
   const startEditExp=e=>{setExpDraft({...e});setEditExpId(e.id);};
   const saveExp=()=>{setData(d=>({...d,reports:d.reports.map(r=>{if(r.id!==selId)return r;const exps=editExpId==="new"?[...r.additionalExpenses,{...expDraft,id:Date.now()}]:r.additionalExpenses.map(e=>e.id===editExpId?expDraft:e);return{...r,additionalExpenses:exps};})}));setEditExpId(null);setExpDraft(null);};
   const delExp=id=>{setData(d=>({...d,reports:d.reports.map(r=>r.id===selId?{...r,additionalExpenses:r.additionalExpenses.filter(e=>e.id!==id)}:r)}));};
-  const createRep=()=>{if(!newRepLabel)return;const last=data.reports[data.reports.length-1];const opening=last?calcReport(last).newInvestment:0;const id=`rep-${Date.now()}`;setData(d=>({...d,reports:[...d.reports,{id,label:newRepLabel,investorId:session.investorId||1,openingInvestment:opening,activities:[],additionalExpenses:[],status:"open",signatures:[],shareToken:null}]}));addAudit(setData,session,"Rapport créé",newRepLabel,"create");addNotification(setData,`Nouveau rapport : ${newRepLabel}`,"info");setSelId(id);setAddingRep(false);setNewRepLabel("");};
+  const createRep=()=>{
+    if(!newRepLabel.trim())return;
+    const id=`rep-${Date.now()}`;
+    setData(d=>({...d,reports:[...d.reports,{
+      id,label:newRepLabel,investorId:newReportInvestorId,
+      openingInvestment:getNextOpeningInvestment(d.reports,newReportInvestorId),
+      activities:[],additionalExpenses:[],status:"open",signatures:[],shareToken:null
+    }]}));
+    addAudit(setData,session,"Rapport créé",newRepLabel,"create");
+    addNotification(setData,`Nouveau rapport : ${newRepLabel}`,"info");
+    setSelId(id);setAddingRep(false);setNewRepLabel("");
+  };
 
   // Signature
   const alreadySigned=report?.signatures?.some(sg=>sg.user===session.username);
@@ -2090,7 +2107,7 @@ function Reports({data,setData,session,t,lang}){
     </>)}
 
     {lockModal&&<Modal title={t.lock.title} icon="lock" onClose={()=>setLockModal(false)}><div style={{background:"rgba(127,29,29,0.2)",border:"1px solid rgba(239,68,68,0.3)",borderRadius:7,padding:12,marginBottom:14,display:"flex",gap:10}}><Icon name="warning" size={15} color={_C.red}/><p style={{color:_C.dim,fontSize:13,margin:0}}>{t.lock.msg}</p></div><Field label={t.lock.password} value={lockPwd} onChange={setLockPwd} type="password"/>{lockErr&&<div style={{color:_C.red,fontSize:12,marginBottom:10}}>{lockErr}</div>}<div style={{display:"flex",gap:8}}><Btn onClick={doLock} icon="check">{t.lock.confirm}</Btn><Btn onClick={()=>setLockModal(false)} variant="ghost">{t.lock.cancel}</Btn></div></Modal>}
-    {addingRep&&<Modal title={t.report.openReport} icon="reports" onClose={()=>setAddingRep(false)}><Field label={t.report.newLabel} value={newRepLabel} onChange={setNewRepLabel}/><div style={{background:_C.surface,borderRadius:7,padding:10,marginBottom:14,border:`1px solid ${_C.border2}`,fontSize:12}}><span style={{color:_C.muted}}>{t.report.openingCapital}: </span><span style={{color:_C.yellow,fontWeight:700}}>{fmtNum(data.reports.length>0?calcReport(data.reports[data.reports.length-1]).newInvestment:0)} F CFA</span></div><div style={{display:"flex",gap:8}}><Btn onClick={createRep} icon="check">{t.confirm}</Btn><Btn onClick={()=>setAddingRep(false)} variant="ghost">{t.activity.cancel}</Btn></div></Modal>}
+    {addingRep&&<Modal title={t.report.openReport} icon="reports" onClose={()=>setAddingRep(false)}><Field label={t.report.newLabel} value={newRepLabel} onChange={setNewRepLabel}/><div style={{background:_C.surface,borderRadius:7,padding:10,marginBottom:14,border:`1px solid ${_C.border2}`,fontSize:12}}><span style={{color:_C.muted}}>{t.report.openingCapital}: </span><span style={{color:_C.yellow,fontWeight:700}}>{fmtNum(nextOpeningInvestment)} F CFA</span></div><div style={{display:"flex",gap:8}}><Btn onClick={createRep} icon="check">{t.confirm}</Btn><Btn onClick={()=>setAddingRep(false)} variant="ghost">{t.activity.cancel}</Btn></div></Modal>}
     {shareModal&&<Modal title={t.shareLink} icon="share" iconColor={_C.teal} onClose={()=>setShareModal(false)}>
       <div style={{background:`${_C.teal}11`,border:`1px solid ${_C.teal}33`,borderRadius:8,padding:14,marginBottom:14}}>
         <div style={{color:_C.muted,fontSize:10,marginBottom:6,textTransform:"uppercase",fontWeight:700}}>{t.linkExpires}</div>
