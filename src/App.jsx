@@ -1,3 +1,4 @@
+import { calcReport, getNextOpeningInvestment, reconcileReportCapital } from "./reportCalculations.js";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
 // ── THEME SYSTEM ────────────────────────────────────────────────────────────────
@@ -161,20 +162,6 @@ const fmtNum=n=>new Intl.NumberFormat("fr-FR").format(Math.round(n));
 const fmtDate=(d=new Date())=>{const dt=d instanceof Date?d:new Date(d);return`${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}/${dt.getFullYear()}`;};
 const fmtDateTime=(d=new Date())=>{const dt=d instanceof Date?d:new Date(d);return`${fmtDate(dt)} ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`;};
 const cvt=(n,rate,sym)=>sym+(n/rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",");
-function calcReport(r){
-  const totalRevenue=r.activities.reduce((s,a)=>s+(a.revenue||0),0);
-  const totalInvested=r.activities.reduce((s,a)=>s+(a.invested||0),0);
-  const actExp=r.activities.reduce((s,a)=>s+(a.expenses||0),0);
-  const addExp=r.additionalExpenses.reduce((s,e)=>s+(e.amount||0),0);
-  const totalExpenses=actExp+addExp;
-  const netProfit=totalRevenue-totalInvested-totalExpenses;
-  const newInvestment=r.openingInvestment+netProfit;
-  return{totalRevenue,totalInvested,actExp,addExp,totalExpenses,netProfit,newInvestment};
-}
-function getNextOpeningInvestment(reports,investorId){
-  const previous=reports.findLast(r=>r.investorId===investorId);
-  return previous?calcReport(previous).newInvestment:0;
-}
 function getCurrencyLines(n,settings){
   return ALL_CURRENCIES
     .filter(c=>(settings.selectedCurrencies||[]).includes(c.code))
@@ -6499,7 +6486,13 @@ export default function App(){
   const [sbCfg,setSbCfg]=useState(()=>getSbConfig()); // null = not configured
   const [dbReady,setDbReady]=useState(false);   // true once data loaded from DB
   const [dbStatus,setDbStatus]=useState("idle"); // "loading"|"saving"|"error"|"ok"
-  const [data,setData]=useState(INIT);
+  const [data,setRawData]=useState(()=>reconcileReportCapital(INIT));
+  // Reconcile both loaded snapshots and edits before rendering or persistence.
+  const setData=useCallback(update=>{
+    setRawData(previous=>reconcileReportCapital(
+      typeof update==="function"?update(previous):update
+    ));
+  },[]);
   const [session,setSession]=useState(null);
   const [view,setView]=useState("dashboard");
   const [showNotif,setShowNotif]=useState(false);
