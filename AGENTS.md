@@ -100,8 +100,9 @@ Default section order:
 
 ## Report Interactions
 
+- Double-clicking a noninteractive activity cell starts the existing inline editor when editing is permitted and the report is open. Enter in Date, Description, Invested, Revenue, or Expenses saves through the same handler as the green check; IME composition does not submit.
 - Activity rows use the same subtle gray background for hover and click selection, scoped to report/activity IDs. Keyboard Enter/Space also selects; reduced-motion preferences disable the transition.
-- Report tabs stay on one horizontally scrollable row and do not shrink.
+- Report tabs stay on one horizontally scrollable row and do not shrink. Hover uses the same accent color, background, bold text, and left border as selection.
 - `src/reportTitles.js` translates fully recognized French/English month and report titles at display time. Unknown wording retains the complete original title. Editing always uses the original stored text.
 - `src/reportInteractions.css` owns scoped row and report-tab styles.
 

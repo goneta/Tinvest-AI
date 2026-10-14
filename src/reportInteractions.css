@@ -4,3 +4,7 @@
 .report-title-strip > button { white-space: nowrap; }
 .report-title-strip { scrollbar-width: thin; scrollbar-color: #94a3b8 transparent; }
 @media (prefers-reduced-motion: reduce) { .activity-row { transition: none; } }
+
+.report-title-tab { background: transparent; color: var(--tab-muted); font-weight: 400; border-left: 3px solid transparent !important; }
+.report-title-tab:hover, .report-title-tab[data-active="true"] { background: var(--tab-background); color: var(--tab-accent); font-weight: 700; border-left-color: var(--tab-accent) !important; }
+@media (prefers-reduced-motion: reduce) { .report-title-tab { transition: none !important; } }

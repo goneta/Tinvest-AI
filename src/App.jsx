@@ -469,10 +469,10 @@ function Amt({n,settings,color,size=12,right=true}){
     {lines.map(l=><div key={l.code} style={{color:col,fontSize:size,fontWeight:700,whiteSpace:"nowrap",lineHeight:1.45}}>{l.value}</div>)}
   </div>);
 }
-function EditCell({value,onChange,type="text",options,optionLabels,style={}}){
+function EditCell({value,onChange,type="text",options,optionLabels,style={},onCommit}){
   const C=_C;
   if(options)return(<select value={value} onChange={e=>onChange(e.target.value)} style={{background:C.surface,border:`1px solid ${C.border2}`,borderRadius:5,padding:"3px 6px",color:C.text,fontSize:11,width:"100%",...style}}>{options.map((o,i)=><option key={o} value={o}>{optionLabels?optionLabels[i]||o:o}</option>)}</select>);
-  return(<input type={type} value={value??""} onChange={e=>onChange(type==="number"?parseFloat(e.target.value)||0:e.target.value)} style={{background:C.surface,border:`1px solid ${C.border2}`,borderRadius:5,padding:"3px 6px",color:C.text,fontSize:11,width:"100%",textAlign:type==="number"?"right":"left",...style}}/>);
+  return(<input onKeyDown={e=>{if(onCommit&&e.key==="Enter"&&!e.nativeEvent.isComposing){e.preventDefault();e.stopPropagation();onCommit();}}} type={type} value={value??""} onChange={e=>onChange(type==="number"?parseFloat(e.target.value)||0:e.target.value)} style={{background:C.surface,border:`1px solid ${C.border2}`,borderRadius:5,padding:"3px 6px",color:C.text,fontSize:11,width:"100%",textAlign:type==="number"?"right":"left",...style}}/>);
 }
 
 // ── PROGRESS BAR ────────────────────────────────────────────────────────────────
@@ -1542,6 +1542,7 @@ function Reports({data,setData,session,t,lang}){
   };
   const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||t.categories)[0],company:"",truckType:"own",contractType:"own_contract",description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[],roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000,rentalTruckVal:0});setEditActId("new");};
   const saveAct=()=>{
+    if(!canEdit||!actDraft)return;
     const profit=(actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0);
     const finalAct={...actDraft,profit};
     setData(d=>({...d,reports:d.reports.map(r=>{if(r.id!==selId)return r;const acts=editActId==="new"?[...r.activities,{...finalAct,id:Date.now()}]:r.activities.map(a=>a.id===editActId?finalAct:a);return{...r,activities:acts};})}));
@@ -1653,10 +1654,10 @@ function Reports({data,setData,session,t,lang}){
                 <Icon name="check" size={17} color={C.green}/>
               </button>
             </form>
-          ):(<button key={r.id} onClick={()=>{setSelId(r.id);setEditingTitleId(null);}} onDoubleClick={()=>startRenameReport(r)}
+          ):(<button className="report-title-tab" data-active={active} key={r.id} onClick={()=>{setSelId(r.id);setEditingTitleId(null);}} onDoubleClick={()=>startRenameReport(r)}
             onKeyDown={e=>{if(e.key==="F2"&&canRenameReport){e.preventDefault();startRenameReport(r);}}}
             title={canRenameReport?(lang==="fr"?"Double-cliquez pour modifier le titre (F2)":"Double-click to edit the title (F2)"):undefined}
-            style={{padding:"6px 12px",borderRadius:7,border:"none",background:active?col+"20":"transparent",color:active?col:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:active?700:400,borderLeft:active?`3px solid ${col}`:"3px solid transparent",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
+            style={{padding:"6px 12px",borderRadius:7,border:"none","--tab-accent":col,"--tab-background":col+"20","--tab-muted":C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
             <span>{translateReportTitle(r.label,lang)}</span>
             {active&&<span style={{fontSize:9,color:col,fontWeight:600}}>{t.activity.profit}: +{fmtNum(lc.netProfit)} F</span>}
           </button>)
@@ -1906,23 +1907,24 @@ function Reports({data,setData,session,t,lang}){
               <tr key={a.id} className="activity-row" tabIndex={0}
                 data-selected={selectedActivity?.reportId===report.id&&selectedActivity?.activityId===a.id}
                 onClick={()=>setSelectedActivity({reportId:report.id,activityId:a.id})}
+                onDoubleClick={e=>{if(canEdit&&!editing&&!e.target.closest("button,input,select,a")){startEditAct(a);}}}
                 onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==="Enter"||e.key===" ")){e.preventDefault();setSelectedActivity({reportId:report.id,activityId:a.id});}}}
                 style={{borderBottom:`1px solid ${C.border}44`,verticalAlign:"top","--row-base":editing?C.surface+"88":"transparent","--row-highlight":"rgba(148,163,184,0.16)"}}>
                 {editing?(<>
-                  <td style={{padding:"4px 5px",minWidth:110}}><EditCell value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/></td>
+                  <td style={{padding:"4px 5px",minWidth:110}}><EditCell onCommit={saveAct} value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/></td>
                   <td style={{padding:"4px 5px",minWidth:140}}><EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
                   <td style={{padding:"4px 5px",minWidth:160}}><EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))} options={["", ...partnerCompanies]} optionLabels={[lang==="fr"?"— Société —":"— Company —",...partnerCompanies]}/></td>
                   <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.truckType||"own"} onChange={v=>setActDraft(d=>({...d,truckType:v,rentalTruckVal:v==="rental"?d.rentalTruckVal:0}))} options={["own","rental"]} optionLabels={["Own Truck","Rental Truck"]}/></td>
                   <td style={{padding:"4px 5px",minWidth:130}}><EditCell value={actDraft.contractType||"own_contract"} onChange={v=>setActDraft(d=>({...d,contractType:v,commission:v==="sub_contract"?100000:0}))} options={["own_contract","sub_contract"]} optionLabels={["Own Contract","Sub Contract"]}/></td>
-                  <td style={{padding:"4px 5px",minWidth:180}}><EditCell value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
+                  <td style={{padding:"4px 5px",minWidth:180}}><EditCell onCommit={saveAct} value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
                   <td style={{padding:"4px 5px",minWidth:130}}>
                     <div style={{display:"flex",gap:3,alignItems:"center"}}>
-                      <div style={{flex:1}}><EditCell value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/></div>
+                      <div style={{flex:1}}><EditCell onCommit={saveAct} value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/></div>
                       <button onClick={()=>openInvestModal(actDraft)} title={lang==="fr"?"Calculer":"Calc"} style={{width:24,height:26,background:`${C.yellow}22`,border:`1px solid ${C.yellow}44`,borderRadius:5,color:C.yellow,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
                     </div>
                   </td>
-                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/></td>
-                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.expenses} onChange={v=>setActDraft(d=>({...d,expenses:parseFloat(v)||0}))} type="number"/></td>
+                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell onCommit={saveAct} value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/></td>
+                  <td style={{padding:"4px 5px",minWidth:120}}><EditCell onCommit={saveAct} value={actDraft.expenses} onChange={v=>setActDraft(d=>({...d,expenses:parseFloat(v)||0}))} type="number"/></td>
                   <td style={{padding:"4px 5px",textAlign:"right",minWidth:100}}><span style={{color:C.green,fontWeight:700}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span></td>
                   <td style={{padding:"4px 5px"}}><div style={{display:"flex",gap:3}}><Btn onClick={saveAct} variant="green" small><Icon name="check" size={10} color="#fff"/></Btn><Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small><Icon name="close" size={10} color={C.muted}/></Btn></div></td>
                 </>):(<>
