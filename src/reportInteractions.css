@@ -1,0 +1,6 @@
+.activity-row { background: var(--row-base); transition: background-color 160ms ease; cursor: pointer; }
+.activity-row:hover, .activity-row[data-selected="true"], .activity-row:focus-visible { background: var(--row-highlight); }
+.report-title-strip > * { flex-shrink: 0; }
+.report-title-strip > button { white-space: nowrap; }
+.report-title-strip { scrollbar-width: thin; scrollbar-color: #94a3b8 transparent; }
+@media (prefers-reduced-motion: reduce) { .activity-row { transition: none; } }

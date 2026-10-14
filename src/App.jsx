@@ -1,3 +1,5 @@
+import { translateReportTitle } from "./reportTitles.js";
+import "./reportInteractions.css";
 import { calcReport, getNextOpeningInvestment, reconcileReportCapital } from "./reportCalculations.js";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 
@@ -1444,6 +1446,7 @@ function Reports({data,setData,session,t,lang}){
   const [selId,setSelId]=useState(visibleReports[visibleReports.length-1]?.id);
   const [lockModal,setLockModal]=useState(false);const [lockPwd,setLockPwd]=useState("");const [lockErr,setLockErr]=useState("");const [lockTarget,setLockTarget]=useState(null);
   const [addingRep,setAddingRep]=useState(false);const [newRepLabel,setNewRepLabel]=useState("");
+  const [selectedActivity,setSelectedActivity]=useState(null);
   const [editingTitleId,setEditingTitleId]=useState(null);
   const [titleDraft,setTitleDraft]=useState("");
   const canRenameReport=can(session,"create_report");
@@ -1637,7 +1640,7 @@ function Reports({data,setData,session,t,lang}){
     {visibleReports.length===0&&<div style={{textAlign:"center",padding:40,color:C.muted}}>{t.report.noReports}</div>}
 
     {visibleReports.length>0&&(
-      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14,background:C.surface,padding:5,borderRadius:10,border:`1px solid ${C.border}44`}}>
+      <div className="report-title-strip" role="navigation" aria-label={t.report.title} style={{display:"flex",gap:4,flexWrap:"nowrap",overflowX:"auto",minWidth:0,maxWidth:"100%",marginBottom:14,background:C.surface,padding:5,borderRadius:10,border:`1px solid ${C.border}44`}}>
         {visibleReports.map((r,i)=>{const col=tabColors[i%4];const active=selId===r.id;const lc=calcReport(r);return(
           editingTitleId===r.id&&canRenameReport?(
             <form key={r.id} onSubmit={saveReportTitle} style={{position:"relative",padding:"6px 38px 6px 9px",borderRadius:7,background:col+"20",borderLeft:`3px solid ${col}`,maxWidth:"100%",boxSizing:"border-box"}}>
@@ -1654,7 +1657,7 @@ function Reports({data,setData,session,t,lang}){
             onKeyDown={e=>{if(e.key==="F2"&&canRenameReport){e.preventDefault();startRenameReport(r);}}}
             title={canRenameReport?(lang==="fr"?"Double-cliquez pour modifier le titre (F2)":"Double-click to edit the title (F2)"):undefined}
             style={{padding:"6px 12px",borderRadius:7,border:"none",background:active?col+"20":"transparent",color:active?col:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:active?700:400,borderLeft:active?`3px solid ${col}`:"3px solid transparent",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
-            <span>{r.label}</span>
+            <span>{translateReportTitle(r.label,lang)}</span>
             {active&&<span style={{fontSize:9,color:col,fontWeight:600}}>{t.activity.profit}: +{fmtNum(lc.netProfit)} F</span>}
           </button>)
         );})}
@@ -1900,7 +1903,11 @@ function Reports({data,setData,session,t,lang}){
               <TH/>
             </tr></thead>
             <tbody>{report.activities.map(a=>{const editing=editActId===a.id&&actDraft;return(
-              <tr key={a.id} style={{borderBottom:`1px solid ${C.border}44`,background:editing?C.surface+"88":"transparent",verticalAlign:"top"}}>
+              <tr key={a.id} className="activity-row" tabIndex={0}
+                data-selected={selectedActivity?.reportId===report.id&&selectedActivity?.activityId===a.id}
+                onClick={()=>setSelectedActivity({reportId:report.id,activityId:a.id})}
+                onKeyDown={e=>{if(e.target===e.currentTarget&&(e.key==="Enter"||e.key===" ")){e.preventDefault();setSelectedActivity({reportId:report.id,activityId:a.id});}}}
+                style={{borderBottom:`1px solid ${C.border}44`,verticalAlign:"top","--row-base":editing?C.surface+"88":"transparent","--row-highlight":"rgba(148,163,184,0.16)"}}>
                 {editing?(<>
                   <td style={{padding:"4px 5px",minWidth:110}}><EditCell value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/></td>
                   <td style={{padding:"4px 5px",minWidth:140}}><EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
@@ -2114,7 +2121,7 @@ function Reports({data,setData,session,t,lang}){
       {/* Summary */}
       <Card accent={C.yellow} style={{padding:20}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><Icon name="check" size={13} color={C.yellow}/><span style={{color:C.yellow,fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.report.summary} — {report.label}</span></div>
+          <div style={{display:"flex",alignItems:"center",gap:8}}><Icon name="check" size={13} color={C.yellow}/><span style={{color:C.yellow,fontSize:12,fontWeight:800,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.report.summary} — {translateReportTitle(report.label,lang)}</span></div>
           {can(session,"print")&&<Btn onClick={()=>doCertificate(data.investors.find(i=>i.id===report.investorId)||data.investors[0],data.reports.filter(r=>r.investorId===report.investorId),s,lang)} variant="orange" icon="certificate" small>{t.report.myCerts}</Btn>}
         </div>
         {[[t.report.openingCapital,report.openingInvestment,C.muted],[t.report.totalRevenue,calc.totalRevenue,C.blue],[t.report.totalExpenses,calc.totalExpenses,C.red],[t.report.netProfit,calc.netProfit,C.green],[t.report.newInvestment,calc.newInvestment,C.yellow]].map(([label,val,color])=>(

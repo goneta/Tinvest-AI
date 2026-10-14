@@ -98,6 +98,13 @@ Default section order:
 - Enter or the green check button saves the trimmed, nonempty title through root `setData` and records an audit entry. Escape cancels; selecting another tab discards the draft.
 - Renaming preserves report IDs, period order, investor ownership, and financial data; it does not change capital calculations.
 
+## Report Interactions
+
+- Activity rows use the same subtle gray background for hover and click selection, scoped to report/activity IDs. Keyboard Enter/Space also selects; reduced-motion preferences disable the transition.
+- Report tabs stay on one horizontally scrollable row and do not shrink.
+- `src/reportTitles.js` translates fully recognized French/English month and report titles at display time. Unknown wording retains the complete original title. Editing always uses the original stored text.
+- `src/reportInteractions.css` owns scoped row and report-tab styles.
+
 ## User Preferences and Work Guidance
 
 - Read the applicable DOX chain before editing; update it after behavior or workflow changes.
@@ -108,7 +115,7 @@ Default section order:
 
 ## Verification
 
-- `npm test`: financial regression tests, including June/July repair, propagation through following reports, investor isolation, and zero/negative balances.
+- `npm test`: title translation/fallback tests and financial regression tests, including June/July repair, propagation through following reports, investor isolation, and zero/negative balances.
 - `npm run build`: Vite production build; install locked dependencies with `npm ci` when needed. Report a blocked build honestly.
 - `npm run lint`: repository ESLint check; distinguish existing violations from changes introduced by the task.
 - `git diff --check`: whitespace validation before committing.
