@@ -1,3 +1,4 @@
+import {translateData} from './localization.js';
 const pairs = [
   ['janvier','January'], ['février','February'], ['mars','March'], ['avril','April'],
   ['mai','May'], ['juin','June'], ['juillet','July'], ['août','August'],
@@ -11,7 +12,8 @@ const dictionaries = Object.fromEntries(['fr','en'].map(lang=>[lang,new Map(pair
 
 // Translate only fully recognized titles; never change stored user text.
 export function translateReportTitle(title,lang){
-  if(typeof title!=='string'||!dictionaries[lang])return title;
+  if(typeof title!=='string')return title;
+  if(!dictionaries[lang])return translateData(title,lang);
   const dictionary=dictionaries[lang];
   const phrases=[...dictionary.keys()].sort((a,b)=>b.length-a.length);
   const pattern=new RegExp(phrases.join('|')+'|[\\p{L}]+','giu');

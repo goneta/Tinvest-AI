@@ -1,0 +1,3062 @@
+{
+  "text0001": {
+    "fr": "Tableau de Bord",
+    "en": "Dashboard"
+  },
+  "text0002": {
+    "fr": "Rapports",
+    "en": "Reports"
+  },
+  "text0003": {
+    "fr": "Analyses",
+    "en": "Analytics"
+  },
+  "text0004": {
+    "fr": "Investisseurs",
+    "en": "Investors"
+  },
+  "text0005": {
+    "fr": "Utilisateurs",
+    "en": "Users"
+  },
+  "text0006": {
+    "fr": "Journal d'Audit",
+    "en": "Audit Log"
+  },
+  "text0007": {
+    "fr": "Catégories",
+    "en": "Categories"
+  },
+  "text0008": {
+    "fr": "Projections",
+    "en": "Forecast"
+  },
+  "text0009": {
+    "fr": "Paramètres",
+    "en": "Settings"
+  },
+  "text0010": {
+    "fr": "Connexion",
+    "en": "Login"
+  },
+  "text0011": {
+    "fr": "Utilisateur",
+    "en": "Username"
+  },
+  "text0012": {
+    "fr": "Mot de passe",
+    "en": "Password"
+  },
+  "text0013": {
+    "fr": "Se connecter",
+    "en": "Sign In"
+  },
+  "text0014": {
+    "fr": "Identifiants incorrects.",
+    "en": "Invalid credentials."
+  },
+  "text0015": {
+    "fr": "Inscription Investisseur",
+    "en": "Investor Registration"
+  },
+  "text0016": {
+    "fr": "Déconnexion",
+    "en": "Logout"
+  },
+  "text0017": {
+    "fr": "Inscription",
+    "en": "Register"
+  },
+  "text0018": {
+    "fr": "Nom complet",
+    "en": "Full Name"
+  },
+  "text0019": {
+    "fr": "Identifiant",
+    "en": "Username"
+  },
+  "text0020": {
+    "fr": "Email",
+    "en": "Email"
+  },
+  "text0021": {
+    "fr": "Téléphone",
+    "en": "Phone"
+  },
+  "text0022": {
+    "fr": "Pays",
+    "en": "Country"
+  },
+  "text0023": {
+    "fr": "Adresse",
+    "en": "Address"
+  },
+  "text0024": {
+    "fr": "Représentant",
+    "en": "Representative"
+  },
+  "text0025": {
+    "fr": "Investissement initial (F CFA)",
+    "en": "Initial Investment (F CFA)"
+  },
+  "text0026": {
+    "fr": "Soumettre",
+    "en": "Submit"
+  },
+  "text0027": {
+    "fr": "Demande envoyée ! En attente de validation Admin.",
+    "en": "Request sent! Waiting for Admin approval."
+  },
+  "text0028": {
+    "fr": "Retour connexion",
+    "en": "Back to login"
+  },
+  "text0029": {
+    "fr": "Vue d'ensemble — Thunderfam Investment",
+    "en": "Overview — Thunderfam Investment"
+  },
+  "text0030": {
+    "fr": "Évolution Capital",
+    "en": "Capital Evolution"
+  },
+  "text0031": {
+    "fr": "Profits par Rapport",
+    "en": "Profit by Report"
+  },
+  "text0032": {
+    "fr": "Capital Total",
+    "en": "Total Capital"
+  },
+  "text0033": {
+    "fr": "Profit Net Cumulé",
+    "en": "Cumulative Net Profit"
+  },
+  "text0034": {
+    "fr": "Profit du Mois",
+    "en": "Monthly Profit"
+  },
+  "text0035": {
+    "fr": "Investisseurs Actifs",
+    "en": "Active Investors"
+  },
+  "text0036": {
+    "fr": "Évolution",
+    "en": "Evolution"
+  },
+  "text0037": {
+    "fr": "Activités Récentes",
+    "en": "Recent Activities"
+  },
+  "text0038": {
+    "fr": "ROI Annualisé",
+    "en": "Annualized ROI"
+  },
+  "text0039": {
+    "fr": "Croissance Moy.",
+    "en": "Avg Growth"
+  },
+  "text0040": {
+    "fr": "Meilleur Mois",
+    "en": "Best Month"
+  },
+  "text0041": {
+    "fr": "Objectif Profit",
+    "en": "Profit Goal"
+  },
+  "text0042": {
+    "fr": "Rendement",
+    "en": "Return"
+  },
+  "text0043": {
+    "fr": "Vue d'ensemble",
+    "en": "Overview"
+  },
+  "text0044": {
+    "fr": "/ rapport",
+    "en": "/ report"
+  },
+  "text0045": {
+    "fr": "Actifs",
+    "en": "Active"
+  },
+  "text0046": {
+    "fr": "Capital Actuel",
+    "en": "Current Capital"
+  },
+  "text0047": {
+    "fr": "Profit Cumulé",
+    "en": "Cumulative Profit"
+  },
+  "text0048": {
+    "fr": "ROI Total",
+    "en": "Total ROI"
+  },
+  "text0049": {
+    "fr": "Capital d'Ouverture",
+    "en": "Opening Capital"
+  },
+  "text0050": {
+    "fr": "+ Dépense",
+    "en": "+ Expense"
+  },
+  "text0051": {
+    "fr": "Fermer",
+    "en": "Close"
+  },
+  "text0052": {
+    "fr": "Déverrouiller",
+    "en": "Unlock"
+  },
+  "text0053": {
+    "fr": "+ Rapport",
+    "en": "+ Report"
+  },
+  "text0054": {
+    "fr": "Dépenses Add.",
+    "en": "Add. Expenses"
+  },
+  "text0055": {
+    "fr": "Nouvel Invest.",
+    "en": "New Investment"
+  },
+  "text0056": {
+    "fr": "Total Revenus",
+    "en": "Total Revenue"
+  },
+  "text0057": {
+    "fr": "Total Dépenses",
+    "en": "Total Expenses"
+  },
+  "text0058": {
+    "fr": "Imprimer",
+    "en": "Print"
+  },
+  "text0059": {
+    "fr": "PDF",
+    "en": "PDF"
+  },
+  "text0060": {
+    "fr": "Certificat",
+    "en": "Certificate"
+  },
+  "text0061": {
+    "fr": "Approuver",
+    "en": "Approve"
+  },
+  "text0062": {
+    "fr": "Retirer signature",
+    "en": "Remove signature"
+  },
+  "text0063": {
+    "fr": "Approuvé",
+    "en": "Approved"
+  },
+  "text0064": {
+    "fr": "Mes Rapports",
+    "en": "My Reports"
+  },
+  "text0065": {
+    "fr": "Joindre",
+    "en": "Attach"
+  },
+  "text0066": {
+    "fr": "Profit Net",
+    "en": "Net Profit"
+  },
+  "text0067": {
+    "fr": "Aucun rapport disponible.",
+    "en": "No reports available."
+  },
+  "text0068": {
+    "fr": "Vos rapports financiers",
+    "en": "Your personal financial reports"
+  },
+  "text0069": {
+    "fr": "Historique des rapports",
+    "en": "Financial reports history"
+  },
+  "text0070": {
+    "fr": "Activités",
+    "en": "Activities"
+  },
+  "text0071": {
+    "fr": "Profit auto :",
+    "en": "Auto profit:"
+  },
+  "text0072": {
+    "fr": "Approuvé par",
+    "en": "Approved by"
+  },
+  "text0073": {
+    "fr": "Signatures Électroniques",
+    "en": "Electronic Signatures"
+  },
+  "text0074": {
+    "fr": "Résumé Final",
+    "en": "Final Summary"
+  },
+  "text0075": {
+    "fr": "Capital d'ouverture",
+    "en": "Opening Capital"
+  },
+  "text0076": {
+    "fr": "Nouvel Investissement",
+    "en": "New Investment"
+  },
+  "text0077": {
+    "fr": "Titre du rapport",
+    "en": "Report title"
+  },
+  "text0078": {
+    "fr": "Partagez ce code avec le destinataire.",
+    "en": "Share this code with the recipient."
+  },
+  "text0079": {
+    "fr": "Frise chronologique",
+    "en": "Timeline"
+  },
+  "text0080": {
+    "fr": "+ Activité",
+    "en": "+ Activity"
+  },
+  "text0081": {
+    "fr": "Date",
+    "en": "Date"
+  },
+  "text0082": {
+    "fr": "Catégorie",
+    "en": "Category"
+  },
+  "text0083": {
+    "fr": "Description",
+    "en": "Description"
+  },
+  "text0084": {
+    "fr": "Investi",
+    "en": "Invested"
+  },
+  "text0085": {
+    "fr": "Revenu",
+    "en": "Revenue"
+  },
+  "text0086": {
+    "fr": "Dépenses",
+    "en": "Expenses"
+  },
+  "text0087": {
+    "fr": "Profit",
+    "en": "Profit"
+  },
+  "text0088": {
+    "fr": "Sauvegarder",
+    "en": "Save"
+  },
+  "text0089": {
+    "fr": "Annuler",
+    "en": "Cancel"
+  },
+  "text0090": {
+    "fr": "Libellé",
+    "en": "Label"
+  },
+  "text0091": {
+    "fr": "Montant",
+    "en": "Amount"
+  },
+  "text0092": {
+    "fr": "Ajouter",
+    "en": "Add"
+  },
+  "text0093": {
+    "fr": "Logo de l'Investisseur",
+    "en": "Investor Logo"
+  },
+  "text0094": {
+    "fr": "Charger un logo (PNG, JPG, SVG)",
+    "en": "Upload logo (PNG, JPG, SVG)"
+  },
+  "text0095": {
+    "fr": "Supprimer",
+    "en": "Remove"
+  },
+  "text0096": {
+    "fr": "Devise préférée (rapports & contrat)",
+    "en": "Preferred currency (reports & contract)"
+  },
+  "text0097": {
+    "fr": "Catégories d'investissement & montants",
+    "en": "Investment categories & amounts"
+  },
+  "text0098": {
+    "fr": "Montant (F CFA)",
+    "en": "Amount (F CFA)"
+  },
+  "text0099": {
+    "fr": "Aucune catégorie — cliquez sur Ajouter",
+    "en": "No categories — click Add"
+  },
+  "text0100": {
+    "fr": "Montant objectif (F CFA)",
+    "en": "Goal amount (F CFA)"
+  },
+  "text0101": {
+    "fr": "Libellé de l'objectif",
+    "en": "Goal label"
+  },
+  "text0102": {
+    "fr": "Ex: Profit cible 2026",
+    "en": "E.g.: Profit target 2026"
+  },
+  "text0103": {
+    "fr": "Nom",
+    "en": "Name"
+  },
+  "text0104": {
+    "fr": "Invest. Initial",
+    "en": "Init. Investment"
+  },
+  "text0105": {
+    "fr": "Historique",
+    "en": "History"
+  },
+  "text0106": {
+    "fr": "Modifier",
+    "en": "Edit"
+  },
+  "text0107": {
+    "fr": "Fixer objectif",
+    "en": "Set Goal"
+  },
+  "text0108": {
+    "fr": "Vue Consolidée",
+    "en": "Consolidated View"
+  },
+  "text0109": {
+    "fr": "Capital Total Consolidé",
+    "en": "Total Consolidated Capital"
+  },
+  "text0110": {
+    "fr": "Profit Total Cumulé",
+    "en": "Total Cumulative Profit"
+  },
+  "text0111": {
+    "fr": "Nombre Investisseurs",
+    "en": "Number of Investors"
+  },
+  "text0112": {
+    "fr": "Portefeuilles actifs",
+    "en": "Active portfolios"
+  },
+  "text0113": {
+    "fr": "Classement par Profit",
+    "en": "Ranking by Profit"
+  },
+  "text0114": {
+    "fr": "Portefeuilles & objectifs",
+    "en": "Portfolios & goals"
+  },
+  "text0115": {
+    "fr": "Évolution profits",
+    "en": "Profit evolution"
+  },
+  "text0116": {
+    "fr": "Objectif",
+    "en": "Goal"
+  },
+  "text0117": {
+    "fr": "Investisseur lié",
+    "en": "Linked Investor"
+  },
+  "text0118": {
+    "fr": "croissance total",
+    "en": "total growth"
+  },
+  "text0119": {
+    "fr": "Investissement Initial (calculé)",
+    "en": "Initial Investment (calculated)"
+  },
+  "text0120": {
+    "fr": "Devise préférée",
+    "en": "Preferred currency"
+  },
+  "text0121": {
+    "fr": "F CFA seulement",
+    "en": "F CFA only"
+  },
+  "text0122": {
+    "fr": "Taux actuel :",
+    "en": "Current rate:"
+  },
+  "text0123": {
+    "fr": "Actions",
+    "en": "Actions"
+  },
+  "text0124": {
+    "fr": "En attente",
+    "en": "Pending"
+  },
+  "text0125": {
+    "fr": "Rejeter",
+    "en": "Reject"
+  },
+  "text0126": {
+    "fr": "Désactiver",
+    "en": "Disable"
+  },
+  "text0127": {
+    "fr": "Activer",
+    "en": "Enable"
+  },
+  "text0128": {
+    "fr": "MDP",
+    "en": "PWD"
+  },
+  "text0129": {
+    "fr": "+ Utilisateur",
+    "en": "+ User"
+  },
+  "text0130": {
+    "fr": "Rôle",
+    "en": "Role"
+  },
+  "text0131": {
+    "fr": "Statut",
+    "en": "Status"
+  },
+  "text0132": {
+    "fr": "Modifier",
+    "en": "Edit User"
+  },
+  "text0133": {
+    "fr": "Utilisateur",
+    "en": "User"
+  },
+  "text0134": {
+    "fr": "Nouveau mot de passe",
+    "en": "New password"
+  },
+  "text0135": {
+    "fr": "Vous",
+    "en": "You"
+  },
+  "text0136": {
+    "fr": "RBAC — Contrôle d'accès",
+    "en": "RBAC — Role-Based Access Control"
+  },
+  "text0137": {
+    "fr": "Nom *",
+    "en": "Name *"
+  },
+  "text0138": {
+    "fr": "Identifiant *",
+    "en": "Username *"
+  },
+  "text0139": {
+    "fr": "Mot de passe *",
+    "en": "Password *"
+  },
+  "text0140": {
+    "fr": "— Aucun —",
+    "en": "— None —"
+  },
+  "text0141": {
+    "fr": "Analyses & Graphiques",
+    "en": "Analytics & Charts"
+  },
+  "text0142": {
+    "fr": "Visualisations & outils de projection",
+    "en": "Visualizations & projection tools"
+  },
+  "text0143": {
+    "fr": "Évolution du Capital",
+    "en": "Capital Evolution"
+  },
+  "text0144": {
+    "fr": "Aucune dépense enregistrée",
+    "en": "No expenses recorded"
+  },
+  "text0145": {
+    "fr": "Taux moyen constaté :",
+    "en": "Average rate observed:"
+  },
+  "text0146": {
+    "fr": "/ mois",
+    "en": "/ month"
+  },
+  "text0147": {
+    "fr": "Résultats estimés sur 6 mois",
+    "en": "Estimated results over 6 months"
+  },
+  "text0148": {
+    "fr": "Base d'investissement",
+    "en": "Investment base"
+  },
+  "text0149": {
+    "fr": "Évolution du profit net",
+    "en": "Net profit evolution"
+  },
+  "text0150": {
+    "fr": "Copié !",
+    "en": "Copied!"
+  },
+  "text0151": {
+    "fr": "Prévisualiser",
+    "en": "Preview"
+  },
+  "text0152": {
+    "fr": "Générez un email HTML des 3 derniers rapports.",
+    "en": "Generate an HTML email summary of the 3 latest reports."
+  },
+  "text0153": {
+    "fr": "Simulateur de Rendement",
+    "en": "Yield Simulator"
+  },
+  "text0154": {
+    "fr": "Comparaison Périodes",
+    "en": "Period Comparison"
+  },
+  "text0155": {
+    "fr": "Graphiques Interactifs",
+    "en": "Interactive Charts"
+  },
+  "text0156": {
+    "fr": "Courbe de Profit",
+    "en": "Profit Curve"
+  },
+  "text0157": {
+    "fr": "Revenus vs Dépenses",
+    "en": "Revenue vs Expenses"
+  },
+  "text0158": {
+    "fr": "Dépenses par Catégorie",
+    "en": "Expenses by Category"
+  },
+  "text0159": {
+    "fr": "Période 1",
+    "en": "Period 1"
+  },
+  "text0160": {
+    "fr": "Période 2",
+    "en": "Period 2"
+  },
+  "text0161": {
+    "fr": "Investissement supplémentaire",
+    "en": "Extra Investment"
+  },
+  "text0162": {
+    "fr": "Profit estimé (6 mois)",
+    "en": "Estimated profit (6 months)"
+  },
+  "text0163": {
+    "fr": "Résultat projection",
+    "en": "Projection Result"
+  },
+  "text0164": {
+    "fr": "Taux de rendement moyen",
+    "en": "Average yield rate"
+  },
+  "text0165": {
+    "fr": "Résumé Email",
+    "en": "Email Summary"
+  },
+  "text0166": {
+    "fr": "Copier HTML",
+    "en": "Copy HTML"
+  },
+  "text0167": {
+    "fr": "Action",
+    "en": "Action"
+  },
+  "text0168": {
+    "fr": "Cible",
+    "en": "Target"
+  },
+  "text0169": {
+    "fr": "Type",
+    "en": "Type"
+  },
+  "text0170": {
+    "fr": "Tous",
+    "en": "All"
+  },
+  "text0171": {
+    "fr": "Filtrer",
+    "en": "Filter"
+  },
+  "text0172": {
+    "fr": "Aucune entrée.",
+    "en": "No entries."
+  },
+  "text0173": {
+    "fr": "Traçabilité complète",
+    "en": "Complete traceability"
+  },
+  "text0174": {
+    "fr": "Aperçu",
+    "en": "Preview"
+  },
+  "text0175": {
+    "fr": "MAJ :",
+    "en": "Updated:"
+  },
+  "text0176": {
+    "fr": "Mode clair",
+    "en": "Light mode"
+  },
+  "text0177": {
+    "fr": "Mode sombre",
+    "en": "Dark mode"
+  },
+  "text0178": {
+    "fr": "Catégories utilisées dans les activités et les contrats.",
+    "en": "Categories used in activities and contracts."
+  },
+  "text0179": {
+    "fr": "F CFA toujours affiché. Sélectionnez les devises supplémentaires.",
+    "en": "F CFA always shown. Select additional currencies."
+  },
+  "text0180": {
+    "fr": "Devises",
+    "en": "Currencies"
+  },
+  "text0181": {
+    "fr": "Toutes",
+    "en": "All"
+  },
+  "text0182": {
+    "fr": "F CFA uniquement",
+    "en": "F CFA only"
+  },
+  "text0183": {
+    "fr": "Taux de Change",
+    "en": "Exchange Rates"
+  },
+  "text0184": {
+    "fr": "Mot de passe Admin",
+    "en": "Admin Password"
+  },
+  "text0185": {
+    "fr": "Langue",
+    "en": "Language"
+  },
+  "text0186": {
+    "fr": "Actualiser",
+    "en": "Refresh"
+  },
+  "text0187": {
+    "fr": "Taux mis à jour ✓",
+    "en": "Rates updated ✓"
+  },
+  "text0188": {
+    "fr": "Erreur",
+    "en": "Failed"
+  },
+  "text0189": {
+    "fr": "Thème",
+    "en": "Theme"
+  },
+  "text0190": {
+    "fr": "Sombre",
+    "en": "Dark"
+  },
+  "text0191": {
+    "fr": "Clair",
+    "en": "Light"
+  },
+  "text0192": {
+    "fr": "Widgets",
+    "en": "Widgets"
+  },
+  "text0193": {
+    "fr": "Gestion des Catégories",
+    "en": "Category Management"
+  },
+  "text0194": {
+    "fr": "+ Catégorie",
+    "en": "+ Category"
+  },
+  "text0195": {
+    "fr": "Supprimer",
+    "en": "Delete"
+  },
+  "text0196": {
+    "fr": "Sécurité Admin",
+    "en": "Admin Security"
+  },
+  "text0197": {
+    "fr": "Configuration système",
+    "en": "System Configuration"
+  },
+  "text0198": {
+    "fr": "Seul un Administrateur peut modifier les paramètres.",
+    "en": "Only an Administrator can modify settings."
+  },
+  "text0199": {
+    "fr": "✓ Sauvegardé",
+    "en": "✓ Saved"
+  },
+  "text0200": {
+    "fr": "Nouvelle catégorie",
+    "en": "New category"
+  },
+  "text0201": {
+    "fr": "Contrat d'Investissement",
+    "en": "Investment Contract"
+  },
+  "text0202": {
+    "fr": "Générer Contrat",
+    "en": "Generate Contract"
+  },
+  "text0203": {
+    "fr": "Télécharger Contrat",
+    "en": "Download Contract"
+  },
+  "text0204": {
+    "fr": "Imprimer Contrat",
+    "en": "Print Contract"
+  },
+  "text0205": {
+    "fr": "Catégories d'investissement",
+    "en": "Investment Categories"
+  },
+  "text0206": {
+    "fr": "Montant par catégorie (F CFA)",
+    "en": "Amount per category (F CFA)"
+  },
+  "text0207": {
+    "fr": "Devise du contrat",
+    "en": "Contract currency"
+  },
+  "text0208": {
+    "fr": "Logo Investisseur",
+    "en": "Investor Logo"
+  },
+  "text0209": {
+    "fr": "Chargez un logo",
+    "en": "Upload a logo"
+  },
+  "text0210": {
+    "fr": "Supprimer logo",
+    "en": "Remove logo"
+  },
+  "text0211": {
+    "fr": "Entre",
+    "en": "Between"
+  },
+  "text0212": {
+    "fr": "et",
+    "en": "and"
+  },
+  "text0213": {
+    "fr": "Fait à Abidjan, le",
+    "en": "Signed in Abidjan, on"
+  },
+  "text0214": {
+    "fr": "OBJET DU CONTRAT",
+    "en": "CONTRACT PURPOSE"
+  },
+  "text0215": {
+    "fr": "MONTANTS D'INVESTISSEMENT",
+    "en": "INVESTMENT AMOUNTS"
+  },
+  "text0216": {
+    "fr": "DURÉE ET CONDITIONS",
+    "en": "DURATION & CONDITIONS"
+  },
+  "text0217": {
+    "fr": "CONFIDENTIALITÉ",
+    "en": "CONFIDENTIALITY"
+  },
+  "text0218": {
+    "fr": "SIGNATURES",
+    "en": "SIGNATURES"
+  },
+  "text0219": {
+    "fr": "Le présent contrat définit les termes de l'investissement réalisé par l'Investisseur auprès de Thunderfam Investment.",
+    "en": "This contract defines the terms of the investment made by the Investor with Thunderfam Investment."
+  },
+  "text0220": {
+    "fr": "L'investissement est soumis aux conditions du marché. Toute modification doit faire l'objet d'un avenant signé.",
+    "en": "The investment is subject to market conditions. Any modification must be covered by an amendment signed by both parties."
+  },
+  "text0221": {
+    "fr": "Toutes les informations échangées sont strictement confidentielles.",
+    "en": "All information exchanged is strictly confidential."
+  },
+  "text0222": {
+    "fr": "Partie A — Gestionnaire",
+    "en": "Party A — Manager"
+  },
+  "text0223": {
+    "fr": "Partie B — Investisseur",
+    "en": "Party B — Investor"
+  },
+  "text0224": {
+    "fr": "Direction Générale",
+    "en": "General Management"
+  },
+  "text0225": {
+    "fr": "Compliance Officer",
+    "en": "Compliance Officer"
+  },
+  "text0226": {
+    "fr": "Aucune catégorie définie.",
+    "en": "No investment categories defined."
+  },
+  "text0227": {
+    "fr": "Devise de référence :",
+    "en": "Secondary reference currency:"
+  },
+  "text0228": {
+    "fr": "Devise de référence : F CFA uniquement",
+    "en": "Reference currency: F CFA only"
+  },
+  "text0229": {
+    "fr": "Total Investissement Initial",
+    "en": "Total Initial Investment"
+  },
+  "text0230": {
+    "fr": "Catégorie d'Activité",
+    "en": "Activity Category"
+  },
+  "text0231": {
+    "fr": "Montant Investi",
+    "en": "Amount Invested"
+  },
+  "text0232": {
+    "fr": "Confidentiel",
+    "en": "Confidential"
+  },
+  "text0233": {
+    "fr": "Document généré le",
+    "en": "Generated on"
+  },
+  "text0234": {
+    "fr": "Transport de marchandise",
+    "en": "Merchandise transport"
+  },
+  "text0235": {
+    "fr": "Achat de marchandise",
+    "en": "Merchandise purchase"
+  },
+  "text0236": {
+    "fr": "Vente de marchandise",
+    "en": "Merchandise sale"
+  },
+  "text0237": {
+    "fr": "Expertise en informatique : conseil, installation, entretien, maintenance, confection de logiciels et applications",
+    "en": "IT expertise: consulting, installation, maintenance, software & app development"
+  },
+  "text0238": {
+    "fr": "Import-Export de biens et produits divers",
+    "en": "Import-Export of various goods and products"
+  },
+  "text0239": {
+    "fr": "Services de transfert d'argent mobile money (Orange, MTN, Moov, etc.)",
+    "en": "Mobile money transfer services (Orange, MTN, Moov, etc.)"
+  },
+  "text0240": {
+    "fr": "Achat et vente de terrain et maison, gestion foncière et immobilière",
+    "en": "Purchase and sale of land and property, land management"
+  },
+  "text0241": {
+    "fr": "Tous travaux de bâtiment et travaux publics (BTP) : construction, aménagement et entretien",
+    "en": "All building and civil engineering works (BTP): construction, development and maintenance"
+  },
+  "text0242": {
+    "fr": "Secteur d'agroalimentaire et hôtellerie, restauration",
+    "en": "Agri-food, hotel and restaurant sector"
+  },
+  "text0243": {
+    "fr": "Éducation et formation dans divers domaines",
+    "en": "Education and training in various fields"
+  },
+  "text0244": {
+    "fr": "Exploitation d'une ferme agro-pisciculture",
+    "en": "Agro-fish farming operation"
+  },
+  "text0245": {
+    "fr": "Transport routier",
+    "en": "Road transport"
+  },
+  "text0246": {
+    "fr": "L'acquisition, la location et la vente de tous biens meubles et immeubles",
+    "en": "Acquisition, rental and sale of all movable and immovable property"
+  },
+  "text0247": {
+    "fr": "L'emprunt de toutes sommes auprès de tous établissements financiers avec possibilité de donner en garantie tout ou partie des biens sociaux",
+    "en": "Borrowing from financial institutions with the option to pledge company assets as collateral"
+  },
+  "text0248": {
+    "fr": "Toutes opérations financières, commerciales, industrielles, mobilières et immobilières, se rapportant directement ou indirectement à l'objet social ou pouvant en faciliter l'extension ou le développement",
+    "en": "All financial, commercial, industrial, movable and immovable operations related to the corporate purpose"
+  },
+  "text0249": {
+    "fr": "Rapport Verrouillé",
+    "en": "Locked Report"
+  },
+  "text0250": {
+    "fr": "Entrez le mot de passe pour modifier.",
+    "en": "Enter password to modify."
+  },
+  "text0251": {
+    "fr": "Confirmer",
+    "en": "Confirm"
+  },
+  "text0252": {
+    "fr": "Mot de passe incorrect.",
+    "en": "Incorrect password."
+  },
+  "text0253": {
+    "fr": "Total",
+    "en": "Total"
+  },
+  "text0254": {
+    "fr": "Accès refusé",
+    "en": "Access Denied"
+  },
+  "text0255": {
+    "fr": "Lecture seule",
+    "en": "Read-only"
+  },
+  "text0256": {
+    "fr": "Notifications",
+    "en": "Notifications"
+  },
+  "text0257": {
+    "fr": "Tout lire",
+    "en": "Mark all read"
+  },
+  "text0258": {
+    "fr": "Partager",
+    "en": "Share"
+  },
+  "text0259": {
+    "fr": "Lien de partage",
+    "en": "Share Link"
+  },
+  "text0260": {
+    "fr": "Copier le lien",
+    "en": "Copy link"
+  },
+  "text0261": {
+    "fr": "Expire dans 7 jours",
+    "en": "Expires in 7 days"
+  },
+  "text0262": {
+    "fr": "● Actif",
+    "en": "● Active"
+  },
+  "text0263": {
+    "fr": "● Inactif",
+    "en": "● Inactive"
+  },
+  "text0264": {
+    "fr": "Fermé",
+    "en": "Closed"
+  },
+  "text0265": {
+    "fr": "Ouvert",
+    "en": "Open"
+  },
+  "text0266": {
+    "fr": "Aucune notification",
+    "en": "No notifications"
+  },
+  "text0267": {
+    "fr": "Autorisez les popups pour continuer.",
+    "en": "Please allow popups to continue."
+  },
+  "text0268": {
+    "fr": "Comptes démo",
+    "en": "Demo accounts"
+  },
+  "text0269": {
+    "fr": "Un administrateur validera votre demande.",
+    "en": "An administrator will validate your request."
+  },
+  "text0270": {
+    "fr": "RAPPORT FINANCIER MENSUEL",
+    "en": "MONTHLY FINANCIAL REPORT"
+  },
+  "text0271": {
+    "fr": "Investisseur",
+    "en": "Investor"
+  },
+  "text0272": {
+    "fr": "TOTAL DÉPENSES ADD.",
+    "en": "TOTAL ADD. EXPENSES"
+  },
+  "text0273": {
+    "fr": "Total des Revenus",
+    "en": "Total Revenue"
+  },
+  "text0274": {
+    "fr": "Total des Dépenses",
+    "en": "Total Expenses"
+  },
+  "text0275": {
+    "fr": "Nouveau Capital",
+    "en": "New Capital"
+  },
+  "text0276": {
+    "fr": "Dépenses Additionnelles",
+    "en": "Additional Expenses"
+  },
+  "text0277": {
+    "fr": "Généré le",
+    "en": "Generated on"
+  },
+  "text0278": {
+    "fr": "Document Confidentiel",
+    "en": "Confidential Document"
+  },
+  "text0279": {
+    "fr": "TOTAL",
+    "en": "TOTAL"
+  },
+  "text0280": {
+    "fr": "CERTIFICAT D'INVESTISSEMENT",
+    "en": "INVESTMENT CERTIFICATE"
+  },
+  "text0281": {
+    "fr": "Thunderfam Group Limited — Côte d'Ivoire",
+    "en": "Thunderfam Group Limited — Côte d'Ivoire"
+  },
+  "text0282": {
+    "fr": "Investissement Initial",
+    "en": "Initial Investment"
+  },
+  "text0283": {
+    "fr": "Nombre de Rapports",
+    "en": "Number of Reports"
+  },
+  "text0284": {
+    "fr": "Date d'Émission",
+    "en": "Issue Date"
+  },
+  "text0285": {
+    "fr": "Ce certificat est délivré à",
+    "en": "This certificate is awarded to"
+  },
+  "text0286": {
+    "fr": "En reconnaissance de son investissement actif auprès de Thunderfam Investment.",
+    "en": "In recognition of their active investment with Thunderfam Investment."
+  },
+  "text0287": {
+    "fr": "Confirmer la suppression",
+    "en": "Confirm deletion"
+  },
+  "text0288": {
+    "fr": "Vous allez supprimer definitivement :",
+    "en": "You are about to permanently delete:"
+  },
+  "text0289": {
+    "fr": "Attention : cette action est irreversible.",
+    "en": "Warning: this action cannot be undone."
+  },
+  "text0290": {
+    "fr": "fr-FR",
+    "en": "en-GB"
+  },
+  "text0291": {
+    "fr": "🚛 Location",
+    "en": "🚛 Rental"
+  },
+  "text0292": {
+    "fr": "🚚 Propre",
+    "en": "🚚 Own"
+  },
+  "text0293": {
+    "fr": "Salaires Chauffeurs",
+    "en": "Driver Salaries"
+  },
+  "text0294": {
+    "fr": "Rapport Financier Mensuel",
+    "en": "Monthly Financial Report"
+  },
+  "text0295": {
+    "fr": "Société",
+    "en": "Company"
+  },
+  "text0296": {
+    "fr": "Camion",
+    "en": "Truck"
+  },
+  "text0297": {
+    "fr": "Contrat",
+    "en": "Contract"
+  },
+  "text0298": {
+    "fr": "Champs * obligatoires.",
+    "en": "Required fields missing."
+  },
+  "text0299": {
+    "fr": "Format email invalide (ex: nom@provider.com)",
+    "en": "Invalid email (eg: name@provider.com)"
+  },
+  "text0300": {
+    "fr": "Le téléphone doit contenir uniquement des chiffres.",
+    "en": "Phone must contain digits only."
+  },
+  "text0301": {
+    "fr": "L'investissement doit être un nombre entier.",
+    "en": "Investment must be a whole number."
+  },
+  "text0302": {
+    "fr": "Mot de passe invalide. Vérifiez les critères ci-dessous.",
+    "en": "Invalid password. Check requirements below."
+  },
+  "text0303": {
+    "fr": "Identifiant déjà utilisé.",
+    "en": "Username already taken."
+  },
+  "text0304": {
+    "fr": "Un email a été envoyé à l'équipe Thunderfam.",
+    "en": "A notification email has been sent to the Thunderfam team."
+  },
+  "text0305": {
+    "fr": "Format invalide",
+    "en": "Invalid format"
+  },
+  "text0306": {
+    "fr": "≥ 10 caractères",
+    "en": "≥ 10 chars"
+  },
+  "text0307": {
+    "fr": "Lettre a-z",
+    "en": "Letter a-z"
+  },
+  "text0308": {
+    "fr": "Chiffre 0-9",
+    "en": "Digit 0-9"
+  },
+  "text0309": {
+    "fr": "Symbole !@#",
+    "en": "Symbol !@#"
+  },
+  "text0310": {
+    "fr": "Envoi en cours…",
+    "en": "Sending…"
+  },
+  "text0311": {
+    "fr": "Fichiers joints",
+    "en": "Attached files"
+  },
+  "text0312": {
+    "fr": "Ajouter",
+    "en": "Add files"
+  },
+  "text0313": {
+    "fr": "Télécharger",
+    "en": "Download"
+  },
+  "text0314": {
+    "fr": "Aucun fichier joint.",
+    "en": "No files attached."
+  },
+  "text0315": {
+    "fr": "Joindre des fichiers",
+    "en": "Attach files"
+  },
+  "text0316": {
+    "fr": "Enregistrer le titre",
+    "en": "Save report title"
+  },
+  "text0317": {
+    "fr": "Double-cliquez pour modifier le titre (F2)",
+    "en": "Double-click to edit the title (F2)"
+  },
+  "text0318": {
+    "fr": "Calcul de l'Investissement",
+    "en": "Investment Calculator"
+  },
+  "text0319": {
+    "fr": "Appliquer",
+    "en": "Apply"
+  },
+  "text0320": {
+    "fr": "— Société —",
+    "en": "— Company —"
+  },
+  "text0321": {
+    "fr": "Calculer l'investi",
+    "en": "Calculate invested"
+  },
+  "text0322": {
+    "fr": "Calculer",
+    "en": "Calc"
+  },
+  "text0323": {
+    "fr": "Voir / Joindre fichiers",
+    "en": "View / Attach files"
+  },
+  "text0324": {
+    "fr": "Modifier salaire",
+    "en": "Edit salary"
+  },
+  "text0325": {
+    "fr": "Ajouter salaire chauffeur",
+    "en": "Add driver salary"
+  },
+  "text0326": {
+    "fr": "Chauffeur",
+    "en": "Driver"
+  },
+  "text0327": {
+    "fr": "— Sélectionner un chauffeur —",
+    "en": "— Select a driver —"
+  },
+  "text0328": {
+    "fr": "Aucun chauffeur dans les Paramètres.",
+    "en": "No drivers in Settings."
+  },
+  "text0329": {
+    "fr": "Montant du salaire (F CFA)",
+    "en": "Salary Amount (F CFA)"
+  },
+  "text0330": {
+    "fr": "Nombre de voyages",
+    "en": "Number of trips"
+  },
+  "text0331": {
+    "fr": "Mettre à jour",
+    "en": "Update"
+  },
+  "text0332": {
+    "fr": "Chauffeurs",
+    "en": "Drivers"
+  },
+  "text0333": {
+    "fr": "Ajouter salaire des chauffeurs",
+    "en": "Add driver salary"
+  },
+  "text0334": {
+    "fr": "voyage(s)",
+    "en": "trip(s)"
+  },
+  "text0335": {
+    "fr": "Supprimer l utilisateur ?",
+    "en": "Delete user?"
+  },
+  "text0336": {
+    "fr": "Supprimer definitivement l utilisateur :",
+    "en": "Permanently delete user:"
+  },
+  "text0337": {
+    "fr": "Virement bancaire",
+    "en": "Bank Transfer"
+  },
+  "text0338": {
+    "fr": "Titulaire du compte",
+    "en": "Account holder"
+  },
+  "text0339": {
+    "fr": "Numéro téléphone",
+    "en": "Phone Number"
+  },
+  "text0340": {
+    "fr": "Nom du compte",
+    "en": "Account name"
+  },
+  "text0341": {
+    "fr": "Titulaire",
+    "en": "Account holder"
+  },
+  "text0342": {
+    "fr": "Mes moyens de paiement",
+    "en": "My payment methods"
+  },
+  "text0343": {
+    "fr": "(utilisés pour les retraits)",
+    "en": "(used for withdrawals)"
+  },
+  "text0344": {
+    "fr": "Nouveau moyen de paiement",
+    "en": "New payment method"
+  },
+  "text0345": {
+    "fr": "IBAN (ex: FR76 3000...) — BIC/SWIFT identifie votre banque (ex: BNPAFRPP). Délai de virement: 3 jours ouvrables.",
+    "en": "IBAN (e.g. FR76 3000...) — BIC/SWIFT identifies your bank (e.g. BNPAFRPP). Processing: 3 business days."
+  },
+  "text0346": {
+    "fr": "Aucun moyen de paiement enregistré. Ajoutez-en un pour pouvoir faire des demandes de retrait.",
+    "en": "No payment method saved. Add one to make withdrawal requests."
+  },
+  "text0347": {
+    "fr": "Supprimer ce moyen de paiement ?",
+    "en": "Delete this payment method?"
+  },
+  "text0348": {
+    "fr": "Format non supporté (JPG, PNG, GIF, WebP)",
+    "en": "Unsupported format (JPG, PNG, GIF, WebP)"
+  },
+  "text0349": {
+    "fr": "Erreur de lecture du fichier",
+    "en": "File read error"
+  },
+  "text0350": {
+    "fr": "Avatar modifié",
+    "en": "Avatar updated"
+  },
+  "text0351": {
+    "fr": "Avatar mis à jour !",
+    "en": "Avatar updated!"
+  },
+  "text0352": {
+    "fr": "Erreur lors de la sauvegarde",
+    "en": "Error saving avatar"
+  },
+  "text0353": {
+    "fr": "Utilisateur introuvable.",
+    "en": "User not found."
+  },
+  "text0354": {
+    "fr": "Mot de passe actuel incorrect.",
+    "en": "Current password is incorrect."
+  },
+  "text0355": {
+    "fr": "Le nouveau mot de passe doit faire au moins 6 caractères.",
+    "en": "New password must be at least 6 characters."
+  },
+  "text0356": {
+    "fr": "Les nouveaux mots de passe ne correspondent pas.",
+    "en": "New passwords do not match."
+  },
+  "text0357": {
+    "fr": "Profil modifié",
+    "en": "Profile updated"
+  },
+  "text0358": {
+    "fr": "Profil mis à jour avec succès.",
+    "en": "Profile updated successfully."
+  },
+  "text0359": {
+    "fr": "Mon Profil",
+    "en": "My Profile"
+  },
+  "text0360": {
+    "fr": "Photo de profil",
+    "en": "Profile photo"
+  },
+  "text0361": {
+    "fr": "JPG, PNG, GIF — max 2MB",
+    "en": "JPG, PNG, GIF — max 2MB"
+  },
+  "text0362": {
+    "fr": "Changer l'avatar",
+    "en": "Change avatar"
+  },
+  "text0363": {
+    "fr": "Mot de passe actuel *",
+    "en": "Current password *"
+  },
+  "text0364": {
+    "fr": "Laisser vide = inchangé",
+    "en": "Leave empty = unchanged"
+  },
+  "text0365": {
+    "fr": "Confirmer nouveau MDP",
+    "en": "Confirm new password"
+  },
+  "text0366": {
+    "fr": "Enregistrer le profil",
+    "en": "Save profile"
+  },
+  "text0367": {
+    "fr": "Fichier partagé",
+    "en": "File shared"
+  },
+  "text0368": {
+    "fr": "Aperçu non disponible pour ce type de fichier.",
+    "en": "Preview not available for this file type."
+  },
+  "text0369": {
+    "fr": "Niveau d'importance",
+    "en": "Importance level"
+  },
+  "text0370": {
+    "fr": "Choisissez le niveau d'importance du fichier partagé :",
+    "en": "Choose the importance level for the shared file:"
+  },
+  "text0371": {
+    "fr": "Nécessite une attention immédiate",
+    "en": "Requires immediate attention"
+  },
+  "text0372": {
+    "fr": "À traiter en priorité",
+    "en": "Priority action needed"
+  },
+  "text0373": {
+    "fr": "Pour information",
+    "en": "For information only"
+  },
+  "text0374": {
+    "fr": "Gestionnaire de fichiers",
+    "en": "File Manager"
+  },
+  "text0375": {
+    "fr": "Uploader",
+    "en": "Upload"
+  },
+  "text0376": {
+    "fr": "Fichier ajouté",
+    "en": "File uploaded"
+  },
+  "text0377": {
+    "fr": "Aucun fichier ici.",
+    "en": "No files here."
+  },
+  "text0378": {
+    "fr": "Partagé avec",
+    "en": "Shared with"
+  },
+  "text0379": {
+    "fr": "tous",
+    "en": "all"
+  },
+  "text0380": {
+    "fr": "Partager avec:",
+    "en": "Share with:"
+  },
+  "text0381": {
+    "fr": "Partager avec tous",
+    "en": "Share with all"
+  },
+  "text0382": {
+    "fr": "Annuler le partage",
+    "en": "Unshare"
+  },
+  "text0383": {
+    "fr": "Fichier",
+    "en": "File"
+  },
+  "text0384": {
+    "fr": "Sociétés partenaires",
+    "en": "Partner Companies"
+  },
+  "text0385": {
+    "fr": "Représentant",
+    "en": "Rep."
+  },
+  "text0386": {
+    "fr": "Catégories permanentes",
+    "en": "Permanent categories"
+  },
+  "text0387": {
+    "fr": "Catégories personnalisées",
+    "en": "Custom categories"
+  },
+  "text0388": {
+    "fr": "Disponibles dans les listes déroulantes des activités",
+    "en": "Available in activity dropdowns"
+  },
+  "text0389": {
+    "fr": "Filtrer par nom de société…",
+    "en": "Filter by company name…"
+  },
+  "text0390": {
+    "fr": "résultat(s)",
+    "en": "result(s)"
+  },
+  "text0391": {
+    "fr": "Nouvelle société",
+    "en": "New company"
+  },
+  "text0392": {
+    "fr": "Aucune société trouvée.",
+    "en": "No company found."
+  },
+  "text0393": {
+    "fr": "Société partenaire",
+    "en": "Partner company"
+  },
+  "text0394": {
+    "fr": "Liste utilisée pour les salaires de chauffeurs",
+    "en": "Used for driver salary entries"
+  },
+  "text0395": {
+    "fr": "Ajouter un chauffeur",
+    "en": "Add a driver"
+  },
+  "text0396": {
+    "fr": "Nom *",
+    "en": "Last Name *"
+  },
+  "text0397": {
+    "fr": "Prénom",
+    "en": "First Name"
+  },
+  "text0398": {
+    "fr": "N° Permis",
+    "en": "License No."
+  },
+  "text0399": {
+    "fr": "Permis de conduire (fichier)",
+    "en": "Driving License (file)"
+  },
+  "text0400": {
+    "fr": "Choisir fichier",
+    "en": "Choose file"
+  },
+  "text0401": {
+    "fr": "Aucun chauffeur enregistré.",
+    "en": "No drivers registered."
+  },
+  "text0402": {
+    "fr": "Nom",
+    "en": "Last Name"
+  },
+  "text0403": {
+    "fr": "Permis",
+    "en": "License"
+  },
+  "text0404": {
+    "fr": "Choisir",
+    "en": "Choose"
+  },
+  "text0405": {
+    "fr": "Voir",
+    "en": "View"
+  },
+  "text0406": {
+    "fr": "Permis de conduire",
+    "en": "Driving License"
+  },
+  "text0407": {
+    "fr": "Suppression impossible",
+    "en": "Cannot delete"
+  },
+  "text0408": {
+    "fr": "Ce chauffeur est lié à un ou plusieurs salaires dans les rapports. Supprimez d'abord les entrées de salaire correspondantes.",
+    "en": "This driver is linked to one or more salary entries in reports. Remove those salary entries first."
+  },
+  "text0409": {
+    "fr": "Action bloquée — chauffeur utilisé dans les rapports",
+    "en": "Action blocked — driver used in reports"
+  },
+  "text0410": {
+    "fr": "Compris",
+    "en": "Got it"
+  },
+  "text0411": {
+    "fr": "Profit minimum requis (retrait)",
+    "en": "Min. profit required (withdrawal)"
+  },
+  "text0412": {
+    "fr": "Paramètres opérationnels",
+    "en": "Operational Defaults"
+  },
+  "text0413": {
+    "fr": "Projection flottes",
+    "en": "Fleet Projection"
+  },
+  "text0414": {
+    "fr": "Prix carburant (F/L)",
+    "en": "Fuel Price (F/L)"
+  },
+  "text0415": {
+    "fr": "Label",
+    "en": "Label"
+  },
+  "text0416": {
+    "fr": "Définir par défaut",
+    "en": "Set as default"
+  },
+  "text0417": {
+    "fr": "Prix carburant",
+    "en": "Fuel Price"
+  },
+  "text0418": {
+    "fr": "Salaires chauffeurs",
+    "en": "Driver Salaries"
+  },
+  "text0419": {
+    "fr": "Base",
+    "en": "Base"
+  },
+  "text0420": {
+    "fr": "Salaire chauffeur",
+    "en": "Driver Salary"
+  },
+  "text0421": {
+    "fr": "Pays, Villes & Routes",
+    "en": "Countries, Cities & Routes"
+  },
+  "text0422": {
+    "fr": "Projection Flottes",
+    "en": "Fleet Projection"
+  },
+  "text0423": {
+    "fr": "Départs (Pays-Ville)",
+    "en": "Departures (Country-City)"
+  },
+  "text0424": {
+    "fr": "Destinations (Pays-Ville)",
+    "en": "Destinations (Country-City)"
+  },
+  "text0425": {
+    "fr": "Ville",
+    "en": "City"
+  },
+  "text0426": {
+    "fr": "Distances entre villes",
+    "en": "Route Distances"
+  },
+  "text0427": {
+    "fr": "Départ",
+    "en": "Departure"
+  },
+  "text0428": {
+    "fr": "Destination",
+    "en": "Destination"
+  },
+  "text0429": {
+    "fr": "Distance",
+    "en": "Route Distance"
+  },
+  "text0430": {
+    "fr": "Prix carburant par pays (F/L)",
+    "en": "Fuel Price by Country (F/L)"
+  },
+  "text0431": {
+    "fr": "Carburant",
+    "en": "Fuel Price"
+  },
+  "text0432": {
+    "fr": "Êtes-vous sûr de vouloir supprimer cet élément ? Cette action peut affecter les projections et les calculs.",
+    "en": "Are you sure you want to delete this item? This action may affect projections and calculations."
+  },
+  "text0433": {
+    "fr": "Cette action est irréversible.",
+    "en": "This action is irreversible."
+  },
+  "text0434": {
+    "fr": "Confirmer la suppression",
+    "en": "Confirm Delete"
+  },
+  "text0435": {
+    "fr": "Supprimer la categorie ?",
+    "en": "Delete category?"
+  },
+  "text0436": {
+    "fr": "Supprimer definitivement la categorie :",
+    "en": "Permanently delete category:"
+  },
+  "text0437": {
+    "fr": "Categorie personnalisee",
+    "en": "Custom category"
+  },
+  "text0438": {
+    "fr": "Produit agricole",
+    "en": "Agricultural product"
+  },
+  "text0439": {
+    "fr": "Nouveau produit",
+    "en": "New product"
+  },
+  "text0440": {
+    "fr": "Impossible de supprimer la derniere saison.",
+    "en": "Cannot delete the last season."
+  },
+  "text0441": {
+    "fr": "Saison agricole",
+    "en": "Agricultural season"
+  },
+  "text0442": {
+    "fr": "Profit = (Prix usine/gros − Prix bord champ − Transport usine) × Quantité min",
+    "en": "Profit = (Factory price − Farm gate − Transport) × Min. quantity"
+  },
+  "text0443": {
+    "fr": "Catégorie : Achat de marchandise",
+    "en": "Category: Merchandise purchase"
+  },
+  "text0444": {
+    "fr": "Produit",
+    "en": "Product"
+  },
+  "text0445": {
+    "fr": "Disponibilité",
+    "en": "Availability"
+  },
+  "text0446": {
+    "fr": "Prix bord champ",
+    "en": "Farm gate"
+  },
+  "text0447": {
+    "fr": "Transport usine",
+    "en": "Factory transport"
+  },
+  "text0448": {
+    "fr": "Prix usine / gros",
+    "en": "Factory / bulk"
+  },
+  "text0449": {
+    "fr": "Quantité min.",
+    "en": "Min. qty"
+  },
+  "text0450": {
+    "fr": "Achat min. (FCFA)",
+    "en": "Min. purchase"
+  },
+  "text0451": {
+    "fr": "Profit estimé",
+    "en": "Est. Profit"
+  },
+  "text0452": {
+    "fr": "Source : Prix officiels + moyennes marché agricole ivoirien",
+    "en": "Source: Official prices + Ivorian agricultural market averages"
+  },
+  "text0453": {
+    "fr": "Retour",
+    "en": "Back"
+  },
+  "text0454": {
+    "fr": "Catégorie permanente",
+    "en": "Permanent category"
+  },
+  "text0455": {
+    "fr": "— Sélectionner —",
+    "en": "— Select —"
+  },
+  "text0456": {
+    "fr": "Nouvelle saison",
+    "en": "New season"
+  },
+  "text0457": {
+    "fr": "produits",
+    "en": "products"
+  },
+  "text0458": {
+    "fr": "Télécharger PDF",
+    "en": "Download PDF"
+  },
+  "text0459": {
+    "fr": "Nouveau produit agricole",
+    "en": "New agricultural product"
+  },
+  "text0460": {
+    "fr": "ex: Cacao",
+    "en": "ex: Cacao"
+  },
+  "text0461": {
+    "fr": "Disponibilité (saison)",
+    "en": "Availability (season)"
+  },
+  "text0462": {
+    "fr": "ex: Oct – Sept",
+    "en": "ex: Oct – Sept"
+  },
+  "text0463": {
+    "fr": "Prix bord champ (F/kg)",
+    "en": "Farm gate (F/kg)"
+  },
+  "text0464": {
+    "fr": "Transport usine (F/kg)",
+    "en": "Factory transport (F/kg)"
+  },
+  "text0465": {
+    "fr": "Prix usine/gros (F/kg)",
+    "en": "Factory/wholesale (F/kg)"
+  },
+  "text0466": {
+    "fr": "Quantité min (kg)",
+    "en": "Min. quantity (kg)"
+  },
+  "text0467": {
+    "fr": "Enregistrer",
+    "en": "Save"
+  },
+  "text0468": {
+    "fr": "pour",
+    "en": "for"
+  },
+  "text0469": {
+    "fr": "Quantité min.",
+    "en": "Min. quantity"
+  },
+  "text0470": {
+    "fr": "Achat min. (F CFA)",
+    "en": "Min. purchase (FCFA)"
+  },
+  "text0471": {
+    "fr": "name",
+    "en": "nameEn"
+  },
+  "text0472": {
+    "fr": "saison",
+    "en": "saisonEn"
+  },
+  "text0473": {
+    "fr": "Cliquez sur une valeur pour la modifier directement dans le tableau",
+    "en": "Click any value to edit it directly in the table"
+  },
+  "text0474": {
+    "fr": "Source : Prix officiels + moyennes marché agricole ivoirien · 2025–2026",
+    "en": "Source: Official prices + Ivorian agricultural market averages · 2025–2026"
+  },
+  "text0475": {
+    "fr": "— Sélectionner une société —",
+    "en": "— Select a company —"
+  },
+  "text0476": {
+    "fr": "Tarifs de transport ALEPE → destinations · Tonnage initial : 35T",
+    "en": "Transport rates ALEPE → destinations · Initial tonnage: 35T"
+  },
+  "text0477": {
+    "fr": "Trajet (destination)",
+    "en": "Route (destination)"
+  },
+  "text0478": {
+    "fr": "Transport facturé (F)",
+    "en": "Charged transport (F)"
+  },
+  "text0479": {
+    "fr": "Trajet",
+    "en": "Route"
+  },
+  "text0480": {
+    "fr": "Transport",
+    "en": "Charged"
+  },
+  "text0481": {
+    "fr": "facturé",
+    "en": "transport"
+  },
+  "text0482": {
+    "fr": "Quantité",
+    "en": "Qty"
+  },
+  "text0483": {
+    "fr": "Cliquez sur n'importe quelle cellule pour la modifier — les profits se recalculent automatiquement",
+    "en": "Click any cell to edit it — profits recalculate automatically"
+  },
+  "text0484": {
+    "fr": "Source : Grille tarifaire KEDA CI 2025–2026",
+    "en": "Source: KEDA CI rate schedule 2025–2026"
+  },
+  "text0485": {
+    "fr": "Tableau disponible prochainement.",
+    "en": "Table coming soon."
+  },
+  "text0486": {
+    "fr": "Sélectionnez une société pour afficher les tarifs de transport.",
+    "en": "Select a company to display transport rates."
+  },
+  "text0487": {
+    "fr": "Sélectionnez un type de marchandise pour afficher le tableau.",
+    "en": "Select a merchandise type to display the table."
+  },
+  "text0488": {
+    "fr": "Fonctionnalite a venir",
+    "en": "Feature coming soon"
+  },
+  "text0489": {
+    "fr": "3 jours ouvrables",
+    "en": "3 business days"
+  },
+  "text0490": {
+    "fr": "1 jour ouvrable",
+    "en": "1 business day"
+  },
+  "text0491": {
+    "fr": "En cours",
+    "en": "In Process"
+  },
+  "text0492": {
+    "fr": "Accepté",
+    "en": "Accepted"
+  },
+  "text0493": {
+    "fr": "Rejeté",
+    "en": "Rejected"
+  },
+  "text0494": {
+    "fr": "Montant dépasse le profit disponible après minimum requis.",
+    "en": "Amount exceeds available profit after minimum threshold."
+  },
+  "text0495": {
+    "fr": "Demande retrait",
+    "en": "Withdrawal request"
+  },
+  "text0496": {
+    "fr": "Retrait de profits",
+    "en": "Profit Withdrawal"
+  },
+  "text0497": {
+    "fr": "Gérez vos demandes de retrait de profits",
+    "en": "Manage your profit withdrawal requests"
+  },
+  "text0498": {
+    "fr": "— Sélectionner investisseur —",
+    "en": "— Select investor —"
+  },
+  "text0499": {
+    "fr": "Profit disponible",
+    "en": "Available Profit"
+  },
+  "text0500": {
+    "fr": "Minimum requis",
+    "en": "Required Minimum"
+  },
+  "text0501": {
+    "fr": "Retraits acceptés",
+    "en": "Accepted Withdrawals"
+  },
+  "text0502": {
+    "fr": "Vous avez atteint le minimum de profit requis. Retrait impossible.",
+    "en": "You have reached the required minimum profit. Withdrawal not possible."
+  },
+  "text0503": {
+    "fr": "Nouvelle demande de retrait",
+    "en": "New withdrawal request"
+  },
+  "text0504": {
+    "fr": "Moyen de paiement",
+    "en": "Payment method"
+  },
+  "text0505": {
+    "fr": "Ajouter un moyen de paiement dans votre page paramètres",
+    "en": "Add a payment method in your settings page"
+  },
+  "text0506": {
+    "fr": "— Sélectionner un compte —",
+    "en": "— Select an account —"
+  },
+  "text0507": {
+    "fr": "Ex: 500 000",
+    "en": "Ex: 500,000"
+  },
+  "text0508": {
+    "fr": "Dépasse le seuil min",
+    "en": "Exceeds minimum threshold"
+  },
+  "text0509": {
+    "fr": "Preuve",
+    "en": "Evidence"
+  },
+  "text0510": {
+    "fr": "Aucune demande de retrait.",
+    "en": "No withdrawal requests."
+  },
+  "text0511": {
+    "fr": "Raison",
+    "en": "Reason"
+  },
+  "text0512": {
+    "fr": "Ajouter preuve",
+    "en": "Add evidence"
+  },
+  "text0513": {
+    "fr": "Réclamation",
+    "en": "Claim"
+  },
+  "text0514": {
+    "fr": "Raison du rejet",
+    "en": "Rejection reason"
+  },
+  "text0515": {
+    "fr": "Rejeter la demande",
+    "en": "Reject request"
+  },
+  "text0516": {
+    "fr": "Motif du rejet...",
+    "en": "Reason for rejection..."
+  },
+  "text0517": {
+    "fr": "Confirmer rejet",
+    "en": "Confirm Reject"
+  },
+  "text0518": {
+    "fr": "Déposer une réclamation",
+    "en": "Submit a claim"
+  },
+  "text0519": {
+    "fr": "Expliquez le problème et joignez une preuve de non-réception.",
+    "en": "Explain the issue and attach proof of non-receipt."
+  },
+  "text0520": {
+    "fr": "Décrivez votre réclamation...",
+    "en": "Describe your claim..."
+  },
+  "text0521": {
+    "fr": "Demande de retrait",
+    "en": "Withdrawal request"
+  },
+  "text0522": {
+    "fr": "Projection Flotte",
+    "en": "Fleet Projection"
+  },
+  "text0523": {
+    "fr": "Own Trucks vs Rental Trucks — Analyse d'investissement",
+    "en": "Own Trucks vs Rental Trucks — Investment Analysis"
+  },
+  "text0524": {
+    "fr": "+ Nouvelle Projection",
+    "en": "+ New Projection"
+  },
+  "text0525": {
+    "fr": "Aucune projection. Créez votre première analyse.",
+    "en": "No projections yet. Create your first fleet analysis."
+  },
+  "text0526": {
+    "fr": "Créer une projection",
+    "en": "Create projection"
+  },
+  "text0527": {
+    "fr": "Projection",
+    "en": "Projection"
+  },
+  "text0528": {
+    "fr": "Modifier projection",
+    "en": "Edit projection"
+  },
+  "text0529": {
+    "fr": "Nouvelle projection flotte",
+    "en": "New Fleet Projection"
+  },
+  "text0530": {
+    "fr": "Investissement flotte",
+    "en": "Fleet Investment"
+  },
+  "text0531": {
+    "fr": "Titre de la projection",
+    "en": "Projection Title"
+  },
+  "text0532": {
+    "fr": "Nombre de camions",
+    "en": "Number of Trucks"
+  },
+  "text0533": {
+    "fr": "Prix par camion (F CFA)",
+    "en": "Price per Truck (F CFA)"
+  },
+  "text0534": {
+    "fr": "Données de route",
+    "en": "Route Data"
+  },
+  "text0535": {
+    "fr": "Départ (Pays-Ville)",
+    "en": "Departure (Country-City)"
+  },
+  "text0536": {
+    "fr": "— Sélectionner le départ —",
+    "en": "— Select departure —"
+  },
+  "text0537": {
+    "fr": "Destination (Pays-Ville)",
+    "en": "Destination (Country-City)"
+  },
+  "text0538": {
+    "fr": "— Sélectionner la destination —",
+    "en": "— Select destination —"
+  },
+  "text0539": {
+    "fr": "Distance (km) — auto depuis Paramètres",
+    "en": "Route Distance (km) — auto from Settings"
+  },
+  "text0540": {
+    "fr": "Coûts carburant",
+    "en": "Fuel Costs"
+  },
+  "text0541": {
+    "fr": "Consommation (L/100km)",
+    "en": "Fuel Consumption (L/100km)"
+  },
+  "text0542": {
+    "fr": "Prix carburant F/L — auto depuis pays départ",
+    "en": "Fuel Price F/L — auto from departure country"
+  },
+  "text0543": {
+    "fr": "Auto depuis pays départ ou défaut",
+    "en": "Auto from departure country or default"
+  },
+  "text0544": {
+    "fr": "Dépenses de route/trajet",
+    "en": "Road Expenses/trip"
+  },
+  "text0545": {
+    "fr": "Revenus & Opérations",
+    "en": "Revenue & Operations"
+  },
+  "text0546": {
+    "fr": "Revenu par trajet (F CFA)",
+    "en": "Revenue per Trip (F CFA)"
+  },
+  "text0547": {
+    "fr": "Coût camion location/trajet",
+    "en": "Rental Truck Cost/trip"
+  },
+  "text0548": {
+    "fr": "Salaire chauffeur/mois — Paramètres",
+    "en": "Driver Salary/month — from Settings"
+  },
+  "text0549": {
+    "fr": "Défaut",
+    "en": "Default"
+  },
+  "text0550": {
+    "fr": "Trajets par mois (défaut: 3)",
+    "en": "Trips per Month (default: 3)"
+  },
+  "text0551": {
+    "fr": "Aperçu en temps réel",
+    "en": "Live Preview"
+  },
+  "text0552": {
+    "fr": "Carburant/trajet",
+    "en": "Fuel/trip"
+  },
+  "text0553": {
+    "fr": "Profit net/trajet",
+    "en": "Net profit/trip"
+  },
+  "text0554": {
+    "fr": "Profit/camion/mois",
+    "en": "Profit/truck/mo"
+  },
+  "text0555": {
+    "fr": "Profit flotte/mois",
+    "en": "Fleet profit/mo"
+  },
+  "text0556": {
+    "fr": "Profit flotte/an",
+    "en": "Fleet profit/yr"
+  },
+  "text0557": {
+    "fr": "Commission/trajet",
+    "en": "Commission/trip"
+  },
+  "text0558": {
+    "fr": "Sauvegarder la projection",
+    "en": "Save Projection"
+  },
+  "text0559": {
+    "fr": "Liste",
+    "en": "List"
+  },
+  "text0560": {
+    "fr": "Invest. Total",
+    "en": "Total Investment"
+  },
+  "text0561": {
+    "fr": "Flotte",
+    "en": "Fleet Size"
+  },
+  "text0562": {
+    "fr": "Prix/camion",
+    "en": "Price/truck"
+  },
+  "text0563": {
+    "fr": "Revenu/trajet",
+    "en": "Revenue/trip"
+  },
+  "text0564": {
+    "fr": "Dépenses route",
+    "en": "Road expenses"
+  },
+  "text0565": {
+    "fr": "Marge nette/trajet",
+    "en": "Net margin/trip"
+  },
+  "text0566": {
+    "fr": "Coût location",
+    "en": "Rental cost"
+  },
+  "text0567": {
+    "fr": "Récupération sur 12 mois",
+    "en": "12-Month Recovery"
+  },
+  "text0568": {
+    "fr": "Verdict : Own Fleet gagne",
+    "en": "Verdict: Own Fleet Wins"
+  },
+  "text0569": {
+    "fr": "Sélectionnez un investisseur",
+    "en": "Select an investor"
+  },
+  "text0570": {
+    "fr": "Ajoutez un titre",
+    "en": "Add a title"
+  },
+  "text0571": {
+    "fr": "Catégorie: Projection / Forecast",
+    "en": "Category: Projection / Forecast"
+  },
+  "text0572": {
+    "fr": "Résumé Global",
+    "en": "Global Summary"
+  },
+  "text0573": {
+    "fr": "Revenus",
+    "en": "Revenue"
+  },
+  "text0574": {
+    "fr": "Résumé par Mois",
+    "en": "Monthly Summary"
+  },
+  "text0575": {
+    "fr": "Mois",
+    "en": "Month"
+  },
+  "text0576": {
+    "fr": "Détail des Activités",
+    "en": "Activity Details"
+  },
+  "text0577": {
+    "fr": "mois",
+    "en": "months"
+  },
+  "text0578": {
+    "fr": "📊 Projections",
+    "en": "📊 Forecast"
+  },
+  "text0579": {
+    "fr": "Planifiez et visualisez les performances futures",
+    "en": "Plan and visualize future performance"
+  },
+  "text0580": {
+    "fr": "+ Nouvelle Projection",
+    "en": "+ New Forecast"
+  },
+  "text0581": {
+    "fr": "Aucune projection",
+    "en": "No forecasts yet"
+  },
+  "text0582": {
+    "fr": "Créez votre première projection ci-dessus",
+    "en": "Create your first forecast above"
+  },
+  "text0583": {
+    "fr": "L'administrateur n'a pas encore créé de projection",
+    "en": "No forecasts have been created yet"
+  },
+  "text0584": {
+    "fr": "mois",
+    "en": "mo."
+  },
+  "text0585": {
+    "fr": "Total Investi",
+    "en": "Total Invested"
+  },
+  "text0586": {
+    "fr": "Résumé par Mois",
+    "en": "Monthly Breakdown"
+  },
+  "text0587": {
+    "fr": "Investi",
+    "en": "Inv."
+  },
+  "text0588": {
+    "fr": "Revenus",
+    "en": "Rev."
+  },
+  "text0589": {
+    "fr": "Dépenses",
+    "en": "Exp."
+  },
+  "text0590": {
+    "fr": "Modifier Projection",
+    "en": "Edit Forecast"
+  },
+  "text0591": {
+    "fr": "Nouvelle Projection",
+    "en": "New Forecast"
+  },
+  "text0592": {
+    "fr": "Titre *",
+    "en": "Title *"
+  },
+  "text0593": {
+    "fr": "Ex: Projection Q1 2026",
+    "en": "E.g. Q1 2026 Forecast"
+  },
+  "text0594": {
+    "fr": "Investisseur *",
+    "en": "Investor *"
+  },
+  "text0595": {
+    "fr": "Nombre de mois",
+    "en": "Number of months"
+  },
+  "text0596": {
+    "fr": "Mois",
+    "en": "Months"
+  },
+  "text0597": {
+    "fr": "Rev.",
+    "en": "Rev."
+  },
+  "text0598": {
+    "fr": "Dép.",
+    "en": "Exp."
+  },
+  "text0599": {
+    "fr": "Description libre...",
+    "en": "Free description..."
+  },
+  "text0600": {
+    "fr": "Investi (F CFA)",
+    "en": "Invested (F CFA)"
+  },
+  "text0601": {
+    "fr": "Revenus (F CFA)",
+    "en": "Revenue (F CFA)"
+  },
+  "text0602": {
+    "fr": "Dépenses (F CFA)",
+    "en": "Expenses (F CFA)"
+  },
+  "text0603": {
+    "fr": "Ajouter une activité",
+    "en": "Add activity"
+  },
+  "text0604": {
+    "fr": "Supprimer definitivement la projection :",
+    "en": "Permanently delete projection:"
+  },
+  "text0605": {
+    "fr": "Supprimer l activite ?",
+    "en": "Delete activity?"
+  },
+  "text0606": {
+    "fr": "Supprimer definitivement l activite :",
+    "en": "Permanently delete activity:"
+  },
+  "text0607": {
+    "fr": "Activite de projection",
+    "en": "Projection activity"
+  },
+  "text0608": {
+    "fr": "Remplissez les deux champs.",
+    "en": "Fill in both fields."
+  },
+  "text0609": {
+    "fr": "Connexion réussie ! Chargement...",
+    "en": "Connected! Loading..."
+  },
+  "text0610": {
+    "fr": "Erreur",
+    "en": "Error"
+  },
+  "text0611": {
+    "fr": "Vérifiez l'URL et la clé.",
+    "en": "Check URL and key."
+  },
+  "text0612": {
+    "fr": "🔗 Connexion base de données",
+    "en": "🔗 Database connection"
+  },
+  "text0613": {
+    "fr": "Connectez votre projet Supabase pour synchroniser les données entre tous les utilisateurs en temps réel.",
+    "en": "Connect your Supabase project to sync data across all users in real time."
+  },
+  "text0614": {
+    "fr": "Configuration Supabase (gratuit)",
+    "en": "Supabase Setup (free)"
+  },
+  "text0615": {
+    "fr": "Créez un compte sur",
+    "en": "Create account at"
+  },
+  "text0616": {
+    "fr": "Créez un nouveau projet",
+    "en": "Create a new project"
+  },
+  "text0617": {
+    "fr": "Dans SQL Editor, exécutez:",
+    "en": "In SQL Editor, run:"
+  },
+  "text0618": {
+    "fr": "Copiez l'URL et la clé anon depuis",
+    "en": "Copy URL and anon key from"
+  },
+  "text0619": {
+    "fr": "Vérification...",
+    "en": "Checking..."
+  },
+  "text0620": {
+    "fr": "Connecter",
+    "en": "Connect"
+  },
+  "text0621": {
+    "fr": "Utiliser sans backend (localStorage)",
+    "en": "Use without backend (localStorage)"
+  },
+  "text0622": {
+    "fr": "Finance",
+    "en": "Finance"
+  },
+  "text0623": {
+    "fr": "Retrait",
+    "en": "Withdraw"
+  },
+  "text0624": {
+    "fr": "Projections",
+    "en": "Projections"
+  },
+  "text0625": {
+    "fr": "Projection Marchandises",
+    "en": "Projection for Goods"
+  },
+  "text0626": {
+    "fr": "Secteurs d'Activité",
+    "en": "Activity Sectors"
+  },
+  "text0627": {
+    "fr": "Catégories permanentes de Thunderfam Investment",
+    "en": "Thunderfam Investment permanent categories"
+  },
+  "text0628": {
+    "fr": "catégories au total",
+    "en": "categories total"
+  },
+  "text0629": {
+    "fr": "EN",
+    "en": "FR"
+  },
+  "text0630": {
+    "fr": "Reconfigurer la connexion base de données ?",
+    "en": "Reconfigure database connection?"
+  },
+  "text0631": {
+    "fr": "Synchronisé",
+    "en": "Synced"
+  },
+  "text0632": {
+    "fr": "Sauvegarde...",
+    "en": "Saving..."
+  },
+  "text0633": {
+    "fr": "Erreur sync",
+    "en": "Sync error"
+  },
+  "text0634": {
+    "fr": "Chargement",
+    "en": "Loading"
+  },
+  "extra634": {
+    "fr": "Données insuffisantes",
+    "en": "Insufficient data"
+  },
+  "extra635": {
+    "fr": "Erreur de rendu",
+    "en": "Rendering error"
+  },
+  "extra636": {
+    "fr": "Réessayer",
+    "en": "Try again"
+  },
+  "extra637": {
+    "fr": "Vous pouvez Investir dans",
+    "en": "You can invest in"
+  },
+  "extra638": {
+    "fr": "ces secteurs d’activité",
+    "en": "these business sectors"
+  },
+  "extra639": {
+    "fr": "ces secteurs d'activité",
+    "en": "these business sectors"
+  },
+  "extra640": {
+    "fr": "Investir en Côte d’Ivoire · Abidjan · 2024",
+    "en": "Invest in Côte d’Ivoire · Abidjan · 2024"
+  },
+  "extra641": {
+    "fr": "Investir en Côte d'Ivoire · Abidjan · 2024",
+    "en": "Invest in Côte d'Ivoire · Abidjan · 2024"
+  },
+  "extra642": {
+    "fr": "fichier(s) · Cliquez pour prévisualiser",
+    "en": "file(s) · Click to preview"
+  },
+  "extra643": {
+    "fr": "＋ Ajouter",
+    "en": "＋ Add"
+  },
+  "extra644": {
+    "fr": "Camion en location (F CFA)",
+    "en": "Rental Truck (F CFA)"
+  },
+  "extra645": {
+    "fr": "Commission",
+    "en": "Commission"
+  },
+  "extra646": {
+    "fr": "(Sous-contrat → 100 000 F)",
+    "en": "(Sub Contract → 100 000 F)"
+  },
+  "extra647": {
+    "fr": "(Contrat propre → 0 F)",
+    "en": "(Own Contract → 0 F)"
+  },
+  "extra648": {
+    "fr": "Frais de route (F CFA) — défaut : 100 000",
+    "en": "Road Expenses (F CFA) — default: 100,000"
+  },
+  "extra649": {
+    "fr": "Carburant — Quantité (L) × Prix/L (F)",
+    "en": "Fuel Consumption — Qty (L) × Price/L (F)"
+  },
+  "extra650": {
+    "fr": "Prime chauffeur (F CFA) — défaut : 56 000",
+    "en": "Driver Bonus (F CFA) — default: 56,000"
+  },
+  "extra651": {
+    "fr": "INVESTI TOTAL",
+    "en": "TOTAL INVESTED"
+  },
+  "extra652": {
+    "fr": "Salaire chauffeur",
+    "en": "Driver Salary"
+  },
+  "extra653": {
+    "fr": "— 200 000 F/mois (camion propre uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel.",
+    "en": "— 200,000 F/month (own truck only). Add to Additional Expenses in the monthly report."
+  },
+  "extra654": {
+    "fr": "F/mois",
+    "en": "F/month"
+  },
+  "extra655": {
+    "fr": "Salaire chauffeur — Camion propre",
+    "en": "Driver Salary — Own Truck"
+  },
+  "extra656": {
+    "fr": "Annuler",
+    "en": "Cancel"
+  },
+  "extra657": {
+    "fr": "Trajets",
+    "en": "trips"
+  },
+  "extra658": {
+    "fr": "Filtrer :",
+    "en": "Filter:"
+  },
+  "extra659": {
+    "fr": "⚖ Réclamation",
+    "en": "⚖ Claim"
+  },
+  "extra660": {
+    "fr": "→ En cours",
+    "en": "→ In Process"
+  },
+  "extra661": {
+    "fr": "✕ Rejeter",
+    "en": "✕ Reject"
+  },
+  "extra662": {
+    "fr": "✓ Accepter + Justificatif",
+    "en": "✓ Accept + Proof"
+  },
+  "extra663": {
+    "fr": "camions ·",
+    "en": "trucks ·"
+  },
+  "extra664": {
+    "fr": "trajets/mois ·",
+    "en": "trips/mo ·"
+  },
+  "extra665": {
+    "fr": "Amortissement : ~",
+    "en": "Payback: ~"
+  },
+  "extra666": {
+    "fr": "mois",
+    "en": "months"
+  },
+  "extra667": {
+    "fr": "trajets/mois",
+    "en": "trips/month"
+  },
+  "extra668": {
+    "fr": "🚛 Camions propres",
+    "en": "🚛 Own Trucks"
+  },
+  "extra669": {
+    "fr": "📋 Camions en location",
+    "en": "📋 Rental Trucks"
+  },
+  "extra670": {
+    "fr": "⏱ Amortissement",
+    "en": "⏱ Payback"
+  },
+  "extra671": {
+    "fr": "📋 Location",
+    "en": "📋 Rental"
+  },
+  "extra672": {
+    "fr": "Modifier",
+    "en": "Edit"
+  },
+  "extra673": {
+    "fr": "Imprimer",
+    "en": "Print"
+  },
+  "extra674": {
+    "fr": "Télécharger",
+    "en": "Download"
+  },
+  "extra675": {
+    "fr": "Analyse d’investissement de flotte",
+    "en": "Fleet Investment Analysis"
+  },
+  "extra676": {
+    "fr": "Investissement de flotte",
+    "en": "Fleet Investment"
+  },
+  "extra677": {
+    "fr": "Projection",
+    "en": "Projection"
+  },
+  "extra678": {
+    "fr": "Camions",
+    "en": "Trucks"
+  },
+  "extra679": {
+    "fr": "corridor ·",
+    "en": "corridor ·"
+  },
+  "extra680": {
+    "fr": "Camions propres",
+    "en": "Own Trucks"
+  },
+  "extra681": {
+    "fr": "Modèle opérationnel complet",
+    "en": "Full operational model"
+  },
+  "extra682": {
+    "fr": "Profit / Camion / Mois",
+    "en": "Profit / Truck / Month"
+  },
+  "extra683": {
+    "fr": "Camions en location",
+    "en": "Rental Trucks"
+  },
+  "extra684": {
+    "fr": "Modèle à commission",
+    "en": "Commission-based model"
+  },
+  "extra685": {
+    "fr": "Différence",
+    "en": "Difference"
+  },
+  "extra686": {
+    "fr": "— Durée d’amortissement",
+    "en": "— Payback Period"
+  },
+  "extra687": {
+    "fr": "F récupérés sur",
+    "en": "F recovered out of"
+  },
+  "extra688": {
+    "fr": "F investis",
+    "en": "F investment"
+  },
+  "extra689": {
+    "fr": "Récupération cumulée mois par mois (camions propres)",
+    "en": "Month-by-Month Cumulative Recovery (Own Trucks)"
+  },
+  "extra690": {
+    "fr": "Mois",
+    "en": "Month"
+  },
+  "extra691": {
+    "fr": "Exploiter",
+    "en": "Operating with"
+  },
+  "extra692": {
+    "fr": "camions propres génère",
+    "en": "own trucks generates"
+  },
+  "extra693": {
+    "fr": "fois plus de revenus mensuels",
+    "en": "× more monthly revenue"
+  },
+  "extra694": {
+    "fr": "que la location sur le",
+    "en": "than a rental model on the"
+  },
+  "extra695": {
+    "fr": "corridor. Avec",
+    "en": "corridor. With"
+  },
+  "extra696": {
+    "fr": "camions, la flotte rapporte",
+    "en": "trucks, the fleet earns"
+  },
+  "extra697": {
+    "fr": "F par an",
+    "en": "F annually"
+  },
+  "extra698": {
+    "fr": ", récupérant",
+    "en": ", recovering"
+  },
+  "extra699": {
+    "fr": "% de l’investissement total sur les 12 premiers mois",
+    "en": "% of the full investment within the first 12 months"
+  },
+  "extra700": {
+    "fr": "— et atteignant l’amortissement complet en environ",
+    "en": "— and reaching full payback in approximately"
+  },
+  "extra701": {
+    "fr": "ans",
+    "en": "years"
+  },
+  "extra702": {
+    "fr": "En comparaison, la location rapporte seulement",
+    "en": "By contrast, rental operations yield only"
+  },
+  "extra703": {
+    "fr": "F par an — récupérant seulement",
+    "en": "F per year — recovering just"
+  },
+  "extra704": {
+    "fr": "la première année, avec un amortissement sur près de",
+    "en": "in Year 1, with a payback stretching to nearly"
+  },
+  "extra705": {
+    "fr": "act. ·",
+    "en": "act. ·"
+  },
+  "extra706": {
+    "fr": "Activité",
+    "en": "Activity"
+  },
+  "extra707": {
+    "fr": "Profit :",
+    "en": "Profit:"
+  },
+  "extra708": {
+    "fr": "Description",
+    "en": "Description"
+  },
+  "extra709": {
+    "fr": "Chargement depuis la base de données...",
+    "en": "Loading from database..."
+  },
+  "extra710": {
+    "fr": "Paramètres → API",
+    "en": "Settings → API"
+  },
+  "extra711": {
+    "fr": "URL du projet",
+    "en": "Project URL"
+  },
+  "extra712": {
+    "fr": "Clé anonyme / publique",
+    "en": "Anon / Public Key"
+  },
+  "extra713": {
+    "fr": "📐 Profit = Tonnage − Transport facturé",
+    "en": "📐 Profit = Tonnage − Invoiced transport"
+  },
+  "extra714": {
+    "fr": "Route(",
+    "en": "Road("
+  },
+  "extra715": {
+    "fr": "Carburant(",
+    "en": "Fuel("
+  },
+  "extra716": {
+    "fr": "Prime(",
+    "en": "Bonus("
+  },
+  "extra717": {
+    "fr": "Location(",
+    "en": "Rental("
+  },
+  "alias718": {
+    "fr": "Frais de route (F CFA) — défaut : 100 000",
+    "en": "Road Expenses (F CFA) — default: 100,000",
+    "original": "Road Expenses (F CFA) — défaut : 100 000"
+  },
+  "alias719": {
+    "fr": "Carburant — Quantité (L) × Prix/L (F)",
+    "en": "Fuel Consumption — Qty (L) × Price/L (F)",
+    "original": "Fuel Consumption — Qté (L) × Prix/L (F)"
+  },
+  "alias720": {
+    "fr": "Prime chauffeur (F CFA) — défaut : 56 000",
+    "en": "Driver Bonus (F CFA) — default: 56,000",
+    "original": "Driver Bonus (F CFA) — défaut : 56 000"
+  },
+  "alias721": {
+    "fr": "— 200 000 F/mois (camion propre uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel.",
+    "en": "— 200,000 F/month (own truck only). Add to Additional Expenses in the monthly report.",
+    "original": "— 200 000 F/mois (Own Truck uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel."
+  },
+  "term722": {
+    "fr": "Camion propre",
+    "en": "Own Truck"
+  },
+  "term723": {
+    "fr": "Camion en location",
+    "en": "Rental Truck"
+  },
+  "term724": {
+    "fr": "Contrat propre",
+    "en": "Own Contract"
+  },
+  "term725": {
+    "fr": "Sous-contrat",
+    "en": "Sub Contract"
+  },
+  "term726": {
+    "fr": "Location",
+    "en": "Rental"
+  },
+  "term727": {
+    "fr": "Propre",
+    "en": "Own"
+  },
+  "final728": {
+    "fr": "Administrateur",
+    "en": "Administrator"
+  },
+  "final729": {
+    "fr": "Gestionnaire",
+    "en": "Manager"
+  },
+  "final730": {
+    "fr": "Investisseur",
+    "en": "Investor"
+  },
+  "final731": {
+    "fr": "Frais de route",
+    "en": "Road Expenses"
+  },
+  "final732": {
+    "fr": "Carburant",
+    "en": "Fuel"
+  },
+  "final733": {
+    "fr": "Prime",
+    "en": "Bonus"
+  },
+  "final734": {
+    "fr": "🚗 Salaire chauffeur :",
+    "en": "🚗 Driver Salary:"
+  },
+  "final735": {
+    "fr": "Par défaut",
+    "en": "DEFAULT"
+  },
+  "final736": {
+    "fr": "trajets",
+    "en": "trips"
+  },
+  "final737": {
+    "fr": "Le modèle propre est",
+    "en": "Own is"
+  },
+  "final738": {
+    "fr": "fois plus rentable",
+    "en": "× more profitable"
+  },
+  "final739": {
+    "fr": "-Camions : Revenu annuel",
+    "en": "-Truck Annual Revenue"
+  },
+  "final740": {
+    "fr": "mois (",
+    "en": "months ("
+  },
+  "final741": {
+    "fr": "mois)",
+    "en": "months)"
+  },
+  "final742": {
+    "fr": "Notre commission",
+    "en": "Our commission"
+  },
+  "final743": {
+    "fr": "Aucun coût de carburant",
+    "en": "No fuel costs"
+  },
+  "final744": {
+    "fr": "Aucun salaire chauffeur",
+    "en": "No driver salary"
+  },
+  "final745": {
+    "fr": "Rentabilité",
+    "en": "Payback"
+  },
+  "final746": {
+    "fr": "Indicateur",
+    "en": "Metric"
+  },
+  "final747": {
+    "fr": "Avantage",
+    "en": "Advantage"
+  },
+  "final748": {
+    "fr": "Par camion / mois",
+    "en": "Per Truck / Month"
+  },
+  "final749": {
+    "fr": "Tous les camions / mois",
+    "en": "Fleet / Month"
+  },
+  "final750": {
+    "fr": "Par camion / an",
+    "en": "Per Truck / Year"
+  },
+  "final751": {
+    "fr": "Flotte / an",
+    "en": "Fleet / Year"
+  },
+  "final752": {
+    "fr": "Bénéfice par mois",
+    "en": "Profit per month"
+  },
+  "final753": {
+    "fr": "Transport facturé",
+    "en": "Invoiced transport"
+  },
+  "final754": {
+    "fr": "Quantité",
+    "en": "Quantity"
+  },
+  "final755": {
+    "fr": "Trajet",
+    "en": "Route"
+  },
+  "currencyGBP": {
+    "fr": "Livre Sterling",
+    "en": "Pound Sterling"
+  },
+  "currencyUSD": {
+    "fr": "Dollar US",
+    "en": "US Dollar"
+  },
+  "currencyRUB": {
+    "fr": "Rouble",
+    "en": "Ruble"
+  },
+  "auditCreate": {
+    "fr": "Création",
+    "en": "Create",
+    "original": "create"
+  },
+  "auditUpdate": {
+    "fr": "Modification",
+    "en": "Update",
+    "original": "update"
+  },
+  "auditDelete": {
+    "fr": "Suppression",
+    "en": "Delete",
+    "original": "delete"
+  },
+  "auditLock": {
+    "fr": "Verrouillage",
+    "en": "Lock",
+    "original": "lock"
+  }
+}

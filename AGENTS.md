@@ -81,7 +81,8 @@ Default section order:
 - `src/reportCalculations.js` owns report totals and capital reconciliation.
 - `src/reportCalculations.test.mjs` owns financial regression tests.
 - `package.json` owns development, verification, and build commands.
-- This root document owns all repository rules until child DOX documents are introduced.
+- `src/localization.js` owns catalog discovery, missing-language fallback, and shared business-data translation; `LOCALIZATION.md` documents adding languages and report PDF behavior.
+- `src/locales/AGENTS.md` owns language catalog edits; other source paths remain owned by this root document.
 
 ## Financial Contract
 
@@ -108,6 +109,10 @@ Default section order:
 
 ## User Preferences and Work Guidance
 
+- UI and financial print/export documents must use the selected locale. Translate business categories/descriptions at display time; preserve stored financial data, companies, routes, and unknown free text.
+- Discover languages from `src/locales/*.json`; new languages need supplied translations, with English fallback for missing UI messages. Per-field translations and locale `data` dictionaries support additional business terminology.
+- The Finance PDF action opens the translated browser print document; the user selects Save as PDF. Do not label an HTML download as a PDF.
+
 - Read the applicable DOX chain before editing; update it after behavior or workflow changes.
 - Check available skills and tooling before work and use relevant installed engineering skills.
 - Commit changes and push to GitHub `main` after requested modifications and applicable verification.
@@ -116,11 +121,11 @@ Default section order:
 
 ## Verification
 
-- `npm test`: title translation/fallback tests and financial regression tests, including June/July repair, propagation through following reports, investor isolation, and zero/negative balances.
+- `npm test`: localization/catalog parity, future-locale fallback, actual financial print-renderer translation, title translation, and financial capital propagation tests.
 - `npm run build`: Vite production build; install locked dependencies with `npm ci` when needed. Report a blocked build honestly.
 - `npm run lint`: repository ESLint check; distinguish existing violations from changes introduced by the task.
 - `git diff --check`: whitespace validation before committing.
 
 ## Child DOX Index
 
-- No child AGENTS.md files currently exist. This document owns `src/`, root configuration, and maintained documentation.
+- `src/locales/AGENTS.md` — Locale catalogs, message IDs, language registration, and terminology contracts. This root document owns other `src/` paths, root configuration, and maintained documentation.

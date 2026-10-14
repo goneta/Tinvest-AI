@@ -1,3 +1,4 @@
+import { getTranslations, uiText, translateData, supportedLanguages, translateText, escapeHTML, translateMarkup } from "./localization.js";
 import { translateReportTitle } from "./reportTitles.js";
 import "./reportInteractions.css";
 import { calcReport, getNextOpeningInvestment, reconcileReportCapital } from "./reportCalculations.js";
@@ -120,50 +121,13 @@ const INIT={
 };
 
 // ── TRANSLATIONS ────────────────────────────────────────────────────────────────
-const T={
-  fr:{
-    nav:{dashboard:"Tableau de Bord",reports:"Rapports",analytics:"Analyses",investors:"Investisseurs",users:"Utilisateurs",audit:"Journal d'Audit",categories:"Catégories",forecast:"Projections",fleetProjection:"Projection Flottes",settings:"Paramètres"},
-    login:{title:"Connexion",username:"Utilisateur",password:"Mot de passe",btn:"Se connecter",error:"Identifiants incorrects.",register:"Inscription Investisseur",logout:"Déconnexion"},
-    register:{title:"Inscription",name:"Nom complet",username:"Identifiant",email:"Email",password:"Mot de passe",phone:"Téléphone",country:"Pays",address:"Adresse",representative:"Représentant",initialInv:"Investissement initial (F CFA)",btn:"Soumettre",success:"Demande envoyée ! En attente de validation Admin.",backLogin:"Retour connexion"},
-    dashboard:{overviewSub:"Vue d'ensemble — Thunderfam Investment",capitalEvolution:"Évolution Capital",profitsByReport:"Profits par Rapport",totalInvested:"Capital Total",netProfit:"Profit Net Cumulé",monthlyProfit:"Profit du Mois",activeInvestors:"Investisseurs Actifs",evolution:"Évolution",recentActivity:"Activités Récentes",roi:"ROI Annualisé",avgGrowth:"Croissance Moy.",bestMonth:"Meilleur Mois",goal:"Objectif Profit",returnRate:"Rendement",overview:"Vue d'ensemble",perReport:"/ rapport",actives:"Actifs",currentCapital:"Capital Actuel",cumulativeProfit:"Profit Cumulé",monthProfit:"Profit du Mois",roiTotal:"ROI Total"},
-    report:{title:"Rapports",investment:"Capital d'Ouverture",addExpense:"+ Dépense",closeReport:"Fermer",unlock:"Déverrouiller",openReport:"+ Rapport",additionalExpenses:"Dépenses Add.",newInvestment:"Nouvel Invest.",totalRevenue:"Total Revenus",totalExpenses:"Total Dépenses",printReport:"Imprimer",downloadPDF:"PDF",myCerts:"Certificat",signReport:"Approuver",unsignReport:"Retirer signature",signed:"Approuvé",myReports:"Mes Rapports",addAttachment:"Joindre",netProfit:"Profit Net",noReports:"Aucun rapport disponible.",personalReports:"Vos rapports financiers",historyTitle:"Historique des rapports",activities:"Activités",autoProfit:"Profit auto :",approvedBy:"Approuvé par",signatureBlock:"Signatures Électroniques",summary:"Résumé Final",openingCapital:"Capital d'ouverture",totalInvestment:"Nouvel Investissement",newLabel:"Titre du rapport",shareInfo:"Partagez ce code avec le destinataire.",timeline:"Frise chronologique"},
-    activity:{add:"+ Activité",date:"Date",category:"Catégorie",description:"Description",invested:"Investi",revenue:"Revenu",expenses:"Dépenses",profit:"Profit",save:"Sauvegarder",cancel:"Annuler",expLabel:"Libellé",expAmount:"Montant"},
-    investor:{add:"Ajouter",logoLabel:"Logo de l'Investisseur",uploadLogo:"Charger un logo (PNG, JPG, SVG)",removeLogo:"Supprimer",currencyDesc:"Devise préférée (rapports & contrat)",catsLabel:"Catégories d'investissement & montants",amountLabel:"Montant (F CFA)",noCats:"Aucune catégorie — cliquez sur Ajouter",goalAmountLabel:"Montant objectif (F CFA)",goalLabelField:"Libellé de l'objectif",goalHint:"Ex: Profit cible 2026",name:"Nom",initial:"Invest. Initial",current:"Capital Actuel",profit:"Profit Cumulé",history:"Historique",address:"Adresse",phone:"Téléphone",representative:"Représentant",email:"Email",country:"Pays",editInfo:"Modifier",setGoal:"Fixer objectif",timeline:"Frise chronologique",consolidatedView:"Vue Consolidée",consolidatedCapital:"Capital Total Consolidé",consolidatedProfit:"Profit Total Cumulé",investorCount:"Nombre Investisseurs",activePortfolios:"Portefeuilles actifs",ranking:"Classement par Profit",subtitle:"Portefeuilles & objectifs",profitEvolution:"Évolution profits",goalDefault:"Objectif",linkedInvestor:"Investisseur lié",totalGrowth:"croissance total",investCalc:"Investissement Initial (calculé)",preferredCurrency:"Devise préférée",fcfaOnly:"F CFA seulement",rateLabel:"Taux actuel :"},
-    users:{title:"Utilisateurs",emailCol:"Email",actions:"Actions",pending:"En attente",approve:"Approuver",reject:"Rejeter",disable:"Désactiver",enable:"Activer",resetPwd:"MDP",newUser:"+ Utilisateur",role:"Rôle",status:"Statut",editUser:"Modifier",userCol:"Utilisateur",linkedInvestor:"Investisseur lié",newPwd:"Nouveau mot de passe",you:"Vous",subtitle:"RBAC — Contrôle d'accès",nameField:"Nom *",usernameField:"Identifiant *",pwdField:"Mot de passe *",nameLabel:"Nom",noneOpt:"— Aucun —"},
-    analytics:{title:"Analyses & Graphiques",overviewSub:"Visualisations & outils de projection",capitalEvolution:"Évolution du Capital",noExpenses:"Aucune dépense enregistrée",avgRateLabel:"Taux moyen constaté :",perMonth:"/ mois",projResults:"Résultats estimés sur 6 mois",baseInv:"Base d'investissement",netProfitEvol:"Évolution du profit net",copied:"Copié !",preview:"Prévisualiser",emailDesc:"Générez un email HTML des 3 derniers rapports.",projection:"Simulateur de Rendement",compare:"Comparaison Périodes",charts:"Graphiques Interactifs",profitCurve:"Courbe de Profit",revenueVsExp:"Revenus vs Dépenses",expByCategory:"Dépenses par Catégorie",period1:"Période 1",period2:"Période 2",investExtra:"Investissement supplémentaire",estimatedProfit:"Profit estimé (6 mois)",projectionResult:"Résultat projection",baseRate:"Taux de rendement moyen",emailSummary:"Résumé Email",copyHTML:"Copier HTML"},
-    audit:{title:"Journal d'Audit",action:"Action",user:"Utilisateur",target:"Cible",date:"Date",type:"Type",all:"Tous",filter:"Filtrer",noEntries:"Aucune entrée.",subtitle:"Traçabilité complète"},
-    settings:{title:"Paramètres",preview:"Aperçu",lastUpdate:"MAJ :",toLightMode:"Mode clair",toDarkMode:"Mode sombre",categoriesDesc:"Catégories utilisées dans les activités et les contrats.",currenciesDesc:"F CFA toujours affiché. Sélectionnez les devises supplémentaires.",currencies:"Devises",allCurrencies:"Toutes",noCurrencies:"F CFA uniquement",rates:"Taux de Change",adminPwd:"Mot de passe Admin",language:"Langue",save:"Sauvegarder",autoRates:"Actualiser",ratesUpdated:"Taux mis à jour ✓",ratesFailed:"Erreur",theme:"Thème",dark:"Sombre",light:"Clair",dashWidgets:"Widgets",categoriesMgmt:"Gestion des Catégories",addCategory:"+ Catégorie",deleteCategory:"Supprimer",security:"Sécurité Admin",subtitle:"Configuration système",adminOnly:"Seul un Administrateur peut modifier les paramètres.",savedOk:"✓ Sauvegardé",newCatDefault:"Nouvelle catégorie"},
-    contract:{title:"Contrat d'Investissement",generate:"Générer Contrat",download:"Télécharger Contrat",print:"Imprimer Contrat",selectCats:"Catégories d'investissement",amountPerCat:"Montant par catégorie (F CFA)",displayCurrency:"Devise du contrat",investorLogo:"Logo Investisseur",uploadLogo:"Chargez un logo",removeLogo:"Supprimer logo",between:"Entre",and:"et",signedAt:"Fait à Abidjan, le",article1:"OBJET DU CONTRAT",article2:"MONTANTS D'INVESTISSEMENT",article3:"DURÉE ET CONDITIONS",article4:"CONFIDENTIALITÉ",article5:"SIGNATURES",contractBody1:"Le présent contrat définit les termes de l'investissement réalisé par l'Investisseur auprès de Thunderfam Investment.",contractBody2:"L'investissement est soumis aux conditions du marché. Toute modification doit faire l'objet d'un avenant signé.",contractBody3:"Toutes les informations échangées sont strictement confidentielles.",partyA:"Partie A — Gestionnaire",partyB:"Partie B — Investisseur",dirGen:"Direction Générale",compliance:"Compliance Officer",noCategories:"Aucune catégorie définie.",refCurrency:"Devise de référence :",fcfaRef:"Devise de référence : F CFA uniquement",totalLabel:"Total Investissement Initial",categoryCol:"Catégorie d'Activité",amountCol:"Montant Investi",confidential:"Confidentiel",generatedOn:"Document généré le"},
-    categories:[...PERMANENT_CATEGORIES],
-    lock:{title:"Rapport Verrouillé",msg:"Entrez le mot de passe pour modifier.",password:"Mot de passe",confirm:"Confirmer",cancel:"Annuler",wrong:"Mot de passe incorrect."},
-    confirm:"Confirmer",total:"Total",save:"Sauvegarder",cancel:"Annuler",accessDenied:"Accès refusé",readOnly:"Lecture seule",notifications:"Notifications",markAllRead:"Tout lire",share:"Partager",shareLink:"Lien de partage",copyLink:"Copier le lien",linkExpires:"Expire dans 7 jours",active:"● Actif",inactive:"● Inactif",statusClosed:"Fermé",statusOpen:"Ouvert",noNotifications:"Aucune notification",popupBlocked:"Autorisez les popups pour continuer.",demoAccounts:"Comptes démo",adminPending:"Un administrateur validera votre demande.",
-    print:{reportTitle:"RAPPORT FINANCIER MENSUEL",investorLabel:"Investisseur",representativeLabel:"Représentant",phoneLabel:"Téléphone",addressLabel:"Adresse",countryLabel:"Pays",totalAddExp:"TOTAL DÉPENSES ADD.",openingCapital:"Capital d'Ouverture",totalRevenue:"Total des Revenus",totalExpenses:"Total des Dépenses",netProfit:"Profit Net",newCapital:"Nouveau Capital",activities:"Activités",addExpenses:"Dépenses Additionnelles",summary:"Résumé Final",signatures:"Signatures Électroniques",date:"Date",category:"Catégorie",description:"Description",invested:"Investi",revenue:"Revenu",expenses:"Dépenses",profit:"Profit",label:"Libellé",amount:"Montant",approvedBy:"Approuvé par",generatedOn:"Généré le",confidential:"Document Confidentiel",total:"TOTAL",certTitle:"CERTIFICAT D'INVESTISSEMENT",certSub:"Thunderfam Group Limited — Côte d'Ivoire",initInvestment:"Investissement Initial",currentCapital:"Capital Actuel",cumulativeProfit:"Profit Cumulé",totalROI:"ROI Total",reportCount:"Nombre de Rapports",issueDate:"Date d'Émission",direction:"Direction Générale",investorTitle:"Investisseur",certAwardedTo:"Ce certificat est délivré à",certSince:"En reconnaissance de son investissement actif auprès de Thunderfam Investment."},
-  },
-  en:{
-    nav:{dashboard:"Dashboard",reports:"Reports",analytics:"Analytics",investors:"Investors",users:"Users",audit:"Audit Log",categories:"Categories",forecast:"Forecast",settings:"Settings"},
-    login:{title:"Login",username:"Username",password:"Password",btn:"Sign In",error:"Invalid credentials.",register:"Investor Registration",logout:"Logout"},
-    register:{title:"Register",name:"Full Name",username:"Username",email:"Email",password:"Password",phone:"Phone",country:"Country",address:"Address",representative:"Representative",initialInv:"Initial Investment (F CFA)",btn:"Submit",success:"Request sent! Waiting for Admin approval.",backLogin:"Back to login"},
-    dashboard:{overviewSub:"Overview — Thunderfam Investment",capitalEvolution:"Capital Evolution",profitsByReport:"Profit by Report",totalInvested:"Total Capital",netProfit:"Cumulative Net Profit",monthlyProfit:"Monthly Profit",activeInvestors:"Active Investors",evolution:"Evolution",recentActivity:"Recent Activities",roi:"Annualized ROI",avgGrowth:"Avg Growth",bestMonth:"Best Month",goal:"Profit Goal",returnRate:"Return",overview:"Overview",perReport:"/ report",actives:"Active",currentCapital:"Current Capital",cumulativeProfit:"Cumulative Profit",monthProfit:"Monthly Profit",roiTotal:"Total ROI"},
-    report:{title:"Reports",investment:"Opening Capital",addExpense:"+ Expense",closeReport:"Close",unlock:"Unlock",openReport:"+ Report",additionalExpenses:"Add. Expenses",newInvestment:"New Investment",totalRevenue:"Total Revenue",totalExpenses:"Total Expenses",printReport:"Print",downloadPDF:"PDF",myCerts:"Certificate",signReport:"Approve",unsignReport:"Remove signature",signed:"Approved",myReports:"My Reports",addAttachment:"Attach",netProfit:"Net Profit",noReports:"No reports available.",personalReports:"Your personal financial reports",historyTitle:"Financial reports history",activities:"Activities",autoProfit:"Auto profit:",approvedBy:"Approved by",signatureBlock:"Electronic Signatures",summary:"Final Summary",openingCapital:"Opening Capital",totalInvestment:"New Investment",newLabel:"Report title",shareInfo:"Share this code with the recipient.",timeline:"Timeline"},
-    activity:{add:"+ Activity",date:"Date",category:"Category",description:"Description",invested:"Invested",revenue:"Revenue",expenses:"Expenses",profit:"Profit",save:"Save",cancel:"Cancel",expLabel:"Label",expAmount:"Amount"},
-    investor:{add:"Add",logoLabel:"Investor Logo",uploadLogo:"Upload logo (PNG, JPG, SVG)",removeLogo:"Remove",currencyDesc:"Preferred currency (reports & contract)",catsLabel:"Investment categories & amounts",amountLabel:"Amount (F CFA)",noCats:"No categories — click Add",goalAmountLabel:"Goal amount (F CFA)",goalLabelField:"Goal label",goalHint:"E.g.: Profit target 2026",name:"Name",initial:"Init. Investment",current:"Current Capital",profit:"Cumulative Profit",history:"History",address:"Address",phone:"Phone",representative:"Representative",email:"Email",country:"Country",editInfo:"Edit",setGoal:"Set Goal",timeline:"Timeline",consolidatedView:"Consolidated View",consolidatedCapital:"Total Consolidated Capital",consolidatedProfit:"Total Cumulative Profit",investorCount:"Number of Investors",activePortfolios:"Active portfolios",ranking:"Ranking by Profit",subtitle:"Portfolios & goals",profitEvolution:"Profit evolution",goalDefault:"Goal",linkedInvestor:"Linked Investor",totalGrowth:"total growth",investCalc:"Initial Investment (calculated)",preferredCurrency:"Preferred currency",fcfaOnly:"F CFA only",rateLabel:"Current rate:"},
-    users:{title:"Users",emailCol:"Email",actions:"Actions",pending:"Pending",approve:"Approve",reject:"Reject",disable:"Disable",enable:"Enable",resetPwd:"PWD",newUser:"+ User",role:"Role",status:"Status",editUser:"Edit User",userCol:"User",linkedInvestor:"Linked Investor",newPwd:"New password",you:"You",subtitle:"RBAC — Role-Based Access Control",nameField:"Name *",usernameField:"Username *",pwdField:"Password *",nameLabel:"Name",noneOpt:"— None —"},
-    analytics:{title:"Analytics & Charts",overviewSub:"Visualizations & projection tools",capitalEvolution:"Capital Evolution",noExpenses:"No expenses recorded",avgRateLabel:"Average rate observed:",perMonth:"/ month",projResults:"Estimated results over 6 months",baseInv:"Investment base",netProfitEvol:"Net profit evolution",copied:"Copied!",preview:"Preview",emailDesc:"Generate an HTML email summary of the 3 latest reports.",projection:"Yield Simulator",compare:"Period Comparison",charts:"Interactive Charts",profitCurve:"Profit Curve",revenueVsExp:"Revenue vs Expenses",expByCategory:"Expenses by Category",period1:"Period 1",period2:"Period 2",investExtra:"Extra Investment",estimatedProfit:"Estimated profit (6 months)",projectionResult:"Projection Result",baseRate:"Average yield rate",emailSummary:"Email Summary",copyHTML:"Copy HTML"},
-    audit:{title:"Audit Log",action:"Action",user:"User",target:"Target",date:"Date",type:"Type",all:"All",filter:"Filter",noEntries:"No entries.",subtitle:"Complete traceability"},
-    settings:{title:"Settings",preview:"Preview",lastUpdate:"Updated:",toLightMode:"Light mode",toDarkMode:"Dark mode",categoriesDesc:"Categories used in activities and contracts.",currenciesDesc:"F CFA always shown. Select additional currencies.",currencies:"Currencies",allCurrencies:"All",noCurrencies:"F CFA only",rates:"Exchange Rates",adminPwd:"Admin Password",language:"Language",save:"Save",autoRates:"Refresh",ratesUpdated:"Rates updated ✓",ratesFailed:"Failed",theme:"Theme",dark:"Dark",light:"Light",dashWidgets:"Widgets",categoriesMgmt:"Category Management",addCategory:"+ Category",deleteCategory:"Delete",security:"Admin Security",subtitle:"System Configuration",adminOnly:"Only an Administrator can modify settings.",savedOk:"✓ Saved",newCatDefault:"New category"},
-    contract:{title:"Investment Contract",generate:"Generate Contract",download:"Download Contract",print:"Print Contract",selectCats:"Investment Categories",amountPerCat:"Amount per category (F CFA)",displayCurrency:"Contract currency",investorLogo:"Investor Logo",uploadLogo:"Upload a logo",removeLogo:"Remove logo",between:"Between",and:"and",signedAt:"Signed in Abidjan, on",article1:"CONTRACT PURPOSE",article2:"INVESTMENT AMOUNTS",article3:"DURATION & CONDITIONS",article4:"CONFIDENTIALITY",article5:"SIGNATURES",contractBody1:"This contract defines the terms of the investment made by the Investor with Thunderfam Investment.",contractBody2:"The investment is subject to market conditions. Any modification must be covered by an amendment signed by both parties.",contractBody3:"All information exchanged is strictly confidential.",partyA:"Party A — Manager",partyB:"Party B — Investor",dirGen:"General Management",compliance:"Compliance Officer",noCategories:"No investment categories defined.",refCurrency:"Secondary reference currency:",fcfaRef:"Reference currency: F CFA only",totalLabel:"Total Initial Investment",categoryCol:"Activity Category",amountCol:"Amount Invested",confidential:"Confidential",generatedOn:"Generated on"},
-    categories:[...PERMANENT_CATEGORIES],
-    lock:{title:"Locked Report",msg:"Enter password to modify.",password:"Password",confirm:"Confirm",cancel:"Cancel",wrong:"Incorrect password."},
-    confirm:"Confirm",total:"Total",save:"Save",cancel:"Cancel",accessDenied:"Access Denied",readOnly:"Read-only",notifications:"Notifications",markAllRead:"Mark all read",share:"Share",shareLink:"Share Link",copyLink:"Copy link",linkExpires:"Expires in 7 days",active:"● Active",inactive:"● Inactive",statusClosed:"Closed",statusOpen:"Open",noNotifications:"No notifications",popupBlocked:"Please allow popups to continue.",demoAccounts:"Demo accounts",adminPending:"An administrator will validate your request.",
-    print:{reportTitle:"MONTHLY FINANCIAL REPORT",investorLabel:"Investor",representativeLabel:"Representative",phoneLabel:"Phone",addressLabel:"Address",countryLabel:"Country",totalAddExp:"TOTAL ADD. EXPENSES",openingCapital:"Opening Capital",totalRevenue:"Total Revenue",totalExpenses:"Total Expenses",netProfit:"Net Profit",newCapital:"New Capital",activities:"Activities",addExpenses:"Additional Expenses",summary:"Final Summary",signatures:"Electronic Signatures",date:"Date",category:"Category",description:"Description",invested:"Invested",revenue:"Revenue",expenses:"Expenses",profit:"Profit",label:"Label",amount:"Amount",approvedBy:"Approved by",generatedOn:"Generated on",confidential:"Confidential Document",total:"TOTAL",certTitle:"INVESTMENT CERTIFICATE",certSub:"Thunderfam Group Limited — Côte d'Ivoire",initInvestment:"Initial Investment",currentCapital:"Current Capital",cumulativeProfit:"Cumulative Profit",totalROI:"Total ROI",reportCount:"Number of Reports",issueDate:"Issue Date",direction:"General Management",investorTitle:"Investor",certAwardedTo:"This certificate is awarded to",certSince:"In recognition of their active investment with Thunderfam Investment."},
-  }
-};
+const T=new Proxy({}, {get:(_,language)=>getTranslations(language)});
 
 // ── UTILS ───────────────────────────────────────────────────────────────────────
-const fmtNum=n=>new Intl.NumberFormat("fr-FR").format(Math.round(n));
+const fmtNum=n=>new Intl.NumberFormat(getTranslations(_lang).locale||"en-GB").format(Math.round(n));
 const fmtDate=(d=new Date())=>{const dt=d instanceof Date?d:new Date(d);return`${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}/${dt.getFullYear()}`;};
 const fmtDateTime=(d=new Date())=>{const dt=d instanceof Date?d:new Date(d);return`${fmtDate(dt)} ${String(dt.getHours()).padStart(2,"0")}:${String(dt.getMinutes()).padStart(2,"0")}`;};
-const cvt=(n,rate,sym)=>sym+(n/rate).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",");
+const cvt=(n,rate,sym)=>sym+new Intl.NumberFormat(getTranslations(_lang).locale||"en-GB",{minimumFractionDigits:2,maximumFractionDigits:2}).format(n/rate);
 function getCurrencyLines(n,settings){
   return ALL_CURRENCIES
     .filter(c=>(settings.selectedCurrencies||[]).includes(c.code))
@@ -246,7 +210,7 @@ const TFLogo=({size=36})=>(
 
 // ── SVG CHARTS ──────────────────────────────────────────────────────────────────
 function LineChart({data,width=500,height=160,C}){
-  if(!data||data.length<2)return<div style={{height,display:"flex",alignItems:"center",justifyContent:"center",color:C.muted,fontSize:12}}>Données insuffisantes</div>;
+  if(!data||data.length<2)return<div style={{height,display:"flex",alignItems:"center",justifyContent:"center",color:C.muted,fontSize:12}}>{translateText("Données insuffisantes",_lang)}</div>;
   const pad={t:20,r:20,b:40,l:60};
   const W=width-pad.l-pad.r,H=height-pad.t-pad.b;
   const vals=data.map(d=>d.value);
@@ -318,7 +282,7 @@ function PieChart({data,size=140,C}){
       <svg viewBox={`0 0 ${size} ${size}`} style={{width:size,height:size,flexShrink:0}}>
         {slices.map((s,i)=><path key={i} d={s.path} fill={s.color} opacity="0.9" stroke={_C.card} strokeWidth="1.5"/>)}
         <circle cx={cx} cy={cy} r={r*0.5} fill={_C.card}/>
-        <text x={cx} y={cy-4} textAnchor="middle" fontSize="10" fill={_C.muted}>Total</text>
+        <text x={cx} y={cy-4} textAnchor="middle" fontSize="10" fill={_C.muted}>{translateText("Total",_lang)}</text>
         <text x={cx} y={cy+10} textAnchor="middle" fontSize="9" fontWeight="700" fill={_C.text}>{fmtNum(total)}</text>
       </svg>
       <div>{slices.map((s,i)=>(
@@ -364,7 +328,7 @@ function Modal({title,icon,iconColor,children,onClose,wide,extraWide}){
 function Field({label,value,onChange,type="text",readOnly=false,hint,style={}}){
   const C=_C;
   return(<div style={{marginBottom:12}}>
-    {label&&<div style={{color:C.muted,fontSize:10,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{label}</div>}
+    {label&&<div style={{color:C.muted,fontSize:10,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{translateText(label,_lang)}</div>}
     <input type={type} value={value??""} onChange={e=>onChange&&onChange(e.target.value)} readOnly={readOnly}
       style={{width:"100%",background:readOnly?C.bg:C.surface,border:`1px solid ${C.border2}`,borderRadius:7,padding:"8px 12px",color:readOnly?C.muted:C.text,fontSize:13,outline:"none",...style}}/>
     {hint&&<div style={{color:C.muted,fontSize:10,marginTop:3}}>{hint}</div>}
@@ -373,7 +337,7 @@ function Field({label,value,onChange,type="text",readOnly=false,hint,style={}}){
 function DDrop({label,value,onChange,options}){
   const C=_C;
   return(<div style={{marginBottom:12}}>
-    {label&&<div style={{color:C.muted,fontSize:10,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{label}</div>}
+    {label&&<div style={{color:C.muted,fontSize:10,marginBottom:4,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{translateText(label,_lang)}</div>}
     <select value={value} onChange={e=>onChange(e.target.value)} style={{width:"100%",background:C.surface,border:`1px solid ${C.border2}`,borderRadius:7,padding:"8px 12px",color:C.text,fontSize:13,outline:"none"}}>
       {options.map(o=><option key={o.value??o} value={o.value??o}>{o.label??o}</option>)}
     </select>
@@ -414,11 +378,11 @@ function ConfirmModal({open,title,message,itemName,itemType,onConfirm,onCancel,l
         <div style={{width:72,height:72,borderRadius:18,background:"rgba(239,68,68,0.15)",border:"1px solid rgba(239,68,68,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,margin:"0 auto 24px"}}>🗑️</div>
         {/* Title */}
         <div style={{color:"#fff",fontWeight:800,fontSize:19,marginBottom:8,letterSpacing:"-.01em"}}>
-          {title||( lang==="fr"?"Confirmer la suppression":"Confirm deletion")}
+          {title||( uiText("text0287",lang))}
         </div>
         {/* Subtitle */}
         <div style={{color:"rgba(255,255,255,0.5)",fontSize:13,marginBottom:20,lineHeight:1.5}}>
-          {message||(lang==="fr"?"Vous allez supprimer definitivement :":"You are about to permanently delete:")}
+          {message||(uiText("text0288",lang))}
         </div>
         {/* Item box */}
         {itemName&&(
@@ -429,30 +393,30 @@ function ConfirmModal({open,title,message,itemName,itemType,onConfirm,onCancel,l
         )}
         {/* Warning banner */}
         <div style={{background:"rgba(239,68,68,0.1)",border:"1px solid rgba(239,68,68,0.22)",borderRadius:9,padding:"10px 16px",marginBottom:24,color:"#fca5a5",fontSize:12,fontWeight:500}}>
-          {lang==="fr"?"Attention : cette action est irreversible.":"Warning: this action cannot be undone."}
+          {uiText("text0289",lang)}
         </div>
         {/* Buttons */}
         <div style={{display:"flex",gap:10,justifyContent:"space-between",alignItems:"center"}}>
           <button onClick={onCancel} style={{padding:"10px 24px",borderRadius:10,border:"none",background:"transparent",color:"rgba(255,255,255,0.4)",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600,letterSpacing:"-.01em"}}>
-            {lang==="fr"?"Annuler":"Cancel"}
+            {uiText("text0089",lang)}
           </button>
           <button onClick={onConfirm} style={{flex:1,padding:"12px 20px",borderRadius:12,border:"none",background:"#EA4335",color:"#fff",cursor:"pointer",fontSize:14,fontFamily:"inherit",fontWeight:800,display:"flex",alignItems:"center",justifyContent:"center",gap:7,boxShadow:"0 4px 20px rgba(234,67,53,0.4)",letterSpacing:"-.01em"}}>
-            🗑️ {lang==="fr"?"Supprimer":"Delete"}
+            🗑️ {uiText("text0195",lang)}
           </button>
         </div>
       </div>
     </div>
   );
 }
-function RoleBadge({role,lang="fr"}){
+function RoleBadge({role,lang=_lang}){
   const r=ROLES[role];if(!r)return null;
-  return(<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 9px",borderRadius:20,background:r.color+"22",color:r.color,border:`1px solid ${r.color}44`,fontSize:10,fontWeight:700}}>{r.icon} {lang==="fr"?r.label:r.labelEn}</span>);
+  return(<span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"2px 9px",borderRadius:20,background:r.color+"22",color:r.color,border:`1px solid ${r.color}44`,fontSize:10,fontWeight:700}}>{r.icon} {translateText(r.label,lang)}</span>);
 }
 function StatCard({label,value,lines=[],accent,icon,sparkValues,trend}){
   const C=_C;const ac=accent||C.yellow;
   return(<Card accent={ac} style={{padding:"14px 16px",flex:1,minWidth:140}}>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
-      <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700,lineHeight:1.3,flex:1}}>{label}</span>
+      <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700,lineHeight:1.3,flex:1}}>{translateText(label,_lang)}</span>
       {icon&&<div style={{width:22,height:22,borderRadius:6,background:ac+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Icon name={icon} size={11} color={ac}/></div>}
     </div>
     <div style={{color:ac,fontSize:14,fontWeight:800,lineHeight:1.3}}>{value}</div>
@@ -479,7 +443,7 @@ function EditCell({value,onChange,type="text",options,optionLabels,style={},onCo
 function ProgressBar({value,max,color,label,showPct=true}){
   const C=_C;const pct=Math.min(100,(value/max)*100);
   return(<div>
-    {label&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.dim,fontSize:11}}>{label}</span>{showPct&&<span style={{color:color||C.blue,fontSize:11,fontWeight:700}}>{pct.toFixed(1)}%</span>}</div>}
+    {label&&<div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.dim,fontSize:11}}>{translateText(label,_lang)}</span>{showPct&&<span style={{color:color||C.blue,fontSize:11,fontWeight:700}}>{pct.toFixed(1)}%</span>}</div>}
     <div style={{height:6,background:C.border2,borderRadius:3,overflow:"hidden"}}>
       <div style={{height:"100%",width:`${pct}%`,background:color||C.blue,borderRadius:3,transition:"width 0.5s ease"}}/>
     </div>
@@ -488,7 +452,7 @@ function ProgressBar({value,max,color,label,showPct=true}){
 
 // ── PRINT / PDF / CERTIFICATE ───────────────────────────────────────────────────
 // ── Shared print header builder ──────────────────────────────────────────────────
-function buildPrintHeader(catLine1="",catLine2="",dateStr=""){
+function buildPrintHeader(catLine1="",catLine2="",dateStr="",lang=_lang){
   const d=dateStr||new Date().toLocaleDateString("fr-FR",{year:"numeric",month:"long",day:"numeric"});
   return`<div style="background:#1a1a2e;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;width:100%;box-sizing:border-box;">
     <div style="display:flex;align-items:center;gap:14px;">
@@ -510,25 +474,25 @@ function buildPrintHeader(catLine1="",catLine2="",dateStr=""){
     <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:8px;padding:12px 18px;text-align:right;font-family:'Segoe UI',Arial,sans-serif;">
       ${catLine1?`<div style="color:#ffffff;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">${catLine1}</div>`:""}
       ${catLine2?`<div style="color:rgba(255,255,255,0.75);font-size:11px;margin-bottom:4px;">${catLine2}</div>`:""}
-      <div style="color:rgba(255,255,255,0.5);font-size:10px;">Généré le ${d}</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:10px;">${getTranslations(lang).print.generatedOn} ${d}</div>
     </div>
   </div>`;
 }
 const TF_HEADER_CSS=``;
 
 function buildReportHTML(report,calc,investors,settings,lang="fr"){
-  const tp=T[lang].print;const tl=T[lang].investor;const locale=lang==="fr"?"fr-FR":"en-GB";
+  const tp=T[lang].print;const tl=T[lang].investor;const locale=uiText("text0290",lang);
   const C=_C;const inv=investors.find(i=>i.id===report.investorId)||{};
   const cellHTML=(n,cls="")=>{const rows=[`<div class="amt ${cls}">${fmtNum(n)} F CFA</div>`];getCurrencyLines(n,settings).forEach(l=>rows.push(`<div class="amt ${cls}">${l.value}</div>`));return rows.join("");};
-  const truckLabel=(t)=>t==="rental"?(lang==="fr"?"🚛 Location":"🚛 Rental"):(lang==="fr"?"🚚 Propre":"🚚 Own");
-  const contractLabel=(c)=>c==="sub_contract"?"Sub Contract":"Own Contract";
+  const truckLabel=(t)=>t==="rental"?(uiText("text0291",lang)):(uiText("text0292",lang));
+  const contractLabel=(c)=>translateText(c==="sub_contract"?"Sub Contract":"Own Contract",lang);
   const actRows=report.activities.map(a=>`<tr>
     <td style="white-space:nowrap">${fmtDate(a.date)}</td>
-    <td class="cat">${a.category}</td>
-    <td class="soc">${a.company||"—"}</td>
+    <td class="cat">${escapeHTML(translateData(a.category,lang,a.translations?.category))}</td>
+    <td class="soc">${escapeHTML(a.company||"—")}</td>
     <td class="badge-cell">${a.truckType?`<span class="badge-truck ${a.truckType==="rental"?"rental":"own"}">${truckLabel(a.truckType)}</span>`:"—"}</td>
     <td class="badge-cell">${a.contractType?`<span class="badge-contract ${a.contractType==="sub_contract"?"sub":"own"}">${contractLabel(a.contractType)}</span>`:"—"}</td>
-    <td>${a.description}</td>
+    <td>${escapeHTML(translateData(a.description,lang,a.translations?.description))}</td>
     <td class="num">${cellHTML(a.invested)}</td>
     <td class="num">${cellHTML(a.revenue,"blue")}</td>
     <td class="num">${cellHTML(a.expenses,"red")}</td>
@@ -538,17 +502,17 @@ function buildReportHTML(report,calc,investors,settings,lang="fr"){
   const driverSalExps=report.additionalExpenses.filter(e=>e._type==="driver_salary");
   const driverSalTotal=driverSalExps.reduce((s,e)=>s+e.amount,0);
   const expRows=[
-    ...regularExps.map(e=>`<tr><td colspan="5">${e.label}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`),
-    ...(driverSalExps.length>0?[`<tr><td colspan="5">🚗 ${lang==="fr"?"Salaires Chauffeurs":"Driver Salaries"} (${driverSalExps.length})</td><td class="num">${cellHTML(driverSalTotal,"red")}</td><td></td></tr>`]:[])
+    ...regularExps.map(e=>`<tr><td colspan="5">${escapeHTML(translateData(e.label,lang,e.translations?.label))}</td><td class="num">${cellHTML(e.amount,"red")}</td><td></td></tr>`),
+    ...(driverSalExps.length>0?[`<tr><td colspan="5">🚗 ${uiText("text0293",lang)} (${driverSalExps.length})</td><td class="num">${cellHTML(driverSalTotal,"red")}</td><td></td></tr>`]:[])
   ].join("");
   const allAddExp=[...regularExps,...(driverSalExps.length>0?[{label:"drivers_group",amount:driverSalTotal}]:[])];
   const sigBlock=report.signatures?.length?`<div style="margin-top:16px;padding:12px;background:#f0f4ff;border-radius:8px;border:1px solid #c7d7ff"><div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#555;margin-bottom:8px">${tp.signatures}</div>${report.signatures.map(s=>`<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #e2e8f0;font-size:10px"><span>✅ ${s.name}</span><span style="color:#888">${s.date}</span></div>`).join("")}</div>`:"";
-  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${report.label}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.soc{font-size:9px;color:#333;font-weight:600;max-width:130px;white-space:normal;word-break:break-word;line-height:1.4;}.badge-cell{white-space:nowrap;}.badge-truck{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-truck.own{background:#e6f4ea;color:#2d7a3a;border:1px solid #a8d5b0;}.badge-truck.rental{background:#f0e8ff;color:#6b3fa0;border:1px solid #c9a8f0;}.badge-contract{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-contract.own{background:#e8f0fe;color:#1a56c4;border:1px solid #a8c0f0;}.badge-contract.sub{background:#fef7e0;color:#b5800a;border:1px solid #f0d890;}@media print{@page{size:A4 landscape;margin:1cm;}}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
-${buildPrintHeader(lang==="fr"?"Rapport Financier Mensuel":"Monthly Financial Report",report.label)}
+  return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${tp.reportTitle} — ${escapeHTML(translateReportTitle(report.label,lang))}</title><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a2a;font-size:11px;background:#fff;padding:0 24px 20px;}.inv-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:11px;}.inv-box .lbl{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:700;display:block;margin-bottom:2px;}.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px;}.kpi-card{border-radius:7px;padding:9px;}.kpi-lbl{font-size:8px;text-transform:uppercase;letter-spacing:.07em;color:#888;margin-bottom:4px;font-weight:700;}.amt{font-size:10px;font-weight:700;line-height:1.4;}.blue{color:#4285F4;}.green{color:#34A853;}.red{color:#EA4335;}.k1{background:#e8f0fe;border-top:3px solid #4285F4;}.k1 .amt{color:#4285F4;}.k2{background:#e6f4ea;border-top:3px solid #34A853;}.k2 .amt{color:#34A853;}.k3{background:#fce8e6;border-top:3px solid #EA4335;}.k3 .amt{color:#EA4335;}.k4{background:#fef7e0;border-top:3px solid #FBBC05;}.k4 .amt{color:#c17b00;}.k5{background:#eff6ff;border-top:3px solid #4285F4;}.k5 .amt{color:#4285F4;}table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:10px;}th{background:#f0f4ff;color:#333;font-weight:700;padding:6px 8px;text-align:left;font-size:9px;text-transform:uppercase;border-bottom:2px solid #4285F4;}td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}.num{text-align:right;}.cat{font-size:9px;color:#666;}.tot-row{background:#f0f4ff;font-weight:800;}.soc{font-size:9px;color:#333;font-weight:600;max-width:130px;white-space:normal;word-break:break-word;line-height:1.4;}.badge-cell{white-space:nowrap;}.badge-truck{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-truck.own{background:#e6f4ea;color:#2d7a3a;border:1px solid #a8d5b0;}.badge-truck.rental{background:#f0e8ff;color:#6b3fa0;border:1px solid #c9a8f0;}.badge-contract{display:inline-block;padding:2px 7px;border-radius:4px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;}.badge-contract.own{background:#e8f0fe;color:#1a56c4;border:1px solid #a8c0f0;}.badge-contract.sub{background:#fef7e0;color:#b5800a;border:1px solid #f0d890;}@media print{@page{size:A4 landscape;margin:1cm;}}.sec-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;font-weight:800;margin:12px 0 6px;}.sum-box{background:#f8f9fa;border:1px solid #e2e8f0;border-radius:8px;padding:14px;}.sum-title{font-size:10px;font-weight:800;color:#4285F4;margin-bottom:8px;text-transform:uppercase;}.sum-row{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid #eee;}.sum-row:last-child{border:none;}.sum-lbl{color:#555;font-size:11px;}.sum-val{text-align:right;}footer{margin-top:18px;padding-top:10px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;font-size:8px;color:#aaa;}@media print{@page{margin:1cm;}}</style></head><body>
+${buildPrintHeader(uiText("text0294",lang),escapeHTML(translateReportTitle(report.label,lang)),"",lang)}
 <div class="inv-box"><div><span class="lbl">${tp.investorLabel}</span>${inv.name||"—"}</div><div><span class="lbl">${tp.representativeLabel}</span>${inv.representative||"—"}</div><div><span class="lbl">Email</span>${inv.email||"—"}</div><div><span class="lbl">${tp.phoneLabel}</span>${inv.phone||"—"}</div><div><span class="lbl">${tp.addressLabel}</span>${inv.address||"—"}</div><div><span class="lbl">${tp.countryLabel}</span>${inv.country||"—"}</div></div>
 <div class="kpi"><div class="kpi-card k1"><div class="kpi-lbl">${tp.openingCapital}</div>${cellHTML(report.openingInvestment)}</div><div class="kpi-card k2"><div class="kpi-lbl">${tp.totalRevenue}</div>${cellHTML(calc.totalRevenue,"blue")}</div><div class="kpi-card k3"><div class="kpi-lbl">${tp.totalExpenses}</div>${cellHTML(calc.totalExpenses,"red")}</div><div class="kpi-card k4"><div class="kpi-lbl">${tp.netProfit}</div>${cellHTML(calc.netProfit,"green")}</div><div class="kpi-card k5"><div class="kpi-lbl">${tp.newCapital}</div>${cellHTML(calc.newInvestment)}</div></div>
 <div class="sec-title" style="color:#4285F4">${tp.activities}</div>
-<table><thead><tr><th>${tp.date}</th><th>${tp.category}</th><th>${lang==="fr"?"Société":"Company"}</th><th>${lang==="fr"?"Camion":"Truck"}</th><th>${lang==="fr"?"Contrat":"Contract"}</th><th>${tp.description}</th><th class="num">${tp.invested}</th><th class="num">${tp.revenue}</th><th class="num">${tp.expenses}</th><th class="num">${tp.profit}</th></tr></thead><tbody>${actRows}<tr class="tot-row"><td colspan="6">${tp.total.toUpperCase()}</td><td class="num">${cellHTML(calc.totalInvested)}</td><td class="num">${cellHTML(calc.totalRevenue,"blue")}</td><td class="num">${cellHTML(calc.actExp,"red")}</td><td class="num">${cellHTML(report.activities.reduce((s,a)=>s+a.profit,0),"green")}</td></tr></tbody></table>
+<table><thead><tr><th>${tp.date}</th><th>${tp.category}</th><th>${uiText("text0295",lang)}</th><th>${uiText("text0296",lang)}</th><th>${uiText("text0297",lang)}</th><th>${tp.description}</th><th class="num">${tp.invested}</th><th class="num">${tp.revenue}</th><th class="num">${tp.expenses}</th><th class="num">${tp.profit}</th></tr></thead><tbody>${actRows}<tr class="tot-row"><td colspan="6">${tp.total.toUpperCase()}</td><td class="num">${cellHTML(calc.totalInvested)}</td><td class="num">${cellHTML(calc.totalRevenue,"blue")}</td><td class="num">${cellHTML(calc.actExp,"red")}</td><td class="num">${cellHTML(report.activities.reduce((s,a)=>s+a.profit,0),"green")}</td></tr></tbody></table>
 ${(regularExps.length>0||driverSalExps.length>0)?`<div class="sec-title" style="color:#EA4335">${tp.addExpenses}</div><table><thead><tr><th colspan="5">${tp.label}</th><th class="num">${tp.amount}</th><th></th></tr></thead><tbody>${expRows}<tr class="tot-row"><td colspan="5">${tp.totalAddExp}</td><td class="num">${cellHTML(calc.addExp,"red")}</td><td></td></tr></tbody></table>`:""}
 <div class="sum-box"><div class="sum-title">${tp.summary}</div>${[[tp.openingCapital,report.openingInvestment,"blue"],[tp.totalRevenue,calc.totalRevenue,"green"],[tp.totalExpenses,calc.totalExpenses,"red"],[tp.netProfit,calc.netProfit,"green"],[tp.newCapital,calc.newInvestment,"blue"]].map(([l,v,cls])=>`<div class="sum-row"><span class="sum-lbl">${l}</span><div class="sum-val ${cls}">${cellHTML(Math.abs(v))}</div></div>`).join("")}</div>
 ${sigBlock}
@@ -556,7 +520,7 @@ ${sigBlock}
 }
 
 function buildCertificateHTML(investor,reports,settings,lang="fr"){
-  const tp=T[lang].print;const locale=lang==="fr"?"fr-FR":"en-GB";
+  const tp=T[lang].print;const locale=uiText("text0290",lang);
   const totalProfit=reports.reduce((s,r)=>s+calcReport(r).netProfit,0);
   const last=reports[reports.length-1];const lc=last?calcReport(last):null;
   const roi=investor.initialInvestment>0?((totalProfit/investor.initialInvestment)*100).toFixed(2):0;
@@ -586,9 +550,9 @@ function buildCertificateHTML(investor,reports,settings,lang="fr"){
 </div></body></html>`;
 }
 
-function doPrint(report,calc,investors,settings,lang="fr"){const html=buildReportHTML(report,calc,investors,settings,lang);const w=window.open("","_blank","width=920,height=750");if(!w){alert(T[_lang].popupBlocked||"Allow popups to continue.");return;}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),800);}
-function doDownloadPDF(report,calc,investors,settings,lang="fr"){const html=buildReportHTML(report,calc,investors,settings,lang);const blob=new Blob([html],{type:"text/html;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`Rapport_${report.label.replace(/[^a-zA-Z0-9]/g,"_")}.html`;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),2000);}
-function doCertificate(investor,reports,settings,lang="fr"){const html=buildCertificateHTML(investor,reports,settings,lang);const w=window.open("","_blank","width=900,height=700");if(!w){alert(T[_lang].popupBlocked||"Allow popups to continue.");return;}w.document.open();w.document.write(html);w.document.close();w.focus();setTimeout(()=>w.print(),800);}
+function doPrint(report,calc,investors,settings,lang="fr"){const html=buildReportHTML(report,calc,investors,settings,lang);const w=window.open("","_blank","width=920,height=750");if(!w){alert(T[_lang].popupBlocked||"Allow popups to continue.");return;}w.document.open();w.document.write(translateMarkup(html,lang));w.document.close();w.focus();setTimeout(()=>w.print(),800);}
+function doDownloadPDF(report,calc,investors,settings,lang="fr"){doPrint(report,calc,investors,settings,lang);}
+function doCertificate(investor,reports,settings,lang="fr"){const html=buildCertificateHTML(investor,reports,settings,lang);const w=window.open("","_blank","width=900,height=700");if(!w){alert(T[_lang].popupBlocked||"Allow popups to continue.");return;}w.document.open();w.document.write(translateMarkup(html,lang));w.document.close();w.focus();setTimeout(()=>w.print(),800);}
 
 // ── CONTRACT BUILDER ──────────────────────────────────────────────────────────────
 function buildContractHTML(investor,settings,lang="fr"){
@@ -779,7 +743,7 @@ function doContract(investor,settings,lang){
   const html=buildContractHTML(investor,settings,lang);
   const w=window.open("","_blank","width=900,height=750");
   if(!w){alert(T[_lang].popupBlocked||"Allow popups to continue.");return;}
-  w.document.open();w.document.write(html);w.document.close();w.focus();
+  w.document.open();w.document.write(translateMarkup(html,lang));w.document.close();w.focus();
   setTimeout(()=>w.print(),800);
 }
 function downloadContract(investor,settings,lang){
@@ -845,12 +809,12 @@ Date demande      : ${fmtDateTime()}
   const doLogin=()=>{setErr("");const u=data.users.find(u=>u.username===un&&u.password===pw&&u.active&&u.approved);if(u)onLogin(u);else setErr(t.login.error);};
   const doRegister=async()=>{
     setErr("");
-    if(!reg.name||!reg.username||!reg.email||!reg.password){setErr(lang==="fr"?"Champs * obligatoires.":"Required fields missing.");return;}
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)){setErr(lang==="fr"?"Format email invalide (ex: nom@provider.com)":"Invalid email (eg: name@provider.com)");return;}
-    if(reg.phone&&!/^\d+$/.test(reg.phone)){setErr(lang==="fr"?"Le téléphone doit contenir uniquement des chiffres.":"Phone must contain digits only.");return;}
-    if(reg.initialInvestment&&!/^\d+$/.test(String(reg.initialInvestment))){setErr(lang==="fr"?"L'investissement doit être un nombre entier.":"Investment must be a whole number.");return;}
-    if(!pwValid){setErr(lang==="fr"?"Mot de passe invalide. Vérifiez les critères ci-dessous.":"Invalid password. Check requirements below.");return;}
-    if(data.users.find(u=>u.username===reg.username)||data.pendingUsers.find(u=>u.username===reg.username)){setErr(lang==="fr"?"Identifiant déjà utilisé.":"Username already taken.");return;}
+    if(!reg.name||!reg.username||!reg.email||!reg.password){setErr(uiText("text0298",lang));return;}
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)){setErr(uiText("text0299",lang));return;}
+    if(reg.phone&&!/^\d+$/.test(reg.phone)){setErr(uiText("text0300",lang));return;}
+    if(reg.initialInvestment&&!/^\d+$/.test(String(reg.initialInvestment))){setErr(uiText("text0301",lang));return;}
+    if(!pwValid){setErr(uiText("text0302",lang));return;}
+    if(data.users.find(u=>u.username===reg.username)||data.pendingUsers.find(u=>u.username===reg.username)){setErr(uiText("text0303",lang));return;}
     const ni={id:Date.now(),name:reg.name,initialInvestment:parseFloat(reg.initialInvestment)||0,currentInvestment:parseFloat(reg.initialInvestment)||0,cumulativeProfit:0,address:reg.address,phone:reg.phone,representative:reg.representative,email:reg.email,country:reg.country,goal:0,goalLabel:"",sharedTokens:[]};
     setData(d=>({...d,pendingUsers:[...d.pendingUsers,{id:Date.now()+1,username:reg.username,password:reg.password,name:reg.name,email:reg.email,role:"investor",active:false,approved:false,investorId:ni.id,investorData:ni}]}));
     setSending(true);
@@ -920,7 +884,7 @@ Date demande      : ${fmtDateTime()}
               ?(<div style={{textAlign:"center",padding:16}}>
                   <div style={{fontSize:36,marginBottom:10}}>✅</div>
                   <div style={{color:C.green,fontWeight:700,marginBottom:6}}>{t.register.success}</div>
-                  <div style={{color:C.muted,fontSize:11,marginBottom:6}}>{lang==="fr"?"Un email a été envoyé à l'équipe Thunderfam.":"A notification email has been sent to the Thunderfam team."}</div>
+                  <div style={{color:C.muted,fontSize:11,marginBottom:6}}>{uiText("text0304",lang)}</div>
                   <div style={{color:C.muted,fontSize:11,marginBottom:16}}>{t.adminPending}</div>
                   <Btn onClick={()=>{setTab("login");setRegDone(false);}} variant="secondary">{t.register.backLogin}</Btn>
                 </div>)
@@ -931,7 +895,7 @@ Date demande      : ${fmtDateTime()}
                     <div>
                       <label style={{...lbl,fontSize:9}}>{t.register.email} *</label>
                       <input type="email" value={reg.email} onChange={e=>setReg(r=>({...r,email:e.target.value}))} style={{...inp,padding:"8px 12px",fontSize:12,borderColor:reg.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)?"#EA4335":"rgba(255,255,255,0.12)"}} placeholder="nom@provider.com"/>
-                      {reg.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)&&<div style={{color:"#EA4335",fontSize:9,marginTop:3}}>⚠ {lang==="fr"?"Format invalide":"Invalid format"}</div>}
+                      {reg.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reg.email)&&<div style={{color:"#EA4335",fontSize:9,marginTop:3}}>⚠ {uiText("text0305",lang)}</div>}
                     </div>
                     <div>
                       <label style={{...lbl,fontSize:9}}>{t.register.phone}</label>
@@ -952,17 +916,17 @@ Date demande      : ${fmtDateTime()}
                       <button type="button" onClick={()=>setShowRegPw(v=>!v)} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",padding:2}}><Icon name="eye" size={14} color={C.muted}/></button>
                     </div>
                     {reg.password.length>0&&<div style={{marginTop:6,padding:"8px 10px",background:C.surface,borderRadius:7,border:`1px solid ${C.border}44`,display:"grid",gridTemplateColumns:"1fr 1fr",gap:"3px 12px"}}>
-                      {[[pwChecks.len,lang==="fr"?"≥ 10 caractères":"≥ 10 chars"],[pwChecks.alpha,lang==="fr"?"Lettre a-z":"Letter a-z"],[pwChecks.num,lang==="fr"?"Chiffre 0-9":"Digit 0-9"],[pwChecks.symbol,lang==="fr"?"Symbole !@#":"Symbol !@#"]].map(([ok,label],i)=>(
+                      {[[pwChecks.len,uiText("text0306",lang)],[pwChecks.alpha,uiText("text0307",lang)],[pwChecks.num,uiText("text0308",lang)],[pwChecks.symbol,uiText("text0309",lang)]].map(([ok,label],i)=>(
                         <div key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:10}}>
                           <span style={{color:ok?"#34A853":"#EA4335",fontSize:12}}>{ok?"✓":"✗"}</span>
-                          <span style={{color:ok?"#34A853":C.muted}}>{label}</span>
+                          <span style={{color:ok?"#34A853":C.muted}}>{translateText(label,_lang)}</span>
                         </div>
                       ))}
                     </div>}
                   </div>
                   {err&&<div style={{color:"#fca5a5",fontSize:11,marginBottom:8,padding:"6px 10px",background:"rgba(127,29,29,0.3)",borderRadius:6,border:"1px solid rgba(239,68,68,0.3)"}}>{err}</div>}
                   <button onClick={doRegister} disabled={sending} style={{width:"100%",padding:"11px",background:sending?C.surface:C.green,color:sending?C.muted:"#fff",border:"none",borderRadius:9,cursor:sending?"wait":"pointer",fontFamily:"inherit",fontWeight:700,fontSize:13,marginTop:4,opacity:sending?0.7:1}}>
-                    {sending?(lang==="fr"?"Envoi en cours…":"Sending…"):t.register.btn}
+                    {sending?(uiText("text0310",lang)):t.register.btn}
                   </button>
                 </>)
             }
@@ -970,7 +934,7 @@ Date demande      : ${fmtDateTime()}
         </div>
 
         <div style={{textAlign:"center",marginTop:12,display:"flex",justifyContent:"center",gap:6}}>
-          {["fr","en"].map(l=>(<button key={l} onClick={()=>setLang(l)} style={{background:lang===l?C.blue+"22":"transparent",border:`1px solid ${lang===l?C.blue:C.border}`,color:lang===l?C.blue:C.muted,borderRadius:6,padding:"4px 10px",cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:lang===l?700:400}}>{l==="fr"?"🇫🇷 FR":"🇬🇧 EN"}</button>))}
+          {supportedLanguages.map(l=>(<button key={l} onClick={()=>setLang(l)} style={{background:lang===l?C.blue+"22":"transparent",border:`1px solid ${lang===l?C.blue:C.border}`,color:lang===l?C.blue:C.muted,borderRadius:6,padding:"4px 10px",cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:lang===l?700:400}}>{l.toUpperCase()}</button>))}
         </div>
       </div>
 
@@ -999,9 +963,7 @@ Date demande      : ${fmtDateTime()}
               <div style={{width:4,height:36,background:"linear-gradient(180deg,#4285F4,#34A853,#FBBC05,#EA4335)",borderRadius:2,flexShrink:0}}/>
               <div>
                 <div style={{color:"rgba(255,255,255,0.5)",fontSize:9,letterSpacing:"0.2em",textTransform:"uppercase",marginBottom:4}}>Thunderfam Investment</div>
-                <div style={{color:"#fff",fontSize:16,fontWeight:800,lineHeight:1.3,letterSpacing:"-0.2px",textShadow:"0 2px 20px rgba(0,0,0,0.5)"}}>
-                  Vous pouvez Investir dans<br/>ces secteurs d'activité
-                </div>
+                <div style={{color:"#fff",fontSize:16,fontWeight:800,lineHeight:1.3,letterSpacing:"-0.2px",textShadow:"0 2px 20px rgba(0,0,0,0.5)"}}>{translateText("Vous pouvez Investir dans",_lang)}<br/>{translateText("ces secteurs d'activité",_lang)}</div>
               </div>
             </div>
             <div style={{height:1,background:"linear-gradient(to right,rgba(66,133,244,0.4),rgba(52,168,83,0.2),transparent)",marginLeft:14}}/>
@@ -1051,9 +1013,7 @@ Date demande      : ${fmtDateTime()}
 
           {/* Footer */}
           <div style={{marginTop:"auto",paddingTop:24,textAlign:"center"}}>
-            <div style={{color:"rgba(255,255,255,0.18)",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase"}}>
-              Investir en Côte d'Ivoire · Abidjan · 2024
-            </div>
+            <div style={{color:"rgba(255,255,255,0.18)",fontSize:9,letterSpacing:"0.18em",textTransform:"uppercase"}}>{translateText("Investir en Côte d'Ivoire · Abidjan · 2024",_lang)}</div>
           </div>
         </div>
       )}
@@ -1072,9 +1032,9 @@ class ErrorBoundary extends React.Component {
       return(
         <div style={{padding:40,textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:16}}>⚠️</div>
-          <div style={{color:"#EA4335",fontWeight:700,fontSize:16,marginBottom:8}}>Erreur de rendu</div>
+          <div style={{color:"#EA4335",fontWeight:700,fontSize:16,marginBottom:8}}>{translateText("Erreur de rendu",_lang)}</div>
           <div style={{color:"#6b7280",fontSize:12,marginBottom:20}}>{this.state.error?.message||"Erreur inconnue"}</div>
-          <button onClick={()=>this.setState({error:null})} style={{padding:"8px 20px",background:"#4285F4",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit"}}>Réessayer</button>
+          <button onClick={()=>this.setState({error:null})} style={{padding:"8px 20px",background:"#4285F4",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit"}}>{translateText("Réessayer",_lang)}</button>
         </div>
       );
     }
@@ -1094,7 +1054,7 @@ function Analytics({data,session,t,lang}){
   const [cmpB,setCmpB]=useState(reports[reports.length-1]?.id||null);
 
   // Profit curve data — guard against undefined labels
-  const safeLabel=(r,n)=>(r?.label||"").substring(0,n)||"—";
+  const safeLabel=(r,n)=>translateReportTitle(r?.label||"",lang).substring(0,n)||"—";
   const lineData=calcs.map(r=>({label:safeLabel(r,8),value:r.newInvestment||0}));
   const profitLine=calcs.map(r=>({label:safeLabel(r,8),value:r.netProfit||0}));
   // Revenue vs Expenses bar data
@@ -1103,7 +1063,7 @@ function Analytics({data,session,t,lang}){
   const expCats={};
   reports.forEach(r=>{
     (r.activities||[]).forEach(a=>{if((a.expenses||0)>0){expCats[a.category||"?"]=(expCats[a.category||"?"]||0)+a.expenses;}});
-    (r.additionalExpenses||[]).forEach(e=>{if(e?.label){const k=e.label.substring(0,15);expCats[k]=(expCats[k]||0)+(e.amount||0);}});
+    (r.additionalExpenses||[]).forEach(e=>{if(e?.label){const k=translateData(e.label,lang).substring(0,15);expCats[k]=(expCats[k]||0)+(e.amount||0);}});
   });
   const pieColors=["#4285F4","#EA4335","#FBBC05","#34A853","#9C27B0","#FF5722","#00BCD4"];
   const pieData=Object.entries(expCats).map(([label,value],i)=>({label,value,color:pieColors[i%pieColors.length]}));
@@ -1126,7 +1086,7 @@ function Analytics({data,session,t,lang}){
   <h1 style="color:white;font-size:22px;margin:0"><span style="color:#4285F4">Th</span><span style="color:#EA4335">un</span><span style="color:#FBBC05">der</span><span style="color:#34A853">fam</span> Investment</h1>
   <p style="color:rgba(255,255,255,0.7);margin:6px 0 0;font-size:12px">${t.analytics.emailSummary} — ${fmtDate()}</p>
 </div>
-<div style="padding:28px;">${calcs.slice(-3).map(r=>'<div style="background:#f8f9ff;border-radius:8px;padding:16px;margin-bottom:12px;border-left:4px solid #4285F4;"><div style="font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:10px;">'+(r.label||'—')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px;text-align:center;"><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.revenue+'</div><div style="color:#34A853;font-weight:700">'+fmtNum(r.totalRevenue)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.expenses+'</div><div style="color:#EA4335;font-weight:700">'+fmtNum(r.totalExpenses)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.report.netProfit+'</div><div style="color:#FBBC05;font-weight:700">'+fmtNum(r.netProfit)+' F</div></div></div></div>').join("")}
+<div style="padding:28px;">${calcs.slice(-3).map(r=>'<div style="background:#f8f9ff;border-radius:8px;padding:16px;margin-bottom:12px;border-left:4px solid #4285F4;"><div style="font-weight:700;font-size:14px;color:#1a1a2e;margin-bottom:10px;">'+escapeHTML(translateReportTitle(r.label,lang)||'—')+'</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;font-size:11px;text-align:center;"><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.revenue+'</div><div style="color:#34A853;font-weight:700">'+fmtNum(r.totalRevenue)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.activity.expenses+'</div><div style="color:#EA4335;font-weight:700">'+fmtNum(r.totalExpenses)+' F</div></div><div><div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:2px">'+t.report.netProfit+'</div><div style="color:#FBBC05;font-weight:700">'+fmtNum(r.netProfit)+' F</div></div></div></div>').join("")}
 </div>
 <div style="background:#f0f4ff;padding:16px;text-align:center;font-size:10px;color:#888;">© 2026 Thunderfam Investment — Côte d'Ivoire</div>
 </div></body></html>`;
@@ -1186,8 +1146,8 @@ function Analytics({data,session,t,lang}){
       {/* Period comparison */}
       <Section title={t.analytics.compare} icon="analytics" color={C.purple}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-          <DDrop label={t.analytics.period1} value={cmpA} onChange={setCmpA} options={reports.map(r=>({value:r.id,label:(r.label||'—').substring(0,18)}))}/>
-          <DDrop label={t.analytics.period2} value={cmpB} onChange={setCmpB} options={reports.map(r=>({value:r.id,label:(r.label||'—').substring(0,18)}))}/>
+          <DDrop label={t.analytics.period1} value={cmpA} onChange={setCmpA} options={reports.map(r=>({value:r.id,label:translateReportTitle(r.label||'—',lang).substring(0,18)}))}/>
+          <DDrop label={t.analytics.period2} value={cmpB} onChange={setCmpB} options={reports.map(r=>({value:r.id,label:translateReportTitle(r.label||'—',lang).substring(0,18)}))}/>
         </div>
         {cA&&cB&&(<>
           {diffPct!==null&&(
@@ -1199,7 +1159,7 @@ function Analytics({data,session,t,lang}){
           {[[t.report.netProfit,cA.netProfit,cB.netProfit,C.yellow],[t.report.totalRevenue,cA.totalRevenue,cB.totalRevenue,C.blue],[t.report.totalExpenses,cA.totalExpenses,cB.totalExpenses,C.red],[t.analytics.capitalEvolution,cA.newInvestment,cB.newInvestment,C.green]].map(([label,vA,vB,col])=>(
             <div key={label} style={{display:"grid",gridTemplateColumns:"1fr auto 1fr",gap:8,alignItems:"center",padding:"7px 0",borderBottom:`1px solid ${C.border}44`,fontSize:11}}>
               <div style={{textAlign:"right",color:col,fontWeight:700}}>{fmtNum(vA)}</div>
-              <div style={{textAlign:"center",color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em"}}>{label}</div>
+              <div style={{textAlign:"center",color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em"}}>{translateText(label,_lang)}</div>
               <div style={{textAlign:"left",color:col,fontWeight:700}}>{fmtNum(vB)}</div>
             </div>
           ))}
@@ -1220,7 +1180,7 @@ function Analytics({data,session,t,lang}){
 }
 
 // ── DASHBOARD ───────────────────────────────────────────────────────────────────
-function Dashboard({data,session,t}){
+function Dashboard({data,session,t,lang=_lang}){
   const C=_C;const s=data.settings;
   const isInvestor=session.role==="investor";
   const myInvestor=isInvestor?data.investors.find(i=>i.id===session.investorId):data.investors[0];
@@ -1272,7 +1232,7 @@ function Dashboard({data,session,t}){
       {inv?.goal>0&&(
         <Card accent={C.green} style={{padding:"14px 16px",flex:2,minWidth:200}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-            <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{inv.goalLabel||t.dashboard.goal}</span>
+            <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{translateData(inv.goalLabel,_lang)||t.dashboard.goal}</span>
             <Icon name="target" size={14} color={C.green}/>
           </div>
           <div style={{color:C.green,fontSize:14,fontWeight:800,marginBottom:8}}>{fmtNum(inv.cumulativeProfit)} / {fmtNum(inv.goal)} F</div>
@@ -1285,13 +1245,13 @@ function Dashboard({data,session,t}){
     <div style={{display:"grid",gridTemplateColumns:"3fr 2fr",gap:12,marginBottom:12}}>
       <Card style={{padding:18}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="trend" size={13} color={C.blue}/><span style={{color:C.text,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.dashboard.capitalEvolution}</span></div>
-        <LineChart data={myReports.map(r=>{const c=calcReport(r);return{label:r.label.substring(0,8),value:c.newInvestment};})} C={C}/>
+        <LineChart data={myReports.map(r=>{const c=calcReport(r);return{label:translateReportTitle(r.label,_lang).substring(0,8),value:c.newInvestment};})} C={C}/>
       </Card>
       <Card style={{padding:18}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="reports" size={13} color={C.green}/><span style={{color:C.text,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.dashboard.profitsByReport}</span></div>
         {myReports.map((r,i)=>{const c=calcReport(r);const col=tabColors[i%4];const maxP=Math.max(...myReports.map(r=>calcReport(r).netProfit));return(<div key={r.id} style={{marginBottom:9}}>
           <div style={{display:"flex",justifyContent:"space-between",marginBottom:2}}>
-            <span style={{color:C.dim,fontSize:10,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"60%"}}>{r.label.substring(0,16)}</span>
+            <span style={{color:C.dim,fontSize:10,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"60%"}}>{translateReportTitle(r.label,_lang).substring(0,16)}</span>
             <span style={{color:col,fontSize:10,fontWeight:700}}>+{fmtNum(c.netProfit)} F</span>
           </div>
           <ProgressBar value={c.netProfit} max={maxP} color={col} showPct={false}/>
@@ -1304,11 +1264,11 @@ function Dashboard({data,session,t}){
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="activity" size={13} color={C.yellow}/><span style={{color:C.text,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{t.dashboard.recentActivity}</span></div>
       <div style={{overflowX:"auto"}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-          <thead><tr>{[t.activity.date,t.activity.description,t.activity.invested,t.activity.revenue,t.activity.profit].map((h,i)=><th key={i} style={{color:C.muted,fontWeight:700,padding:"6px 10px",textAlign:i>1?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`}}>{h}</th>)}</tr></thead>
+          <thead><tr>{[t.activity.date,t.activity.description,t.activity.invested,t.activity.revenue,t.activity.profit].map((h,i)=><th key={i} style={{color:C.muted,fontWeight:700,padding:"6px 10px",textAlign:i>1?"right":"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",borderBottom:`1px solid ${C.border}44`}}>{translateText(h,_lang)}</th>)}</tr></thead>
           <tbody>{myReports.flatMap(r=>r.activities).slice(-6).reverse().map(a=>(
             <tr key={a.id} style={{borderBottom:`1px solid ${C.border}44`}}>
               <td style={{padding:"7px 10px",color:C.muted,verticalAlign:"top"}}>{fmtDate(a.date)}</td>
-              <td style={{padding:"7px 10px",color:C.text,verticalAlign:"top"}}>{a.description}{a.attachments?.length>0&&<span style={{marginLeft:6,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}</td>
+              <td style={{padding:"7px 10px",color:C.text,verticalAlign:"top"}}>{translateData(a.description,lang,a.translations?.description)}{a.attachments?.length>0&&<span style={{marginLeft:6,color:C.teal,fontSize:9}}>📎{a.attachments.length}</span>}</td>
               <td style={{padding:"7px 10px",verticalAlign:"top"}}><Amt n={a.invested} settings={s} color={C.muted} size={11}/></td>
               <td style={{padding:"7px 10px",verticalAlign:"top"}}><Amt n={a.revenue}  settings={s} color={C.blue}  size={11}/></td>
               <td style={{padding:"7px 10px",verticalAlign:"top"}}><Amt n={a.profit}   settings={s} color={C.green} size={11}/></td>
@@ -1325,7 +1285,7 @@ function Dashboard({data,session,t}){
         {data.notifications.filter(n=>!n.read).slice(0,3).map(n=>(
           <div key={n.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 10px",borderRadius:7,background:C.surface,marginBottom:6,border:`1px solid ${C.border}44`}}>
             <div style={{width:8,height:8,borderRadius:"50%",background:n.type==="success"?C.green:n.type==="warning"?C.yellow:C.blue,flexShrink:0}}/>
-            <span style={{color:C.dim,fontSize:12,flex:1}}>{n.msg}</span>
+            <span style={{color:C.dim,fontSize:12,flex:1}}>{translateData(n.msg,_lang)}</span>
             <span style={{color:C.muted,fontSize:10}}>{n.date}</span>
           </div>
         ))}
@@ -1358,7 +1318,7 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
           }
           <div style={{flex:1,minWidth:0}}>
             <div style={{color:"#fff",fontWeight:800,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>
-              {preview ? preview.name : (lang==="fr"?"Fichiers joints":"Attached files")}
+              {preview ? preview.name : (uiText("text0311",lang))}
             </div>
             <div style={{color:"rgba(255,255,255,0.38)",fontSize:10,marginTop:1}}>
               {preview ? fmtSz(preview.size) : files.length+" fichier(s) · "+act.description}
@@ -1366,7 +1326,7 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
           </div>
           {!preview&&canEdit&&(
             <button onClick={onAttach} style={{padding:"6px 14px",background:"rgba(20,184,166,0.18)",border:"1px solid rgba(20,184,166,0.5)",borderRadius:8,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:800,fontFamily:"inherit",whiteSpace:"nowrap",flexShrink:0}}>
-              ＋ {lang==="fr"?"Ajouter":"Add files"}
+              ＋ {uiText("text0312",lang)}
             </button>
           )}
           <button onClick={onClose} style={{width:30,height:30,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.12)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:15,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontFamily:"inherit"}}>✕</button>
@@ -1387,7 +1347,7 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
                     <div style={{color:"rgba(255,255,255,0.85)",fontWeight:700,fontSize:15,marginBottom:8}}>{preview.name}</div>
                     <div style={{color:"rgba(255,255,255,0.35)",fontSize:11,marginBottom:28}}>{fmtSz(preview.size)}</div>
                     <a href={preview.data} download={preview.name} style={{padding:"11px 28px",background:C.blue,borderRadius:10,color:"#fff",textDecoration:"none",fontWeight:700,fontSize:13,display:"inline-block"}}>
-                      ⬇ {lang==="fr"?"Télécharger":"Download"}
+                      ⬇ {uiText("text0313",lang)}
                     </a>
                   </div>
               }
@@ -1400,8 +1360,8 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
               {files.length===0?(
                 <div style={{textAlign:"center",padding:"50px 20px"}}>
                   <div style={{fontSize:50,marginBottom:14,opacity:.35}}>📎</div>
-                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:13,marginBottom:20}}>{lang==="fr"?"Aucun fichier joint.":"No files attached."}</div>
-                  {canEdit&&<button onClick={onAttach} style={{padding:"10px 26px",background:"rgba(20,184,166,0.15)",border:"1px solid rgba(20,184,166,0.4)",borderRadius:10,color:C.teal,cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>＋ {lang==="fr"?"Joindre des fichiers":"Attach files"}</button>}
+                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:13,marginBottom:20}}>{uiText("text0314",lang)}</div>
+                  {canEdit&&<button onClick={onAttach} style={{padding:"10px 26px",background:"rgba(20,184,166,0.15)",border:"1px solid rgba(20,184,166,0.4)",borderRadius:10,color:C.teal,cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>＋ {uiText("text0315",lang)}</button>}
                 </div>
               ):(
                 <div style={{display:"flex",flexDirection:"column",gap:8}}>
@@ -1415,7 +1375,7 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
                         <div style={{color:"rgba(255,255,255,0.28)",fontSize:10,marginTop:2}}>{fmtSz(f.size)}{f.uploadedAt?" · "+f.uploadedAt:""}</div>
                       </div>
                       <div style={{display:"flex",gap:6,flexShrink:0}}>
-                        <button onClick={()=>setPreview(f)} title="Aperçu" style={{width:32,height:32,borderRadius:8,background:"rgba(66,133,244,0.15)",border:"1px solid rgba(66,133,244,0.35)",color:"#4285F4",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>👁</button>
+                        <button onClick={()=>setPreview(f)} title={translateText("Aperçu",_lang)} style={{width:32,height:32,borderRadius:8,background:"rgba(66,133,244,0.15)",border:"1px solid rgba(66,133,244,0.35)",color:"#4285F4",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>👁</button>
                         <a href={f.data} download={f.name} onClick={e=>e.stopPropagation()} style={{width:32,height:32,borderRadius:8,background:"rgba(52,168,83,0.15)",border:"1px solid rgba(52,168,83,0.35)",color:"#34A853",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,textDecoration:"none"}}>⬇</a>
                         {canEdit&&<button onClick={e=>{e.stopPropagation();onDetach(f.id!=null?f.id:i);}} style={{width:32,height:32,borderRadius:8,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.28)",color:"#EA4335",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>}
                       </div>
@@ -1430,8 +1390,8 @@ function ActivityAttachModal({act, canEdit, lang, onClose, onDetach, onAttach}){
         {/* FOOTER */}
         {!preview&&files.length>0&&(
           <div style={{padding:"9px 18px",borderTop:"1px solid rgba(255,255,255,0.06)",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-            <span style={{color:"rgba(255,255,255,0.25)",fontSize:10}}>{files.length} fichier(s) · Cliquez pour prévisualiser</span>
-            {canEdit&&<button onClick={onAttach} style={{padding:"5px 14px",background:"rgba(20,184,166,0.12)",border:"1px solid rgba(20,184,166,0.35)",borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>＋ Ajouter</button>}
+            <span style={{color:"rgba(255,255,255,0.25)",fontSize:10}}>{files.length}{translateText("fichier(s) · Cliquez pour prévisualiser",_lang)}</span>
+            {canEdit&&<button onClick={onAttach} style={{padding:"5px 14px",background:"rgba(20,184,166,0.12)",border:"1px solid rgba(20,184,166,0.35)",borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>{translateText("＋ Ajouter",_lang)}</button>}
           </div>
         )}
       </div>
@@ -1540,7 +1500,7 @@ function Reports({data,setData,session,t,lang}){
     });
     setEditActId(a.id);
   };
-  const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||t.categories)[0],company:"",truckType:"own",contractType:"own_contract",description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[],roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000,rentalTruckVal:0});setEditActId("new");};
+  const startAddAct=()=>{setActDraft({id:"new",date:"",category:(data.settings.categories||DEFAULT_CATEGORIES)[0],company:"",truckType:"own",contractType:"own_contract",description:"",invested:0,revenue:0,expenses:0,profit:0,attachments:[],roadExpenses:100000,fuelQty:480,fuelPrice:675,driverBonus:56000,rentalTruckVal:0});setEditActId("new");};
   const saveAct=()=>{
     if(!canEdit||!actDraft)return;
     const profit=(actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0);
@@ -1649,14 +1609,14 @@ function Reports({data,setData,session,t,lang}){
                 onFocus={e=>e.target.select()} onChange={e=>setTitleDraft(e.target.value)}
                 onKeyDown={e=>{if(e.key==="Escape"){e.preventDefault();setEditingTitleId(null);setTitleDraft("");}if(e.key==="Enter"&&e.nativeEvent.isComposing)e.preventDefault();}}
                 style={{width:240,maxWidth:"100%",boxSizing:"border-box",background:C.surface,color:C.text,border:`1px solid ${col}`,borderRadius:4,padding:"5px 7px",fontSize:12,fontFamily:"inherit"}}/>
-              <button type="submit" disabled={!titleDraft.trim()} aria-label={lang==="fr"?"Enregistrer le titre":"Save report title"} title={lang==="fr"?"Enregistrer le titre":"Save report title"}
+              <button type="submit" disabled={!titleDraft.trim()} aria-label={uiText("text0316",lang)} title={uiText("text0316",lang)}
                 style={{position:"absolute",right:4,top:4,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",background:`${C.green}22`,border:`1px solid ${C.green}66`,borderRadius:5,cursor:titleDraft.trim()?"pointer":"not-allowed",opacity:titleDraft.trim()?1:0.4}}>
                 <Icon name="check" size={17} color={C.green}/>
               </button>
             </form>
           ):(<button className="report-title-tab" data-active={active} key={r.id} onClick={()=>{setSelId(r.id);setEditingTitleId(null);}} onDoubleClick={()=>startRenameReport(r)}
             onKeyDown={e=>{if(e.key==="F2"&&canRenameReport){e.preventDefault();startRenameReport(r);}}}
-            title={canRenameReport?(lang==="fr"?"Double-cliquez pour modifier le titre (F2)":"Double-click to edit the title (F2)"):undefined}
+            title={canRenameReport?(uiText("text0317",lang)):undefined}
             style={{padding:"6px 12px",borderRadius:7,border:"none","--tab-accent":col,"--tab-background":col+"20","--tab-muted":C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
             <span>{translateReportTitle(r.label,lang)}</span>
             {active&&<span style={{fontSize:9,color:col,fontWeight:600}}>{t.activity.profit}: +{fmtNum(lc.netProfit)} F</span>}
@@ -1705,7 +1665,7 @@ function Reports({data,setData,session,t,lang}){
                 <div style={{position:"absolute",left:-20,top:3,width:12,height:12,borderRadius:"50%",background:tabColors[i%4],border:`2px solid ${C.card}`,boxShadow:`0 0 0 2px ${tabColors[i%4]}44`}}/>
                 <div style={{background:C.surface,borderRadius:8,padding:"10px 14px",border:`1px solid ${C.border}44`}}>
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-                    <span style={{color:C.text,fontWeight:600,fontSize:12}}>{a.description}</span>
+                    <span style={{color:C.text,fontWeight:600,fontSize:12}}>{translateData(a.description,lang,a.translations?.description)}</span>
                     <span style={{color:C.muted,fontSize:10}}>{fmtDate(a.date)}</span>
                   </div>
                   <div style={{display:"flex",gap:12,fontSize:11}}>
@@ -1740,7 +1700,7 @@ function Reports({data,setData,session,t,lang}){
             <div style={{padding:"14px 20px",borderBottom:`1px solid ${_C.border}44`,display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:18}}>🔢</span>
               <div style={{flex:1}}>
-                <div style={{color:_C.text,fontWeight:800,fontSize:14}}>{lang==="fr"?"Calcul de l'Investissement":"Investment Calculator"}</div>
+                <div style={{color:_C.text,fontWeight:800,fontSize:14}}>{uiText("text0318",lang)}</div>
                 <div style={{color:_C.muted,fontSize:10,marginTop:1}}>
                   {actDraft.truckType==="rental"?"🚛 Rental Truck":"🚚 Own Truck"} · {actDraft.contractType==="sub_contract"?"Sub Contract":"Own Contract"}
                 </div>
@@ -1753,7 +1713,7 @@ function Reports({data,setData,session,t,lang}){
               <div style={{display:"flex",alignItems:"center",gap:10,opacity:actDraft.truckType==="rental"?1:0.4}}>
                 <span style={{width:26,textAlign:"center",fontSize:14}}>🚛</span>
                 <div style={{flex:1}}>
-                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Rental Truck (F CFA)</div>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{translateText("Rental Truck (F CFA)",_lang)}</div>
                   <input type="number" value={investCalc.rentalTruck} disabled={actDraft.truckType!=="rental"}
                     onChange={e=>setInvestCalc(ic=>({...ic,rentalTruck:parseFloat(e.target.value)||0}))}
                     style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit",opacity:actDraft.truckType==="rental"?1:0.5}}/>
@@ -1764,8 +1724,7 @@ function Reports({data,setData,session,t,lang}){
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{width:26,textAlign:"center",fontSize:14}}>💼</span>
                 <div style={{flex:1}}>
-                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>
-                    Commission {actDraft.contractType==="sub_contract"?<span style={{color:"#FBBC05"}}>(Sub Contract → 100 000 F)</span>:<span style={{color:"#34A853"}}>(Own Contract → 0 F)</span>}
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{translateText("Commission",_lang)}{actDraft.contractType==="sub_contract"?<span style={{color:"#FBBC05"}}>{translateText("(Sub Contract → 100 000 F)",_lang)}</span>:<span style={{color:"#34A853"}}>{translateText("(Own Contract → 0 F)",_lang)}</span>}
                   </div>
                   <input type="number" value={investCalc.commission}
                     onChange={e=>setInvestCalc(ic=>({...ic,commission:parseFloat(e.target.value)||0}))}
@@ -1777,7 +1736,7 @@ function Reports({data,setData,session,t,lang}){
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{width:26,textAlign:"center",fontSize:14}}>🛣️</span>
                 <div style={{flex:1}}>
-                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Road Expenses (F CFA) — défaut : 100 000</div>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{translateText("Road Expenses (F CFA) — défaut : 100 000",_lang)}</div>
                   <input type="number" value={investCalc.roadExpenses}
                     onChange={e=>setInvestCalc(ic=>({...ic,roadExpenses:parseFloat(e.target.value)||0}))}
                     style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
@@ -1788,7 +1747,7 @@ function Reports({data,setData,session,t,lang}){
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{width:26,textAlign:"center",fontSize:14}}>⛽</span>
                 <div style={{flex:1}}>
-                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Fuel Consumption — Qté (L) × Prix/L (F)</div>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{translateText("Fuel Consumption — Qté (L) × Prix/L (F)",_lang)}</div>
                   <div style={{display:"flex",gap:6}}>
                     <input type="number" value={investCalc.fuelQty} placeholder="480 L"
                       onChange={e=>setInvestCalc(ic=>({...ic,fuelQty:parseFloat(e.target.value)||0}))}
@@ -1805,7 +1764,7 @@ function Reports({data,setData,session,t,lang}){
               <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <span style={{width:26,textAlign:"center",fontSize:14}}>👨‍✈️</span>
                 <div style={{flex:1}}>
-                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>Driver Bonus (F CFA) — défaut : 56 000</div>
+                  <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".06em",marginBottom:3}}>{translateText("Driver Bonus (F CFA) — défaut : 56 000",_lang)}</div>
                   <input type="number" value={investCalc.driverBonus}
                     onChange={e=>setInvestCalc(ic=>({...ic,driverBonus:parseFloat(e.target.value)||0}))}
                     style={{width:"100%",background:_C.surface,border:`1px solid ${_C.border}44`,borderRadius:7,padding:"7px 10px",color:_C.text,fontSize:12,outline:"none",fontFamily:"inherit"}}/>
@@ -1815,9 +1774,8 @@ function Reports({data,setData,session,t,lang}){
               {/* Total */}
               <div style={{marginTop:4,padding:"12px 14px",background:`${_C.yellow}12`,border:`1px solid ${_C.yellow}33`,borderRadius:9,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{color:_C.yellow,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",marginBottom:3}}>INVESTI TOTAL</div>
-                  <div style={{color:_C.text,fontSize:10,opacity:0.6}}>
-                    Rental({fmtNum(investCalc.rentalTruck)}) + Commission({fmtNum(investCalc.commission)}) + Route({fmtNum(investCalc.roadExpenses)}) + Fuel({fmtNum(investCalc.fuelQty*investCalc.fuelPrice)}) + Bonus({fmtNum(investCalc.driverBonus)})
+                  <div style={{color:_C.yellow,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".08em",marginBottom:3}}>{translateText("INVESTI TOTAL",_lang)}</div>
+                  <div style={{color:_C.text,fontSize:10,opacity:0.6}}>{translateText("Rental(",_lang)}{fmtNum(investCalc.rentalTruck)}) + Commission({fmtNum(investCalc.commission)}) + Route({fmtNum(investCalc.roadExpenses)}) + Fuel({fmtNum(investCalc.fuelQty*investCalc.fuelPrice)}) + Bonus({fmtNum(investCalc.driverBonus)})
                   </div>
                 </div>
                 <div style={{color:_C.yellow,fontWeight:900,fontSize:18}}>{fmtNum(calcInvested(investCalc))} <span style={{fontSize:12}}>F</span></div>
@@ -1827,18 +1785,17 @@ function Reports({data,setData,session,t,lang}){
                 <div style={{padding:"8px 12px",background:`${_C.teal}12`,border:`1px solid ${_C.teal}33`,borderRadius:7,display:"flex",alignItems:"center",gap:8}}>
                   <span>🚗</span>
                   <div style={{flex:1,color:_C.teal,fontSize:11}}>
-                    <strong>Driver Salary</strong> — 200 000 F/mois (Own Truck uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel.
-                  </div>
+                    <strong>{translateText("Driver Salary",_lang)}</strong>{translateText("— 200 000 F/mois (Own Truck uniquement). À ajouter dans les Dépenses Additionnelles du rapport mensuel.",_lang)}</div>
                 </div>
               )}
             </div>
             {/* Footer buttons */}
             <div style={{padding:"12px 20px",borderTop:`1px solid ${_C.border}44`,display:"flex",justifyContent:"flex-end",gap:8}}>
               <button onClick={()=>setInvestModal(false)}
-                style={{padding:"7px 16px",background:"transparent",border:`1px solid ${_C.border}44`,borderRadius:8,color:_C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+                style={{padding:"7px 16px",background:"transparent",border:`1px solid ${_C.border}44`,borderRadius:8,color:_C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{uiText("text0089",lang)}</button>
               <button onClick={applyInvestCalc}
                 style={{padding:"7px 20px",background:_C.yellow,border:"none",borderRadius:8,color:"#1a1a2e",fontWeight:800,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>
-                ✓ {lang==="fr"?"Appliquer":"Apply"} — {fmtNum(calcInvested(investCalc))} F
+                ✓ {uiText("text0319",lang)} — {fmtNum(calcInvested(investCalc))} F
               </button>
             </div>
           </div>
@@ -1856,13 +1813,13 @@ function Reports({data,setData,session,t,lang}){
             {/* Row 1: Date / Category / Company / Contract Type / Truck */}
             <div style={{display:"grid",gridTemplateColumns:"130px 1fr 1fr 160px 160px",gap:6,marginBottom:8}}>
               <EditCell value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/>
-              <EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/>
+              <EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||DEFAULT_CATEGORIES} optionLabels={(data.settings.categories||DEFAULT_CATEGORIES).map(c=>translateData(c,lang))}/>
               <EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))}
-                options={["", ...partnerCompanies]} optionLabels={[lang==="fr"?"— Société —":"— Company —",...partnerCompanies]}/>
+                options={["", ...partnerCompanies]} optionLabels={[uiText("text0320",lang),...partnerCompanies]}/>
               <EditCell value={actDraft.contractType||"own_contract"} onChange={v=>setActDraft(d=>({...d,contractType:v,commission:v==="sub_contract"?100000:0}))}
-                options={["own_contract","sub_contract"]} optionLabels={["Own Contract","Sub Contract"]}/>
+                options={["own_contract","sub_contract"]} optionLabels={[translateText("Own Contract",lang),translateText("Sub Contract",lang)]}/>
               <EditCell value={actDraft.truckType||"own"} onChange={v=>setActDraft(d=>({...d,truckType:v,rentalTruckVal:v==="rental"?d.rentalTruckVal:0}))}
-                options={["own","rental"]} optionLabels={["Own Truck","Rental Truck"]}/>
+                options={["own","rental"]} optionLabels={[translateText("Own Truck",lang),translateText("Rental Truck",lang)]}/>
             </div>
             {/* Row 2: Description / INVESTI (with modal btn) / Revenue / Expenses */}
             <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:6,marginBottom:8}}>
@@ -1871,7 +1828,7 @@ function Reports({data,setData,session,t,lang}){
                 <div style={{flex:1}}>
                   <EditCell value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/>
                 </div>
-                <button onClick={()=>openInvestModal(actDraft)} title={lang==="fr"?"Calculer l'investi":"Calculate invested"}
+                <button onClick={()=>openInvestModal(actDraft)} title={uiText("text0321",lang)}
                   style={{width:30,background:`${C.yellow}18`,border:`1px solid ${C.yellow}44`,borderRadius:7,color:C.yellow,cursor:"pointer",fontSize:13,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
               </div>
               <EditCell value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/>
@@ -1881,7 +1838,7 @@ function Reports({data,setData,session,t,lang}){
             <div style={{display:"flex",gap:8,alignItems:"center"}}>
               <span style={{color:C.muted,fontSize:10}}>{t.report.autoProfit}</span>
               <span style={{color:C.green,fontWeight:700,fontSize:13}}>{fmtNum((actDraft.revenue||0)-(actDraft.invested||0)-(actDraft.expenses||0))} F</span>
-              {actDraft.truckType==="own"&&<span style={{color:C.yellow,fontSize:10,marginLeft:4}}>🚗 Driver Salary: {fmtNum(200000)} F/mois</span>}
+              {actDraft.truckType==="own"&&<span style={{color:C.yellow,fontSize:10,marginLeft:4}}>{translateText("🚗 Driver Salary:",_lang)}{fmtNum(200000)}{translateText("F/mois",_lang)}</span>}
               <div style={{flex:1}}/>
               <Btn onClick={saveAct} icon="check" small>{t.activity.save}</Btn>
               <Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small>{t.activity.cancel}</Btn>
@@ -1893,9 +1850,9 @@ function Reports({data,setData,session,t,lang}){
             <thead><tr>
               <TH>{t.activity.date}</TH>
               <TH>{t.activity.category}</TH>
-              <TH>{lang==="fr"?"Société":"Company"}</TH>
-              <TH>{lang==="fr"?"Camion":"Truck"}</TH>
-              <TH>{lang==="fr"?"Contrat":"Contract"}</TH>
+              <TH>{uiText("text0295",lang)}</TH>
+              <TH>{uiText("text0296",lang)}</TH>
+              <TH>{uiText("text0297",lang)}</TH>
               <TH>{t.activity.description}</TH>
               <TH right>{t.activity.invested}</TH>
               <TH right>{t.activity.revenue}</TH>
@@ -1912,15 +1869,15 @@ function Reports({data,setData,session,t,lang}){
                 style={{borderBottom:`1px solid ${C.border}44`,verticalAlign:"top","--row-base":editing?C.surface+"88":"transparent","--row-highlight":"rgba(148,163,184,0.16)"}}>
                 {editing?(<>
                   <td style={{padding:"4px 5px",minWidth:110}}><EditCell onCommit={saveAct} value={actDraft.date} onChange={v=>setActDraft(d=>({...d,date:v}))} type="date"/></td>
-                  <td style={{padding:"4px 5px",minWidth:140}}><EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||t.categories} optionLabels={(data.settings.categories||t.categories).map((c,i)=>{const pi=PERMANENT_CATEGORIES.indexOf(c);return _lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||c):c;})}/></td>
-                  <td style={{padding:"4px 5px",minWidth:160}}><EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))} options={["", ...partnerCompanies]} optionLabels={[lang==="fr"?"— Société —":"— Company —",...partnerCompanies]}/></td>
+                  <td style={{padding:"4px 5px",minWidth:140}}><EditCell value={actDraft.category} onChange={v=>setActDraft(d=>({...d,category:v}))} options={data.settings.categories||DEFAULT_CATEGORIES} optionLabels={(data.settings.categories||DEFAULT_CATEGORIES).map(c=>translateData(c,lang))}/></td>
+                  <td style={{padding:"4px 5px",minWidth:160}}><EditCell value={actDraft.company||""} onChange={v=>setActDraft(d=>({...d,company:v}))} options={["", ...partnerCompanies]} optionLabels={[uiText("text0320",lang),...partnerCompanies]}/></td>
                   <td style={{padding:"4px 5px",minWidth:120}}><EditCell value={actDraft.truckType||"own"} onChange={v=>setActDraft(d=>({...d,truckType:v,rentalTruckVal:v==="rental"?d.rentalTruckVal:0}))} options={["own","rental"]} optionLabels={["Own Truck","Rental Truck"]}/></td>
                   <td style={{padding:"4px 5px",minWidth:130}}><EditCell value={actDraft.contractType||"own_contract"} onChange={v=>setActDraft(d=>({...d,contractType:v,commission:v==="sub_contract"?100000:0}))} options={["own_contract","sub_contract"]} optionLabels={["Own Contract","Sub Contract"]}/></td>
                   <td style={{padding:"4px 5px",minWidth:180}}><EditCell onCommit={saveAct} value={actDraft.description} onChange={v=>setActDraft(d=>({...d,description:v}))}/></td>
                   <td style={{padding:"4px 5px",minWidth:130}}>
                     <div style={{display:"flex",gap:3,alignItems:"center"}}>
                       <div style={{flex:1}}><EditCell onCommit={saveAct} value={actDraft.invested} onChange={v=>setActDraft(d=>({...d,invested:parseFloat(v)||0}))} type="number"/></div>
-                      <button onClick={()=>openInvestModal(actDraft)} title={lang==="fr"?"Calculer":"Calc"} style={{width:24,height:26,background:`${C.yellow}22`,border:`1px solid ${C.yellow}44`,borderRadius:5,color:C.yellow,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
+                      <button onClick={()=>openInvestModal(actDraft)} title={uiText("text0322",lang)} style={{width:24,height:26,background:`${C.yellow}22`,border:`1px solid ${C.yellow}44`,borderRadius:5,color:C.yellow,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>🔢</button>
                     </div>
                   </td>
                   <td style={{padding:"4px 5px",minWidth:120}}><EditCell onCommit={saveAct} value={actDraft.revenue} onChange={v=>setActDraft(d=>({...d,revenue:parseFloat(v)||0}))} type="number"/></td>
@@ -1929,22 +1886,22 @@ function Reports({data,setData,session,t,lang}){
                   <td style={{padding:"4px 5px"}}><div style={{display:"flex",gap:3}}><Btn onClick={saveAct} variant="green" small><Icon name="check" size={10} color="#fff"/></Btn><Btn onClick={()=>{setEditActId(null);setActDraft(null);}} variant="ghost" small><Icon name="close" size={10} color={C.muted}/></Btn></div></td>
                 </>):(<>
                   <td style={{padding:"7px 8px",color:C.muted,whiteSpace:"nowrap"}}>{fmtDate(a.date)}</td>
-                  <td style={{padding:"7px 8px",color:C.dim,fontSize:10}}>{a.category}</td>
+                  <td style={{padding:"7px 8px",color:C.dim,fontSize:10}}>{translateData(a.category,lang,a.translations?.category)}</td>
                   <td style={{padding:"7px 8px",maxWidth:140,wordBreak:"break-word",whiteSpace:"normal"}}>
                     {a.company?<span style={{background:`${C.blue}18`,color:C.blue,borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700,display:"inline-block",lineHeight:1.4,wordBreak:"break-word"}}>{a.company}</span>:<span style={{color:C.muted,fontSize:10}}>—</span>}
                   </td>
                   <td style={{padding:"7px 8px"}}>
                     <span style={{background:(a.truckType==="rental"?C.purple:C.teal)+"18",color:(a.truckType==="rental"?C.purple:C.teal),borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700}}>
-                      {a.truckType==="rental"?"🚛 Rental":"🚚 Own"}
+                      {a.truckType==="rental"?"🚛 "+translateText("Rental",lang):"🚚 "+translateText("Own",lang)}
                     </span>
                   </td>
                   <td style={{padding:"7px 8px"}}>
                     <span style={{background:(a.contractType==="sub_contract"?C.yellow:C.green)+"18",color:(a.contractType==="sub_contract"?C.yellow:C.green),borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:700}}>
-                      {a.contractType==="sub_contract"?"Sub":"Own"}
+                      {a.contractType==="sub_contract"?translateText("Sub Contract",lang):translateText("Own Contract",lang)}
                     </span>
                   </td>
-                  <td style={{padding:"7px 8px",color:C.text,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={a.description}>
-                    {a.description}
+                  <td style={{padding:"7px 8px",color:C.text,maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={translateData(a.description,lang,a.translations?.description)}>
+                    {translateData(a.description,lang,a.translations?.description)}
                   </td>
                   <td style={{padding:"7px 8px",cursor:canEdit?"pointer":"default"}} onClick={()=>{if(canEdit){setActDraft({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});openInvestModal({...a,truckType:a.truckType||"own",contractType:a.contractType||"own_contract",roadExpenses:a.roadExpenses||100000,fuelQty:a.fuelQty||480,fuelPrice:a.fuelPrice||675,driverBonus:a.driverBonus||56000,rentalTruckVal:a.rentalTruckVal||0});setEditActId(a.id);}}}>
                     <Amt n={a.invested} settings={s} color={C.muted} size={11}/>
@@ -1956,7 +1913,7 @@ function Reports({data,setData,session,t,lang}){
                   <td style={{padding:"7px 8px"}}><div style={{display:"flex",gap:2,justifyContent:"flex-end"}}>
                     {!isInvestor&&canEdit&&<><Btn onClick={()=>startEditAct(a)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_activity")&&<Btn onClick={()=>delAct(a.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</>}
                     <button onClick={()=>setAttachModal({actId:a.id,actDesc:a.description})}
-                      title={lang==="fr"?"Voir / Joindre fichiers":"View / Attach files"}
+                      title={uiText("text0323",lang)}
                       style={{display:"flex",alignItems:"center",gap:3,padding:"3px 7px",background:(a.attachments?.length>0)?`${C.teal}18`:"transparent",border:`1px solid ${(a.attachments?.length>0)?C.teal:C.border}44`,borderRadius:6,cursor:"pointer",color:C.teal,fontSize:10,fontWeight:700}}>
                       <Icon name="paperclip" size={10} color={C.teal}/>
                       {(a.attachments?.length>0)&&<span>{a.attachments.length}</span>}
@@ -1985,33 +1942,33 @@ function Reports({data,setData,session,t,lang}){
             <div style={{padding:"14px 20px",borderBottom:"1px solid rgba(255,255,255,0.08)",display:"flex",alignItems:"center",gap:10}}>
               <span style={{fontSize:18}}>🚗</span>
               <div style={{flex:1}}>
-                <div style={{color:"#fff",fontWeight:800,fontSize:14}}>{driverSalaryModal.editing!=null?(lang==="fr"?"Modifier salaire":"Edit salary"):(lang==="fr"?"Ajouter salaire chauffeur":"Add driver salary")}</div>
-                <div style={{color:"rgba(255,255,255,0.38)",fontSize:10,marginTop:1}}>Driver Salary — Own Truck</div>
+                <div style={{color:"#fff",fontWeight:800,fontSize:14}}>{driverSalaryModal.editing!=null?(uiText("text0324",lang)):(uiText("text0325",lang))}</div>
+                <div style={{color:"rgba(255,255,255,0.38)",fontSize:10,marginTop:1}}>{translateText("Driver Salary — Own Truck",_lang)}</div>
               </div>
               <button onClick={()=>setDriverSalaryModal(null)} style={{width:28,height:28,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
             </div>
             <div style={{padding:20,display:"flex",flexDirection:"column",gap:14}}>
               {/* Driver dropdown */}
               <div>
-                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Chauffeur":"Driver"}</div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{uiText("text0326",lang)}</div>
                 <select value={driverSalaryModal.driverId||""} onChange={e=>setDriverSalaryModal(m=>({...m,driverId:e.target.value}))}
                   style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  <option value="">{lang==="fr"?"— Sélectionner un chauffeur —":"— Select a driver —"}</option>
+                  <option value="">{uiText("text0327",lang)}</option>
                   {(data.settings.drivers||[]).map(d=>(
                     <option key={d.id} value={d.id}>{d.nom}{d.prenom?" "+d.prenom:""}</option>
                   ))}
                 </select>
-                {(data.settings.drivers||[]).length===0&&<div style={{color:"rgba(234,67,53,0.8)",fontSize:10,marginTop:4}}>⚠ {lang==="fr"?"Aucun chauffeur dans les Paramètres.":"No drivers in Settings."}</div>}
+                {(data.settings.drivers||[]).length===0&&<div style={{color:"rgba(234,67,53,0.8)",fontSize:10,marginTop:4}}>⚠ {uiText("text0328",lang)}</div>}
               </div>
               {/* Salary amount */}
               <div>
-                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Montant du salaire (F CFA)":"Salary Amount (F CFA)"}</div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{uiText("text0329",lang)}</div>
                 <input type="number" value={driverSalaryModal.amount||""} onChange={e=>setDriverSalaryModal(m=>({...m,amount:parseFloat(e.target.value)||0}))}
                   placeholder="200000" style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none"}}/>
               </div>
               {/* Number of trips */}
               <div>
-                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Nombre de voyages":"Number of trips"}</div>
+                <div style={{color:"rgba(255,255,255,0.5)",fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{uiText("text0330",lang)}</div>
                 <select value={driverSalaryModal.trips||0} onChange={e=>setDriverSalaryModal(m=>({...m,trips:parseInt(e.target.value)||0}))}
                   style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 12px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
                   {[0,1,2,3,4,5,6,7,8,9,10].map(n=><option key={n} value={n}>{n}</option>)}
@@ -2020,7 +1977,7 @@ function Reports({data,setData,session,t,lang}){
             </div>
             <div style={{padding:"12px 20px",borderTop:"1px solid rgba(255,255,255,0.06)",display:"flex",gap:10,justifyContent:"flex-end"}}>
               <button onClick={()=>setDriverSalaryModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
-                {lang==="fr"?"Annuler":"Cancel"}
+                {uiText("text0089",lang)}
               </button>
               <button disabled={!driverSalaryModal.driverId||!driverSalaryModal.amount} onClick={()=>{
                 const driver=(data.settings.drivers||[]).find(d=>String(d.id)===String(driverSalaryModal.driverId));
@@ -2036,7 +1993,7 @@ function Reports({data,setData,session,t,lang}){
                 addAudit(setData,session,"Driver Salary",entry.driverName+" — "+fmtNum(entry.amount)+" F","create");
                 setDriverSalaryModal(null);
               }} style={{padding:"7px 20px",background:(driverSalaryModal.driverId&&driverSalaryModal.amount)?_C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:(driverSalaryModal.driverId&&driverSalaryModal.amount)?"#fff":"rgba(255,255,255,0.3)",cursor:(driverSalaryModal.driverId&&driverSalaryModal.amount)?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
-                {driverSalaryModal.editing!=null?(lang==="fr"?"Mettre à jour":"Update"):(lang==="fr"?"Ajouter":"Add")} 🚗
+                {driverSalaryModal.editing!=null?(uiText("text0331",lang)):(uiText("text0092",lang))} 🚗
               </button>
             </div>
           </div>
@@ -2052,15 +2009,15 @@ function Reports({data,setData,session,t,lang}){
             <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:dsSalaries.length>0?10:0}}>
               <span style={{fontSize:16}}>🚗</span>
               <div style={{flex:1}}>
-                <div style={{color:C.teal,fontWeight:700,fontSize:12}}>Driver Salary — Own Truck</div>
+                <div style={{color:C.teal,fontWeight:700,fontSize:12}}>{translateText("Driver Salary — Own Truck",_lang)}</div>
                 {dsSalaries.length>0&&<div style={{color:C.green,fontSize:11,fontWeight:700,marginTop:1}}>
-                  {lang==="fr"?"Chauffeurs":"Drivers"} ({dsSalaries.length}) — {fmtNum(dsTotal)} F
+                  {uiText("text0332",lang)} ({dsSalaries.length}) — {fmtNum(dsTotal)} F
                 </div>}
               </div>
               {canEdit&&(
                 <button onClick={()=>setDriverSalaryModal({driverId:"",amount:200000,trips:1,editing:null})}
                   style={{padding:"6px 14px",background:`${C.teal}18`,border:`1px solid ${C.teal}55`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                  ＋ {lang==="fr"?"Ajouter salaire des chauffeurs":"Add driver salary"}
+                  ＋ {uiText("text0333",lang)}
                 </button>
               )}
             </div>
@@ -2070,7 +2027,7 @@ function Reports({data,setData,session,t,lang}){
                   <div key={e.id||i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 10px",background:"rgba(255,255,255,0.04)",borderRadius:7,border:"1px solid rgba(255,255,255,0.06)"}}>
                     <span style={{fontSize:12}}>👤</span>
                     <span style={{color:C.text,fontSize:11,fontWeight:600,flex:1}}>{e.driverName||"—"}</span>
-                    {e.trips>0&&<span style={{color:C.muted,fontSize:10}}>{e.trips} {lang==="fr"?"voyage(s)":"trip(s)"}</span>}
+                    {e.trips>0&&<span style={{color:C.muted,fontSize:10}}>{e.trips} {uiText("text0334",lang)}</span>}
                     <span style={{color:C.green,fontSize:11,fontWeight:700}}>{fmtNum(e.amount)} F</span>
                     {canEdit&&<>
                       <button onClick={()=>setDriverSalaryModal({driverId:String(e.driverId),amount:e.amount,trips:e.trips||0,editing:e.id})} style={{width:22,height:22,borderRadius:5,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:10,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
@@ -2099,7 +2056,7 @@ function Reports({data,setData,session,t,lang}){
         )}
         {report.additionalExpenses.map(e=>{const editing=editExpId===e.id&&expDraft;return(
           <div key={e.id} style={{display:"flex",alignItems:"flex-start",padding:"8px 0",borderBottom:`1px solid ${C.border}44`,gap:8}}>
-            {editing?(<><div style={{flex:2}}><EditCell value={expDraft.label} onChange={v=>setExpDraft(d=>({...d,label:v}))}/></div><div style={{flex:1}}><EditCell value={expDraft.amount} onChange={v=>setExpDraft(d=>({...d,amount:parseFloat(v)||0}))} type="number" style={{textAlign:"right"}}/></div><Btn onClick={saveExp} variant="green" small><Icon name="check" size={11} color="#fff"/></Btn><Btn onClick={()=>{setEditExpId(null);setExpDraft(null);}} variant="ghost" small><Icon name="close" size={11} color={C.muted}/></Btn></>):(<><span style={{flex:2,color:C.dim,fontSize:13,paddingTop:4}}>{e.label}</span><div style={{flex:1}}><Amt n={e.amount} settings={s} color={C.red} size={12}/></div>{can(session,"edit_expense")&&!locked&&<div style={{display:"flex",gap:3,flexShrink:0}}><Btn onClick={()=>startEditExp(e)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_expense")&&<Btn onClick={()=>delExp(e.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</div>}</>)}
+            {editing?(<><div style={{flex:2}}><EditCell value={expDraft.label} onChange={v=>setExpDraft(d=>({...d,label:v}))}/></div><div style={{flex:1}}><EditCell value={expDraft.amount} onChange={v=>setExpDraft(d=>({...d,amount:parseFloat(v)||0}))} type="number" style={{textAlign:"right"}}/></div><Btn onClick={saveExp} variant="green" small><Icon name="check" size={11} color="#fff"/></Btn><Btn onClick={()=>{setEditExpId(null);setExpDraft(null);}} variant="ghost" small><Icon name="close" size={11} color={C.muted}/></Btn></>):(<><span style={{flex:2,color:C.dim,fontSize:13,paddingTop:4}}>{translateData(e.label,lang,e.translations?.label)}</span><div style={{flex:1}}><Amt n={e.amount} settings={s} color={C.red} size={12}/></div>{can(session,"edit_expense")&&!locked&&<div style={{display:"flex",gap:3,flexShrink:0}}><Btn onClick={()=>startEditExp(e)} variant="ghost" small><Icon name="edit" size={11} color={C.blue}/></Btn>{can(session,"delete_expense")&&<Btn onClick={()=>delExp(e.id)} variant="red" small><Icon name="trash" size={11} color="#fca5a5"/></Btn>}</div>}</>)}
           </div>
         );})}
         {report.additionalExpenses.length>0&&<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"8px 0",marginTop:4,borderTop:`1px solid ${C.border2}`}}><span style={{color:C.muted,fontSize:12,fontWeight:700,paddingTop:4}}>{t.total.toUpperCase()}</span><Amt n={calc.addExp} settings={s} color={C.red} size={12}/></div>}
@@ -2128,7 +2085,7 @@ function Reports({data,setData,session,t,lang}){
         </div>
         {[[t.report.openingCapital,report.openingInvestment,C.muted],[t.report.totalRevenue,calc.totalRevenue,C.blue],[t.report.totalExpenses,calc.totalExpenses,C.red],[t.report.netProfit,calc.netProfit,C.green],[t.report.newInvestment,calc.newInvestment,C.yellow]].map(([label,val,color])=>(
           <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"9px 0",borderBottom:`1px solid ${C.border}44`}}>
-            <span style={{color:C.muted,fontSize:13,paddingTop:4}}>{label}</span>
+            <span style={{color:C.muted,fontSize:13,paddingTop:4}}>{translateText(label,_lang)}</span>
             <Amt n={Math.abs(val)} settings={s} color={color} size={14}/>
           </div>
         ))}
@@ -2159,7 +2116,7 @@ function Investors({data,setData,session,t,lang}){
   const saveEdit=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===editId?draft:i)}));addAudit(setData,session,"Investisseur modifié",draft.name,"update");setEditId(null);setDraft(null);};
   const saveAdd=()=>{const totalCats=(addDraft.investmentCategories||[]).reduce((s,c)=>s+(c.amount||0),0);const ni={...addDraft,initialInvestment:totalCats||addDraft.initialInvestment||0,currentInvestment:totalCats||addDraft.initialInvestment||0,id:Date.now(),goal:0,goalLabel:"",sharedTokens:[]};setData(d=>({...d,investors:[...d.investors,ni]}));addAudit(setData,session,"Investisseur créé",addDraft.name,"create");setShowAdd(false);setAddDraft(null);};
   const saveGoal=()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===goalModal?{...i,...goalDraft}:i)}));setGoalModal(null);};
-  const InfoRow=({icon,label,value})=>(<div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"5px 0",borderBottom:`1px solid ${C.border}44`}}><Icon name={icon} size={12} color={C.muted}/><div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700}}>{label}</div><div style={{color:C.dim,fontSize:12,marginTop:1}}>{value||"—"}</div></div></div>);
+  const InfoRow=({icon,label,value})=>(<div style={{display:"flex",alignItems:"flex-start",gap:8,padding:"5px 0",borderBottom:`1px solid ${C.border}44`}}><Icon name={icon} size={12} color={C.muted}/><div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700}}>{translateText(label,_lang)}</div><div style={{color:C.dim,fontSize:12,marginTop:1}}>{value||"—"}</div></div></div>);
   const InvestorForm=({d,setD,onSave,onCancel,saveLabel,settingsData})=>{
     const C=_C;
     const cats=settingsData?.categories||DEFAULT_CATEGORIES;
@@ -2199,7 +2156,7 @@ function Investors({data,setData,session,t,lang}){
         <div style={{color:C.muted,fontSize:10,marginBottom:6,textTransform:"uppercase",letterSpacing:"0.08em",fontWeight:700}}>{t.investor.currencyDesc}</div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
           <button onClick={()=>setD(x=>({...x,preferredCurrency:""}))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${!prefCur?C.blue:C.border}`,background:!prefCur?`${C.blue}22`:"transparent",color:!prefCur?C.blue:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12,fontWeight:!prefCur?700:400}}>{t.investor.fcfaOnly}</button>
-          {ALL_CURRENCIES.map(cur=>(<button key={cur.code} onClick={()=>setD(x=>({...x,preferredCurrency:cur.code}))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${prefCur===cur.code?cur.color:C.border}`,background:prefCur===cur.code?cur.color+"22":"transparent",color:prefCur===cur.code?cur.color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:prefCur===cur.code?700:400,display:"flex",alignItems:"center",gap:5}}>{prefCur===cur.code&&<Icon name="check" size={11} color={cur.color}/>}{cur.sym} {cur.name}</button>))}
+          {ALL_CURRENCIES.map(cur=>(<button key={cur.code} onClick={()=>setD(x=>({...x,preferredCurrency:cur.code}))} style={{padding:"6px 14px",borderRadius:7,border:`2px solid ${prefCur===cur.code?cur.color:C.border}`,background:prefCur===cur.code?cur.color+"22":"transparent",color:prefCur===cur.code?cur.color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:13,fontWeight:prefCur===cur.code?700:400,display:"flex",alignItems:"center",gap:5}}>{prefCur===cur.code&&<Icon name="check" size={11} color={cur.color}/>}{cur.sym} {translateText(cur.name,_lang)}</button>))}
         </div>
         {curObj&&<div style={{color:C.muted,fontSize:10,marginTop:5}}>{t.investor.rateLabel} 1 {curObj.sym} = <span style={{color:curObj.color,fontWeight:700}}>{fmtNum(rate)} F CFA</span></div>}
       </div>
@@ -2216,7 +2173,7 @@ function Investors({data,setData,session,t,lang}){
             <div style={{flex:2}}>
               <div style={{color:C.muted,fontSize:9,marginBottom:3,textTransform:"uppercase",fontWeight:700}}>{t.activity.category}</div>
               <select value={c.category} onChange={e=>updateCat(i,"category",e.target.value)} style={{width:"100%",background:C.bg,border:`1px solid ${C.border2}`,borderRadius:6,padding:"7px 10px",color:C.text,fontSize:12,outline:"none"}}>
-                {cats.map((cat,ci)=>{const pi=PERMANENT_CATEGORIES.indexOf(cat);const label=_lang==="en"&&pi>=0?(PERMANENT_CATEGORIES_EN[pi]||cat):cat;return<option key={cat} value={cat}>{label}</option>;})}
+                {cats.map((cat,ci)=>{const label=translateData(cat,lang);return<option key={cat} value={cat}>{label}</option>;})}
               </select>
             </div>
             <div style={{flex:1}}>
@@ -2238,7 +2195,7 @@ function Investors({data,setData,session,t,lang}){
         )}
       </div>
 
-      <div style={{display:"flex",gap:8,marginTop:8}}><Btn onClick={()=>{if(totalCats>0)setD(x=>({...x,initialInvestment:totalCats,currentInvestment:totalCats}));onSave();}} icon="save">{saveLabel}</Btn><Btn onClick={onCancel} variant="ghost">Annuler</Btn></div>
+      <div style={{display:"flex",gap:8,marginTop:8}}><Btn onClick={()=>{if(totalCats>0)setD(x=>({...x,initialInvestment:totalCats,currentInvestment:totalCats}));onSave();}} icon="save">{saveLabel}</Btn><Btn onClick={onCancel} variant="ghost">{translateText("Annuler",_lang)}</Btn></div>
     </>);
   };
 
@@ -2301,7 +2258,7 @@ function Investors({data,setData,session,t,lang}){
           {/* Financial rows */}
           {[[t.investor.initial,inv.initialInvestment,C.muted],[t.investor.current,inv.currentInvestment,col],[t.investor.profit,inv.cumulativeProfit,C.green]].map(([label,val,color])=>(
             <div key={label} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderBottom:`1px solid ${C.border}44`}}>
-              <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",fontWeight:700,paddingTop:3}}>{label}</span>
+              <span style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",fontWeight:700,paddingTop:3}}>{translateText(label,_lang)}</span>
               <Amt n={val} settings={s} color={color} size={11}/>
             </div>
           ))}
@@ -2314,7 +2271,7 @@ function Investors({data,setData,session,t,lang}){
 
           {/* Goal */}
           {inv.goal>0&&<div style={{marginTop:10}}>
-            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.muted,fontSize:10}}>{inv.goalLabel||t.investor.goalDefault}</span><span style={{color:C.green,fontSize:10,fontWeight:700}}>{fmtNum(inv.cumulativeProfit)} / {fmtNum(inv.goal)} F</span></div>
+            <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{color:C.muted,fontSize:10}}>{translateData(inv.goalLabel,lang)||t.investor.goalDefault}</span><span style={{color:C.green,fontSize:10,fontWeight:700}}>{fmtNum(inv.cumulativeProfit)} / {fmtNum(inv.goal)} F</span></div>
             <ProgressBar value={inv.cumulativeProfit} max={inv.goal} color={C.green} showPct={true}/>
           </div>}
 
@@ -2331,7 +2288,7 @@ function Investors({data,setData,session,t,lang}){
             <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:".07em",fontWeight:700,marginBottom:6}}>{t.investor.history}</div>
             {invReports.map((r,ri)=>{const c=calcReport(r);const rc=invColors[ri%4];return(
               <div key={r.id} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",fontSize:11,borderBottom:`1px solid ${C.border}44`}}>
-                <span style={{color:C.muted,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"55%"}}>{r.label.substring(0,22)}</span>
+                <span style={{color:C.muted,overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis",maxWidth:"55%"}}>{translateReportTitle(r.label,_lang).substring(0,22)}</span>
                 <span style={{color:rc,fontWeight:700}}>+{fmtNum(c.netProfit)} F</span>
               </div>
             );})}
@@ -2358,7 +2315,7 @@ function Investors({data,setData,session,t,lang}){
 }
 
 // ── AUDIT LOG ────────────────────────────────────────────────────────────────────
-function AuditLog({data,t}){
+function AuditLog({data,t,lang=_lang}){
   const C=_C;
   const [filter,setFilter]=useState("all");
   const types=["all","create","update","delete","lock"];
@@ -2371,7 +2328,7 @@ function AuditLog({data,t}){
       <div style={{display:"flex",gap:4}}>
         {types.map(tp=>(
           <button key={tp} onClick={()=>setFilter(tp)} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${filter===tp?(typeColors[tp]||C.blue):C.border}`,background:filter===tp?(typeColors[tp]||C.blue)+"22":"transparent",color:filter===tp?typeColors[tp]||C.blue:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:filter===tp?700:400,textTransform:"capitalize"}}>
-            {tp==="all"?t.audit.all:tp}
+            {tp==="all"?t.audit.all:translateText(tp,_lang)}
           </button>
         ))}
       </div>
@@ -2389,8 +2346,8 @@ function AuditLog({data,t}){
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <div style={{width:22,height:22,borderRadius:6,background:col+"22",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Icon name={ico} size={11} color={col}/></div>
                   <div>
-                    <span style={{color:C.text,fontWeight:600,fontSize:12}}>{log.action}</span>
-                    {log.target&&<span style={{color:C.dim,fontSize:11,marginLeft:6}}>→ {log.target}</span>}
+                    <span style={{color:C.text,fontWeight:600,fontSize:12}}>{translateData(log.action,lang)}</span>
+                    {log.target&&<span style={{color:C.dim,fontSize:11,marginLeft:6}}>→ {translateData(log.target,lang)}</span>}
                   </div>
                 </div>
                 <div style={{textAlign:"right",flexShrink:0,marginLeft:10}}>
@@ -2458,7 +2415,7 @@ function UsersPanel({data,setData,session,t}){
     </Card>
     {editUser&&<Modal title={t.users.editUser} icon="users" onClose={()=>setEditUser(null)}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><Field label={t.users.nameLabel} value={editUser.name} onChange={v=>setEditUser(u=>({...u,name:v}))}/><Field label={t.users.emailCol} value={editUser.email} onChange={v=>setEditUser(u=>({...u,email:v}))} type="email"/></div>
-      <DDrop label={t.users.role} value={editUser.role} onChange={v=>setEditUser(u=>({...u,role:v}))} options={Object.entries(ROLES).map(([k,r])=>({value:k,label:lang==="fr"?r.label:r.labelEn}))}/>
+      <DDrop label={t.users.role} value={editUser.role} onChange={v=>setEditUser(u=>({...u,role:v}))} options={Object.entries(ROLES).map(([k,r])=>({value:k,label:translateText(r.label,_lang)}))}/>
       {editUser.role==="investor"&&<DDrop label={t.users.linkedInvestor} value={editUser.investorId||""} onChange={v=>setEditUser(u=>({...u,investorId:v?parseInt(v):null}))} options={[{value:"",label:t.users.noneOpt},...data.investors.map(i=>({value:i.id,label:i.name}))]}/>}
       <div style={{display:"flex",gap:8}}><Btn onClick={saveEdit} icon="save">{t.save}</Btn><Btn onClick={()=>setEditUser(null)} variant="ghost">{t.cancel}</Btn></div>
     </Modal>}
@@ -2468,16 +2425,16 @@ function UsersPanel({data,setData,session,t}){
     </Modal>}
     {newUser&&<Modal title={t.users.newUser} icon="users" onClose={()=>setNewUser(null)}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><Field label={t.users.nameField} value={newUser.name} onChange={v=>setNewUser(u=>({...u,name:v}))}/><Field label={t.users.emailCol} value={newUser.email} onChange={v=>setNewUser(u=>({...u,email:v}))} type="email"/><Field label={t.users.usernameField} value={newUser.username} onChange={v=>setNewUser(u=>({...u,username:v}))}/><Field label={t.users.pwdField} value={newUser.password} onChange={v=>setNewUser(u=>({...u,password:v}))} type="password"/></div>
-      <DDrop label={t.users.role} value={newUser.role} onChange={v=>setNewUser(u=>({...u,role:v}))} options={Object.entries(ROLES).map(([k,r])=>({value:k,label:lang==="fr"?r.label:r.labelEn}))}/>
-      {newUser.role==="investor"&&<DDrop label="Investisseur lié" value={newUser.investorId||""} onChange={v=>setNewUser(u=>({...u,investorId:v?parseInt(v):null}))} options={[{value:"",label:t.users.noneOpt},...data.investors.map(i=>({value:i.id,label:i.name}))]}/>}
+      <DDrop label={t.users.role} value={newUser.role} onChange={v=>setNewUser(u=>({...u,role:v}))} options={Object.entries(ROLES).map(([k,r])=>({value:k,label:translateText(r.label,_lang)}))}/>
+      {newUser.role==="investor"&&<DDrop label={translateText("Investisseur lié",_lang)} value={newUser.investorId||""} onChange={v=>setNewUser(u=>({...u,investorId:v?parseInt(v):null}))} options={[{value:"",label:t.users.noneOpt},...data.investors.map(i=>({value:i.id,label:i.name}))]}/>}
       <div style={{display:"flex",gap:8}}><Btn onClick={createUser} icon="plus">{t.confirm}</Btn><Btn onClick={()=>setNewUser(null)} variant="ghost">{t.cancel}</Btn></div>
     </Modal>}
       <ConfirmModal
         open={!!confirmUser}
-        title={lang==="fr"?"Supprimer l utilisateur ?":"Delete user?"}
-        message={lang==="fr"?"Supprimer definitivement l utilisateur :":"Permanently delete user:"}
+        title={uiText("text0335",lang)}
+        message={uiText("text0336",lang)}
         itemName={confirmUser?.name}
-        itemType={lang==="fr"?"Utilisateur":"User"}
+        itemType={uiText("text0133",lang)}
         lang={lang}
         onConfirm={()=>{setData(d=>({...d,users:d.users.filter(u=>u.id!==confirmUser.id)}));setConfirmUser(null);}}
         onCancel={()=>setConfirmUser(null)}
@@ -2493,25 +2450,25 @@ function PaymentMethodsCard({data,setData,session,lang,C}){
   const pms=inv.paymentMethods||[];
 
   const PTYPES=[
-    {key:"bank_transfer", label:lang==="fr"?"Virement bancaire":"Bank Transfer", icon:"🏦",
+    {key:"bank_transfer", label:uiText("text0337",lang), icon:"🏦",
      fields:[
        {id:"iban",  label:"IBAN",  ph:"FR76 3000 6000 0112 3456 7890 189"},
        {id:"swift", label:"SWIFT / BIC",ph:"BNPAFRPPXXX"},
-       {id:"name",  label:lang==="fr"?"Titulaire du compte":"Account holder",ph:"John Doe"},
+       {id:"name",  label:uiText("text0338",lang),ph:"John Doe"},
      ]},
     {key:"orange_money", label:"Orange Money",  icon:"🟠",
-     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+     fields:[{id:"phone",label:uiText("text0339",lang),ph:"+225 07 00 00 00 00"},{id:"name",label:uiText("text0340",lang),ph:""}]},
     {key:"mtn_money",    label:"MTN Money",     icon:"🟡",
-     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+233 24 000 0000"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+     fields:[{id:"phone",label:uiText("text0339",lang),ph:"+233 24 000 0000"},{id:"name",label:uiText("text0340",lang),ph:""}]},
     {key:"wave",         label:"Wave",          icon:"🌊",
-     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+     fields:[{id:"phone",label:uiText("text0339",lang),ph:"+225 07 00 00 00 00"},{id:"name",label:uiText("text0340",lang),ph:""}]},
     {key:"moov",         label:"Moov",          icon:"🔵",
-     fields:[{id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 01 00 00 00 00"},{id:"name",label:lang==="fr"?"Nom du compte":"Account name",ph:""}]},
+     fields:[{id:"phone",label:uiText("text0339",lang),ph:"+225 01 00 00 00 00"},{id:"name",label:uiText("text0340",lang),ph:""}]},
     {key:"djamo",        label:"Djamo",         icon:"💳",
      fields:[
-       {id:"phone",label:lang==="fr"?"Numéro téléphone":"Phone Number",ph:"+225 07 00 00 00 00"},
+       {id:"phone",label:uiText("text0339",lang),ph:"+225 07 00 00 00 00"},
        {id:"iban", label:"IBAN Djamo",ph:"CI00 ..."},
-       {id:"name", label:lang==="fr"?"Titulaire":"Account holder",ph:""},
+       {id:"name", label:uiText("text0341",lang),ph:""},
      ]},
   ];
 
@@ -2551,18 +2508,18 @@ function PaymentMethodsCard({data,setData,session,lang,C}){
     <div style={{background:_C.card,border:`1px solid ${_C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
         <span style={{fontSize:16}}>💳</span>
-        <span style={{color:_C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Mes moyens de paiement":"My payment methods"}</span>
-        <span style={{color:_C.muted,fontSize:10,marginLeft:4}}>{lang==="fr"?"(utilisés pour les retraits)":"(used for withdrawals)"}</span>
+        <span style={{color:_C.text,fontSize:13,fontWeight:700}}>{uiText("text0342",lang)}</span>
+        <span style={{color:_C.muted,fontSize:10,marginLeft:4}}>{uiText("text0343",lang)}</span>
         <button onClick={()=>{setShowForm(v=>!v);setEditId(null);setFields({});}}
           style={{marginLeft:"auto",padding:"5px 14px",background:showForm&&!editId?`${_C.blue}28`:`${_C.blue}18`,border:`1px solid ${_C.blue}44`,borderRadius:7,color:_C.blue,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>
-          {showForm&&!editId?"▲ "+( lang==="fr"?"Annuler":"Cancel"):"＋ "+(lang==="fr"?"Ajouter":"Add")}
+          {showForm&&!editId?"▲ "+( uiText("text0089",lang)):"＋ "+(uiText("text0092",lang))}
         </button>
       </div>
 
       {/* Add / Edit form */}
       {showForm&&(
         <div style={{background:_C.surface,border:`1px solid ${_C.border}33`,borderRadius:10,padding:16,marginBottom:16}}>
-          <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{editId?(lang==="fr"?"Modifier":"Edit"):(lang==="fr"?"Nouveau moyen de paiement":"New payment method")}</div>
+          <div style={{color:_C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{editId?(uiText("text0106",lang)):(uiText("text0344",lang))}</div>
 
           {/* Type selector */}
           <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
@@ -2588,21 +2545,19 @@ function PaymentMethodsCard({data,setData,session,lang,C}){
           {/* Bank transfer special info box */}
           {selType==="bank_transfer"&&(
             <div style={{background:`rgba(66,133,244,0.06)`,border:`1px solid rgba(66,133,244,0.2)`,borderRadius:7,padding:"8px 12px",marginBottom:12,fontSize:10,color:_C.muted}}>
-              ℹ️ {lang==="fr"
-                ?"IBAN (ex: FR76 3000...) — BIC/SWIFT identifie votre banque (ex: BNPAFRPP). Délai de virement: 3 jours ouvrables."
-                :"IBAN (e.g. FR76 3000...) — BIC/SWIFT identifies your bank (e.g. BNPAFRPP). Processing: 3 business days."}
+              ℹ️ {uiText("text0345",lang)}
             </div>
           )}
 
           <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
             <button onClick={()=>{setShowForm(false);setEditId(null);setFields({});}}
               style={{padding:"6px 16px",background:"transparent",border:`1px solid ${_C.border}44`,borderRadius:7,color:_C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit"}}>
-              {lang==="fr"?"Annuler":"Cancel"}
+              {uiText("text0089",lang)}
             </button>
             <button onClick={savePayMethod}
               disabled={!ptype.fields.filter(f=>f.id!=="name").some(f=>fields[f.id]?.trim())}
               style={{padding:"6px 16px",background:_C.blue,border:"none",borderRadius:7,color:"#fff",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit"}}>
-              {editId?(lang==="fr"?"Mettre à jour":"Update"):(lang==="fr"?"Ajouter":"Add")} {ptype.icon}
+              {editId?(uiText("text0331",lang)):(uiText("text0092",lang))} {ptype.icon}
             </button>
           </div>
         </div>
@@ -2611,7 +2566,7 @@ function PaymentMethodsCard({data,setData,session,lang,C}){
       {/* List of saved payment methods */}
       {pms.length===0?(
         <div style={{textAlign:"center",padding:"20px",color:_C.muted,fontSize:12}}>
-          {lang==="fr"?"Aucun moyen de paiement enregistré. Ajoutez-en un pour pouvoir faire des demandes de retrait.":"No payment method saved. Add one to make withdrawal requests."}
+          {uiText("text0346",lang)}
         </div>
       ):(
         <div style={{display:"flex",flexDirection:"column",gap:8}}>
@@ -2647,12 +2602,12 @@ function PaymentMethodsCard({data,setData,session,lang,C}){
       {confirmDel&&(
         <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:16,width:"min(400px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
-            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:8}}>🗑️ {lang==="fr"?"Supprimer ce moyen de paiement ?":"Delete this payment method?"}</div>
+            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:8}}>🗑️ {uiText("text0347",lang)}</div>
             <div style={{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:16}}>{confirmDel.icon} {confirmDel.label} — {summary(confirmDel)}</div>
             <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-              <button onClick={()=>setConfirmDel(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button onClick={()=>setConfirmDel(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{uiText("text0089",lang)}</button>
               <button onClick={()=>{setData(d=>({...d,investors:d.investors.map(i=>i.id===session.investorId?{...i,paymentMethods:(i.paymentMethods||[]).filter(p=>p.id!==confirmDel.id)}:i)}));setConfirmDel(null);}}
-                style={{padding:"7px 18px",background:"#EA4335",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>✕ {lang==="fr"?"Supprimer":"Delete"}</button>
+                style={{padding:"7px 18px",background:"#EA4335",border:"none",borderRadius:8,color:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>✕ {uiText("text0195",lang)}</button>
             </div>
           </div>
         </div>
@@ -2734,14 +2689,14 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       return;
     }
     if(!file.type.startsWith("image/")){
-      setProfMsg({ok:false,text:lang==="fr"?"Format non supporté (JPG, PNG, GIF, WebP)":"Unsupported format (JPG, PNG, GIF, WebP)"});
+      setProfMsg({ok:false,text:uiText("text0348",lang)});
       return;
     }
     setAvatarUploading(true);
     const reader=new FileReader();
     reader.onerror=()=>{
       setAvatarUploading(false);
-      setProfMsg({ok:false,text:lang==="fr"?"Erreur de lecture du fichier":"File read error"});
+      setProfMsg({ok:false,text:uiText("text0349",lang)});
     };
     reader.onload=(ev)=>{
       try{
@@ -2763,11 +2718,11 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           users:d.users.map(u=>u.username===session.username?{...u,avatar:b64}:u),
           files:[...(d.files||[]).filter(f=>!(f.uploadedBy===session.username&&f.category==="avatar")),fileEntry]
         }));
-        addAudit(setData,session,lang==="fr"?"Avatar modifié":"Avatar updated",session.username,"update");
-        setProfMsg({ok:true,text:lang==="fr"?"Avatar mis à jour !":"Avatar updated!"});
+        addAudit(setData,session,uiText("text0350",lang),session.username,"update");
+        setProfMsg({ok:true,text:uiText("text0351",lang)});
         setTimeout(()=>setProfMsg(null),2500);
       }catch(err){
-        setProfMsg({ok:false,text:lang==="fr"?"Erreur lors de la sauvegarde":"Error saving avatar"});
+        setProfMsg({ok:false,text:uiText("text0352",lang)});
       }finally{
         setAvatarUploading(false);
       }
@@ -2777,16 +2732,16 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
 
   const saveProfile=()=>{
     const user=data.users.find(u=>u.username===session.username);
-    if(!user){setProfMsg({ok:false,text:lang==="fr"?"Utilisateur introuvable.":"User not found."});return;}
-    if(profCurPwd!==user.password){setProfMsg({ok:false,text:lang==="fr"?"Mot de passe actuel incorrect.":"Current password is incorrect."});return;}
+    if(!user){setProfMsg({ok:false,text:uiText("text0353",lang)});return;}
+    if(profCurPwd!==user.password){setProfMsg({ok:false,text:uiText("text0354",lang)});return;}
     if(profNewPwd){
-      if(profNewPwd.length<6){setProfMsg({ok:false,text:lang==="fr"?"Le nouveau mot de passe doit faire au moins 6 caractères.":"New password must be at least 6 characters."});return;}
-      if(profNewPwd!==profNewPwd2){setProfMsg({ok:false,text:lang==="fr"?"Les nouveaux mots de passe ne correspondent pas.":"New passwords do not match."});return;}
+      if(profNewPwd.length<6){setProfMsg({ok:false,text:uiText("text0355",lang)});return;}
+      if(profNewPwd!==profNewPwd2){setProfMsg({ok:false,text:uiText("text0356",lang)});return;}
     }
     setData(d=>({...d,users:d.users.map(u=>u.username===session.username?{...u,email:profEmail,...(profNewPwd?{password:profNewPwd}:{})}:u)}));
-    addAudit(setData,session,lang==="fr"?"Profil modifié":"Profile updated",session.username,"update");
+    addAudit(setData,session,uiText("text0357",lang),session.username,"update");
     setProfCurPwd("");setProfNewPwd("");setProfNewPwd2("");
-    setProfMsg({ok:true,text:lang==="fr"?"Profil mis à jour avec succès.":"Profile updated successfully."});
+    setProfMsg({ok:true,text:uiText("text0358",lang)});
     setTimeout(()=>setProfMsg(null),3500);
   };
   const allSelected=ALL_CURRENCIES.every(c=>selected.includes(c.code));
@@ -2800,7 +2755,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
     <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
       <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
         <Icon name="user" size={14} color={C.blue}/>
-        <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Mon Profil":"My Profile"}</span>
+        <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0359",lang)}</span>
         <span style={{marginLeft:"auto",background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{session.username}</span>
       </div>
       {/* Avatar upload */}
@@ -2815,34 +2770,34 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           {avatarUploading&&<div style={{position:"absolute",inset:0,borderRadius:"50%",background:"rgba(0,0,0,0.5)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>⏳</div>}
         </div>
         <div>
-          <div style={{color:C.text,fontWeight:700,fontSize:13,marginBottom:4}}>{lang==="fr"?"Photo de profil":"Profile photo"}</div>
-          <div style={{color:C.muted,fontSize:11,marginBottom:10}}>{lang==="fr"?"JPG, PNG, GIF — max 2MB":"JPG, PNG, GIF — max 2MB"}</div>
+          <div style={{color:C.text,fontWeight:700,fontSize:13,marginBottom:4}}>{uiText("text0360",lang)}</div>
+          <div style={{color:C.muted,fontSize:11,marginBottom:10}}>{uiText("text0361",lang)}</div>
           <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:6,padding:"6px 14px",background:`${C.blue}22`,border:`1px solid ${C.blue}44`,borderRadius:7,color:C.blue,fontSize:12,fontWeight:700}}>
-            📷 {lang==="fr"?"Changer l'avatar":"Change avatar"}
+            📷 {uiText("text0362",lang)}
             <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" onChange={handleAvatarUpload} style={{display:"none"}}/>
           </label>
         </div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
         <div>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Email</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{translateText("Email",_lang)}</div>
           <Field value={profEmail} onChange={setProfEmail} type="email" placeholder="email@example.com"/>
         </div>
         <div>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Mot de passe actuel *":"Current password *"}</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{uiText("text0363",lang)}</div>
           <Field value={profCurPwd} onChange={setProfCurPwd} type="password" placeholder="••••••"/>
         </div>
         <div>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Nouveau mot de passe":"New password"}</div>
-          <Field value={profNewPwd} onChange={setProfNewPwd} type="password" placeholder={lang==="fr"?"Laisser vide = inchangé":"Leave empty = unchanged"}/>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{uiText("text0134",lang)}</div>
+          <Field value={profNewPwd} onChange={setProfNewPwd} type="password" placeholder={uiText("text0364",lang)}/>
         </div>
         <div>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{lang==="fr"?"Confirmer nouveau MDP":"Confirm new password"}</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{uiText("text0365",lang)}</div>
           <Field value={profNewPwd2} onChange={setProfNewPwd2} type="password" placeholder="••••••"/>
         </div>
       </div>
       {profMsg&&<div style={{marginBottom:10,padding:"8px 12px",borderRadius:7,background:profMsg.ok?`${C.green}18`:`${C.red}18`,border:`1px solid ${profMsg.ok?C.green:C.red}44`,color:profMsg.ok?C.green:"#fca5a5",fontSize:12}}>{profMsg.text}</div>}
-      <Btn variant="primary" small onClick={saveProfile}>{lang==="fr"?"Enregistrer le profil":"Save profile"}</Btn>
+      <Btn variant="primary" small onClick={saveProfile}>{uiText("text0366",lang)}</Btn>
     </div>
   );
 
@@ -2866,13 +2821,13 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           return (f.sharedWith||[]).includes(session.username)||(f.sharedWith||[]).includes("all");
         });
         const folders=["all","images","pdf","docs","data","misc"];
-        const folderLabels={all:lang==="fr"?"Tous":"All",images:"🖼 Images",pdf:"📄 PDF",docs:"📝 Docs",data:"🗂 Data",misc:"📎 Misc"};
+        const folderLabels={all:uiText("text0170",lang),images:"🖼 Images",pdf:"📄 PDF",docs:"📝 Docs",data:"🗂 Data",misc:"📎 Misc"};
         const filtered=selFolder==="all"?myFiles:myFiles.filter(f=>f.category===selFolder);
 
         // Share handler
         const doShare=(file,recipientIds,importance)=>{
           setData(d=>({...d,files:(d.files||[]).map(f=>f.id===file.id?{...f,sharedWith:recipientIds,sharedBy:session.username,importance:importance}:f)}));
-          addAudit(setData,session,lang==="fr"?"Fichier partagé":"File shared",file.name,"update");
+          addAudit(setData,session,uiText("text0367",lang),file.name,"update");
           setSharePopId(null);setImportanceModal(null);
         };
 
@@ -2889,7 +2844,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                   <div style={{color:C.muted,fontSize:10}}>{filePreview.uploadedBy} · {filePreview.uploadedAt} · {fmtSize(filePreview.size)}</div>
                 </div>
                 {filePreview.importance&&<span style={{background:impLevels[filePreview.importance]?.color+"22",color:impLevels[filePreview.importance]?.color,fontSize:10,fontWeight:700,borderRadius:5,padding:"2px 8px"}}>{impLevels[filePreview.importance]?.icon} {impLevels[filePreview.importance]?.label}</span>}
-                <a href={filePreview.data} download={filePreview.name} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:7,color:C.blue,textDecoration:"none",fontSize:11,fontWeight:700}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                <a href={filePreview.data} download={filePreview.name} style={{display:"flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:7,color:C.blue,textDecoration:"none",fontSize:11,fontWeight:700}}>⬇ {uiText("text0313",lang)}</a>
                 <button onClick={()=>setFilePreview(null)} style={{width:30,height:30,borderRadius:7,background:C.surface,border:`1px solid ${C.border}44`,color:C.muted,cursor:"pointer",fontSize:16,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
               </div>
               {/* Modal content */}
@@ -2906,8 +2861,8 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                   <div style={{textAlign:"center",color:C.muted,padding:40}}>
                     <div style={{fontSize:48,marginBottom:12}}>{catIcons[filePreview.category]||"📎"}</div>
                     <div style={{fontSize:13,marginBottom:8,color:C.dim}}>{filePreview.name}</div>
-                    <div style={{fontSize:11,marginBottom:20}}>{lang==="fr"?"Aperçu non disponible pour ce type de fichier.":"Preview not available for this file type."}</div>
-                    <a href={filePreview.data} download={filePreview.name} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 18px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:8,color:C.blue,textDecoration:"none",fontSize:12,fontWeight:700}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                    <div style={{fontSize:11,marginBottom:20}}>{uiText("text0368",lang)}</div>
+                    <a href={filePreview.data} download={filePreview.name} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"8px 18px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:8,color:C.blue,textDecoration:"none",fontSize:12,fontWeight:700}}>⬇ {uiText("text0313",lang)}</a>
                   </div>
                 )}
               </div>
@@ -2919,8 +2874,8 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         {importanceModal&&(
           <div onClick={()=>setImportanceModal(null)} style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.7)",zIndex:1001,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:C.card,borderRadius:12,padding:24,width:380,boxShadow:"0 20px 60px rgba(0,0,0,0.5)"}}>
-              <div style={{color:C.text,fontWeight:800,fontSize:14,marginBottom:4}}>🔔 {lang==="fr"?"Niveau d'importance":"Importance level"}</div>
-              <div style={{color:C.muted,fontSize:11,marginBottom:16}}>{lang==="fr"?"Choisissez le niveau d'importance du fichier partagé :":"Choose the importance level for the shared file:"}</div>
+              <div style={{color:C.text,fontWeight:800,fontSize:14,marginBottom:4}}>🔔 {uiText("text0369",lang)}</div>
+              <div style={{color:C.muted,fontSize:11,marginBottom:16}}>{uiText("text0370",lang)}</div>
               <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:20}}>
                 {Object.entries(impLevels).map(([k,v])=>(
                   <button key={k} onClick={()=>doShare(importanceModal.file,importanceModal.recipients,k)}
@@ -2929,13 +2884,13 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                     <div>
                       <div style={{color:v.color,fontWeight:800,fontSize:12}}>{v.label}</div>
                       <div style={{color:C.muted,fontSize:10}}>
-                        {k==="urgent"?(lang==="fr"?"Nécessite une attention immédiate":"Requires immediate attention"):k==="important"?(lang==="fr"?"À traiter en priorité":"Priority action needed"):(lang==="fr"?"Pour information":"For information only")}
+                        {k==="urgent"?(uiText("text0371",lang)):k==="important"?(uiText("text0372",lang)):(uiText("text0373",lang))}
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
-              <button onClick={()=>setImportanceModal(null)} style={{width:"100%",padding:"8px",background:"transparent",border:`1px solid ${C.border}44`,borderRadius:7,color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button onClick={()=>setImportanceModal(null)} style={{width:"100%",padding:"8px",background:"transparent",border:`1px solid ${C.border}44`,borderRadius:7,color:C.muted,cursor:"pointer",fontFamily:"inherit",fontSize:12}}>{uiText("text0089",lang)}</button>
             </div>
           </div>
         )}
@@ -2944,11 +2899,11 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={{...cs,marginTop:12}} onClick={()=>setSharePopId(null)}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:14}}>
             <span style={{fontSize:14}}>📁</span>
-            <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Gestionnaire de fichiers":"File Manager"}</span>
+            <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0374",lang)}</span>
             <span style={{background:`${C.muted}18`,color:C.muted,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{myFiles.length}</span>
             <div style={{marginLeft:"auto"}}>
               <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:5,padding:"5px 12px",background:`${C.green}18`,border:`1px solid ${C.green}44`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700}}>
-                ➕ {lang==="fr"?"Uploader":"Upload"}
+                ➕ {uiText("text0375",lang)}
                 <input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.webp,.xml,.json,.xlsx,.csv" multiple onChange={e=>{
               const files=Array.from(e.target.files);e.target.value="";
               files.forEach((file,idx)=>{
@@ -2960,7 +2915,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                   const folder=["jpg","jpeg","png","gif","webp"].includes(ext)?"images":["pdf"].includes(ext)?"pdf":["doc","docx"].includes(ext)?"docs":["json","xml","csv","xlsx"].includes(ext)?"data":"misc";
                   const entry={id:Date.now()+idx,name:file.name,type:file.type,size:file.size,data:ev.target.result,uploadedBy:session.username,uploadedAt:fmtDateTime(),category:folder,path:folder+"/"+file.name,sharedWith:[],importance:null,sharedBy:null};
                   setData(d=>({...d,files:[...(d.files||[]),entry]}));
-                  addAudit(setData,session,lang==="fr"?"Fichier ajouté":"File uploaded",file.name,"create");
+                  addAudit(setData,session,uiText("text0376",lang),file.name,"create");
                 }catch(e){console.error(e);}};
                 reader.readAsDataURL(file);
               });
@@ -2982,7 +2937,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           {filtered.length===0?(
             <div style={{textAlign:"center",padding:"30px 0",color:C.muted,fontSize:12}}>
               <div style={{fontSize:32,marginBottom:8}}>📂</div>
-              {lang==="fr"?"Aucun fichier ici.":"No files here."}
+              {uiText("text0377",lang)}
             </div>
           ):(
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(240px,1fr))",gap:8}}>
@@ -3020,24 +2975,24 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                       <div style={{color:C.dim,fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:2,cursor:"pointer"}} onClick={()=>setFilePreview(f)} title={f.name}>{f.name}</div>
                       <div style={{color:C.muted,fontSize:9}}>📁 {f.path} · {fmtSize(f.size)}</div>
                       <div style={{color:C.muted,fontSize:9}}>{f.uploadedBy} · {f.uploadedAt}</div>
-                      {isShared&&<div style={{marginTop:3,color:C.green,fontSize:9,fontWeight:700}}>✓ {lang==="fr"?"Partagé avec":"Shared with"} {(f.sharedWith||[]).includes("all")?(lang==="fr"?"tous":"all"):(f.sharedWith||[]).join(", ")}</div>}
+                      {isShared&&<div style={{marginTop:3,color:C.green,fontSize:9,fontWeight:700}}>✓ {uiText("text0378",lang)} {(f.sharedWith||[]).includes("all")?(uiText("text0379",lang)):(f.sharedWith||[]).join(", ")}</div>}
                     </div>
 
                     {/* Action bar */}
                     <div style={{display:"flex",gap:4,padding:"6px 10px",borderTop:`1px solid ${C.border}22`}} onClick={e=>e.stopPropagation()}>
                       {/* Preview */}
-                      <button onClick={()=>setFilePreview(f)} style={{flex:1,padding:"4px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:5,color:C.blue,cursor:"pointer",fontSize:10,fontWeight:600}} title="Preview">👁</button>
+                      <button onClick={()=>setFilePreview(f)} style={{flex:1,padding:"4px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:5,color:C.blue,cursor:"pointer",fontSize:10,fontWeight:600}} title={translateText("Preview",_lang)}>👁</button>
                       {/* Download */}
-                      <a href={f.data} download={f.name} style={{flex:1,padding:"4px",background:`${C.teal}18`,border:`1px solid ${C.teal}33`,borderRadius:5,color:C.teal,textDecoration:"none",fontSize:10,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center"}} title="Download">⬇</a>
+                      <a href={f.data} download={f.name} style={{flex:1,padding:"4px",background:`${C.teal}18`,border:`1px solid ${C.teal}33`,borderRadius:5,color:C.teal,textDecoration:"none",fontSize:10,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center"}} title={translateText("Download",_lang)}>⬇</a>
                       {/* Share */}
                       {canShare&&(
                         <div style={{position:"relative",flex:1}}>
-                          <button onClick={e=>{e.stopPropagation();setSharePopId(sharePopId===f.id?null:f.id);}} style={{width:"100%",padding:"4px",background:isShared?`${C.green}18`:`${C.yellow}18`,border:`1px solid ${isShared?C.green:C.yellow}33`,borderRadius:5,color:isShared?C.green:C.yellow,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Partager":"Share"}>📤</button>
+                          <button onClick={e=>{e.stopPropagation();setSharePopId(sharePopId===f.id?null:f.id);}} style={{width:"100%",padding:"4px",background:isShared?`${C.green}18`:`${C.yellow}18`,border:`1px solid ${isShared?C.green:C.yellow}33`,borderRadius:5,color:isShared?C.green:C.yellow,cursor:"pointer",fontSize:10,fontWeight:600}} title={uiText("text0258",lang)}>📤</button>
                           {sharePopId===f.id&&(
                             <div onClick={e=>e.stopPropagation()} style={{position:"absolute",bottom:"calc(100% + 6px)",right:0,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:10,minWidth:200,boxShadow:"0 12px 36px rgba(0,0,0,0.5)",zIndex:500}}>
-                              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>{lang==="fr"?"Partager avec:":"Share with:"}</div>
+                              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:8}}>{uiText("text0380",lang)}</div>
                               <button onClick={()=>setImportanceModal({file:f,recipients:["all"]})} style={{width:"100%",padding:"6px 10px",background:`${C.green}18`,border:`1px solid ${C.green}33`,borderRadius:6,color:C.green,cursor:"pointer",fontFamily:"inherit",fontSize:11,fontWeight:700,marginBottom:6,textAlign:"left"}}>
-                                🌐 {lang==="fr"?"Partager avec tous":"Share with all"}
+                                🌐 {uiText("text0381",lang)}
                               </button>
                               <div style={{maxHeight:160,overflowY:"auto",display:"flex",flexDirection:"column",gap:3}}>
                                 {shareTargets.map(u=>(
@@ -3046,7 +3001,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                                   </button>
                                 ))}
                               </div>
-                              {isShared&&<button onClick={()=>{setData(d=>({...d,files:(d.files||[]).map(x=>x.id===f.id?{...x,sharedWith:[],sharedBy:null,importance:null}:x)}));setSharePopId(null);}} style={{width:"100%",marginTop:8,padding:"5px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:6,color:C.red,cursor:"pointer",fontFamily:"inherit",fontSize:10}}>✕ {lang==="fr"?"Annuler le partage":"Unshare"}</button>}
+                              {isShared&&<button onClick={()=>{setData(d=>({...d,files:(d.files||[]).map(x=>x.id===f.id?{...x,sharedWith:[],sharedBy:null,importance:null}:x)}));setSharePopId(null);}} style={{width:"100%",marginTop:8,padding:"5px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:6,color:C.red,cursor:"pointer",fontFamily:"inherit",fontSize:10}}>✕ {uiText("text0382",lang)}</button>}
                             </div>
                           )}
                         </div>
@@ -3054,10 +3009,10 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                       {/* Delete */}
                       {canDelete&&(
                         <button onClick={()=>setConfirmDelete({
-                            type:lang==="fr"?"Fichier":"File",
+                            type:uiText("text0383",lang),
                             itemName:f.name,
                             onConfirm:()=>{setData(d=>({...d,files:(d.files||[]).filter(x=>x.id!==f.id)}));setConfirmDelete(null);}
-                          })} style={{flex:1,padding:"4px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:10,fontWeight:600}} title={lang==="fr"?"Supprimer":"Delete"}>✕</button>
+                          })} style={{flex:1,padding:"4px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:10,fontWeight:600}} title={uiText("text0195",lang)}>✕</button>
                       )}
                     </div>
                   </div>
@@ -3093,16 +3048,16 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
           <Icon name="money" size={13} color={C.green}/>
           <span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.rates}</span>
-          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Lecture seule":"Read-only"} 👁</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{uiText("text0255",lang)} 👁</span>
         </div>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}}>
           <div style={{display:"flex",flexDirection:"column",alignItems:"center",background:`${C.blue}18`,borderRadius:9,padding:"10px 16px",minWidth:90}}>
             <span style={{color:C.blue,fontWeight:800,fontSize:15}}>F CFA</span>
-            <span style={{color:C.muted,fontSize:9,marginTop:2}}>Base</span>
+            <span style={{color:C.muted,fontSize:9,marginTop:2}}>{translateText("Base",_lang)}</span>
           </div>
           {roCurs.map(cur=>(
             <div key={cur.code} style={{display:"flex",flexDirection:"column",alignItems:"center",background:cur.color+"18",borderRadius:9,padding:"10px 16px",minWidth:90}}>
-              <span style={{color:cur.color,fontWeight:800,fontSize:15}}>{cur.sym} {cur.name}</span>
+              <span style={{color:cur.color,fontWeight:800,fontSize:15}}>{cur.sym} {translateText(cur.name,_lang)}</span>
               <span style={{color:cur.color,fontSize:12,fontWeight:700,marginTop:3}}>1 F = {roRates[cur.code]} {cur.code}</span>
               <span style={{color:C.muted,fontSize:9,marginTop:1}}>1 {cur.code} = {fmtNum(Math.round(1/roRates[cur.code]))} F</span>
             </div>
@@ -3114,9 +3069,9 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
           <span style={{fontSize:14}}>🏢</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Sociétés partenaires":"Partner Companies"}</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0384",lang)}</span>
           <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{roCompanies.length}</span>
-          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Lecture seule":"Read-only"} 👁</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{uiText("text0255",lang)} 👁</span>
         </div>
         {roCompanies.length===0
           ?<div style={{color:C.muted,fontSize:12,textAlign:"center",padding:20}}>—</div>
@@ -3124,8 +3079,8 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
               <thead>
                 <tr style={{borderBottom:`2px solid ${C.border2}`}}>
-                  {["🏭 "+(lang==="fr"?"Société":"Company"),"👤 "+(lang==="fr"?"Représentant":"Rep."),"🌍 "+(lang==="fr"?"Pays":"Country"),"📍 "+(lang==="fr"?"Adresse":"Address"),"📞 Tél.","🔢 Num Reg"].map((h,i)=>(
-                    <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{h}</th>
+                  {["🏭 "+(uiText("text0295",lang)),"👤 "+(uiText("text0385",lang)),"🌍 "+(uiText("text0022",lang)),"📍 "+(uiText("text0023",lang)),"📞 Tél.","🔢 Num Reg"].map((h,i)=>(
+                    <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{translateText(h,_lang)}</th>
                   ))}
                 </tr>
               </thead>
@@ -3163,15 +3118,15 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={{marginBottom:10}}>
           <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}>
             <Icon name="lock" size={10} color={C.yellow}/>
-            <span style={{color:C.yellow,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{lang==="fr"?"Catégories permanentes":"Permanent categories"}</span>
+            <span style={{color:C.yellow,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{uiText("text0386",lang)}</span>
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:5}}>
             {PERMANENT_CATEGORIES.map((cat,i)=>{
-              const label=lang==="en"?(PERMANENT_CATEGORIES_EN[i]||cat):cat;
+              const label=translateData(cat,lang);
               return(
               <div key={i} style={{background:`${C.yellow}08`,border:`1px solid ${C.yellow}22`,borderRadius:6,padding:"7px 10px",color:C.dim,fontSize:11,display:"flex",alignItems:"center",gap:6}}>
                 <span style={{color:C.yellow,fontSize:9,flexShrink:0}}>🔒</span>
-                <span style={{lineHeight:1.4}}>{label}</span>
+                <span style={{lineHeight:1.4}}>{translateText(label,_lang)}</span>
               </div>
               );
             })}
@@ -3182,7 +3137,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <div style={{marginBottom:10}}>
             <div style={{display:"flex",alignItems:"center",gap:5,marginBottom:8}}>
               <Icon name="edit" size={10} color={C.blue}/>
-              <span style={{color:C.blue,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{lang==="fr"?"Catégories personnalisées":"Custom categories"}</span>
+              <span style={{color:C.blue,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em"}}>{uiText("text0387",lang)}</span>
             </div>
             {(s.categories||DEFAULT_CATEGORIES).map((cat,i)=>{
               if(PERMANENT_CATEGORIES.includes(cat))return null;
@@ -3245,7 +3200,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>
             {ALL_CURRENCIES.map(cur=>{const on=selected.includes(cur.code);return(
               <button key={cur.code} onClick={()=>setSelected(prev=>prev.includes(cur.code)?prev.filter(c=>c!==cur.code):[...prev,cur.code])} style={{padding:"8px 16px",borderRadius:8,border:`2px solid ${on?cur.color:C.border}`,background:on?cur.color+"22":"transparent",color:on?cur.color:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:on?700:400,display:"flex",alignItems:"center",gap:6,transition:"all .15s"}}>
-                {on&&<Icon name="check" size={11} color={cur.color}/>}<span style={{fontSize:16}}>{cur.sym}</span>{cur.name}
+                {on&&<Icon name="check" size={11} color={cur.color}/>}<span style={{fontSize:16}}>{cur.sym}</span>{translateText(cur.name,_lang)}
               </button>
             );})}
           </div>
@@ -3267,7 +3222,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={cs}>
           <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}><Icon name="globe" size={13} color={C.blue}/><span style={{color:C.text,fontSize:13,fontWeight:700}}>{t.settings.language}</span></div>
           <div style={{display:"flex",gap:8}}>
-            {[["fr","🇫🇷 Français"],["en","🇬🇧 English"]].map(([l,lbl])=>(<button key={l} onClick={()=>setLang(l)} style={{padding:"9px 20px",borderRadius:8,border:`2px solid ${lang===l?C.blue:C.border}`,background:lang===l?`${C.blue}22`:"transparent",color:lang===l?C.blue:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:lang===l?700:400,transition:"all .15s"}}>{lbl}</button>))}
+            {supportedLanguages.map(l=>(<button key={l} onClick={()=>setLang(l)} style={{padding:"9px 20px",borderRadius:8,border:`2px solid ${lang===l?C.blue:C.border}`,background:lang===l?`${C.blue}22`:"transparent",color:lang===l?C.blue:C.muted,cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:lang===l?700:400,transition:"all .15s"}}>{getTranslations(l).languageName||l.toUpperCase()}</button>))}
           </div>
         </div>
       </div>
@@ -3276,9 +3231,9 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <div style={{...cs}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
           <span style={{fontSize:14}}>🏢</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Sociétés partenaires":"Partner Companies"}</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0384",lang)}</span>
           <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{companies.length}</span>
-          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Disponibles dans les listes déroulantes des activités":"Available in activity dropdowns"}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{uiText("text0388",lang)}</span>
         </div>
 
         {/* ── Filter bar ── */}
@@ -3286,12 +3241,12 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <div style={{position:"relative",flex:1,maxWidth:340}}>
             <span style={{position:"absolute",left:9,top:"50%",transform:"translateY(-50%)",color:C.muted,fontSize:12,pointerEvents:"none"}}>🔍</span>
             <input value={companyFilter} onChange={e=>{setCompanyFilter(e.target.value);setCompanyPage(1);}}
-              placeholder={lang==="fr"?"Filtrer par nom de société…":"Filter by company name…"}
+              placeholder={uiText("text0389",lang)}
               style={{width:"100%",background:C.surface,border:`1px solid ${companyFilter?C.blue:C.border}44`,borderRadius:8,padding:"7px 10px 7px 30px",color:C.text,fontSize:11,outline:"none",fontFamily:"inherit",boxSizing:"border-box"}}/>
             {companyFilter&&<button onClick={()=>{setCompanyFilter("");setCompanyPage(1);}} style={{position:"absolute",right:8,top:"50%",transform:"translateY(-50%)",background:"transparent",border:"none",color:C.muted,cursor:"pointer",fontSize:13,lineHeight:1}}>✕</button>}
           </div>
           <span style={{color:C.muted,fontSize:10,whiteSpace:"nowrap"}}>
-            {companies.filter(c=>c.name.toLowerCase().includes(companyFilter.toLowerCase())).length} {lang==="fr"?"résultat(s)":"result(s)"}
+            {companies.filter(c=>c.name.toLowerCase().includes(companyFilter.toLowerCase())).length} {uiText("text0390",lang)}
           </span>
         </div>
 
@@ -3299,22 +3254,22 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         <div style={{background:C.surface,borderRadius:9,border:`1px solid ${showAddCompany?C.green:C.border}33`,marginBottom:12,overflow:"hidden"}}>
           <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",cursor:"pointer",background:showAddCompany?`${C.green}08`:"transparent"}} onClick={()=>setShowAddCompany(v=>!v)}>
             <span style={{fontSize:13}}>＋</span>
-            <span style={{fontWeight:700,color:showAddCompany?C.green:C.muted,fontSize:12}}>{lang==="fr"?"Nouvelle société":"New company"}</span>
+            <span style={{fontWeight:700,color:showAddCompany?C.green:C.muted,fontSize:12}}>{uiText("text0391",lang)}</span>
             <span style={{color:C.muted,fontSize:10,marginLeft:"auto"}}>{showAddCompany?"▲":"▼"}</span>
           </div>
           {showAddCompany&&(
             <div style={{padding:"0 14px 14px"}}>
               <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:6,alignItems:"end"}}>
                 {[
-                  {field:"name",label:lang==="fr"?"Nom *":"Name *",placeholder:"ex: KEDA CI"},
-                  {field:"representative",label:lang==="fr"?"Représentant":"Rep.",placeholder:"Nom complet"},
-                  {field:"country",label:lang==="fr"?"Pays":"Country",placeholder:"Côte d'Ivoire"},
-                  {field:"address",label:lang==="fr"?"Adresse":"Address",placeholder:"Abidjan..."},
+                  {field:"name",label:uiText("text0137",lang),placeholder:"ex: KEDA CI"},
+                  {field:"representative",label:uiText("text0385",lang),placeholder:"Nom complet"},
+                  {field:"country",label:uiText("text0022",lang),placeholder:"Côte d'Ivoire"},
+                  {field:"address",label:uiText("text0023",lang),placeholder:"Abidjan..."},
                   {field:"phone",label:"Tél.",placeholder:"+225 …"},
                   {field:"numReg",label:"Num Reg",placeholder:"RC …"},
                 ].map(({field,label,placeholder})=>(
                   <div key={field}>
-                    <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:3}}>{label}</div>
+                    <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:3}}>{translateText(label,_lang)}</div>
                     <input value={newCompany[field]||""} onChange={e=>setNewCompany(nc=>({...nc,[field]:e.target.value}))}
                       placeholder={placeholder}
                       style={{width:"100%",background:C.bg,border:`1px solid ${field==="name"&&newCompany.name?C.blue:C.border}44`,borderRadius:6,padding:"6px 8px",color:C.text,fontSize:11,outline:"none",fontFamily:"inherit"}}/>
@@ -3328,7 +3283,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                   setCompanyPage(1);
                   setCompanyFilter("");
                 }} style={{padding:"6px 14px",background:newCompany.name?.trim()?`${C.green}18`:"transparent",border:`1px solid ${newCompany.name?.trim()?C.green:C.border}44`,borderRadius:7,color:newCompany.name?.trim()?C.green:C.muted,cursor:newCompany.name?.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                  ✓ {lang==="fr"?"Ajouter":"Add"}
+                  ✓ {uiText("text0092",lang)}
                 </button>
               </div>
             </div>
@@ -3349,15 +3304,15 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
                   <thead>
                     <tr style={{borderBottom:`2px solid ${C.border2}`}}>
-                      {["🏭 "+(lang==="fr"?"Société":"Company"),"👤 "+(lang==="fr"?"Représentant":"Rep."),"🌍 "+(lang==="fr"?"Pays":"Country"),"📍 "+(lang==="fr"?"Adresse":"Address"),"📞 Tél.","🔢 Num Reg",""].map((h,i)=>(
-                        <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{h}</th>
+                      {["🏭 "+(uiText("text0295",lang)),"👤 "+(uiText("text0385",lang)),"🌍 "+(uiText("text0022",lang)),"📍 "+(uiText("text0023",lang)),"📞 Tél.","🔢 Num Reg",""].map((h,i)=>(
+                        <th key={i} style={{padding:"6px 10px",textAlign:"left",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",whiteSpace:"nowrap"}}>{translateText(h,_lang)}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {paged.length===0?(
                       <tr><td colSpan={7} style={{padding:"24px",textAlign:"center",color:C.muted,fontSize:12}}>
-                        {lang==="fr"?"Aucune société trouvée.":"No company found."}
+                        {uiText("text0392",lang)}
                       </td></tr>
                     ):paged.map(co=>{
                       const isEditing=editingCompanyId===co.id;
@@ -3379,7 +3334,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                                 :<button onClick={()=>setEditingCompanyId(co.id)} style={{width:22,height:22,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:5,color:C.blue,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
                               }
                               <button onClick={()=>setConfirmDelete({
-                                  type:lang==="fr"?"Société partenaire":"Partner company",
+                                  type:uiText("text0393",lang),
                                   itemName:co.name,
                                   onConfirm:()=>{setCompanies(cs=>cs.filter(c=>c.id!==co.id));setEditingCompanyId(null);setConfirmDelete(null);}
                                 })} style={{width:22,height:22,background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:5,color:C.red,cursor:"pointer",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
@@ -3426,21 +3381,21 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12}}>
           <span style={{fontSize:14}}>🚗</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Chauffeurs":"Drivers"}</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0332",lang)}</span>
           <span style={{background:`${C.teal}18`,color:C.teal,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px"}}>{drivers.length}</span>
-          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{lang==="fr"?"Liste utilisée pour les salaires de chauffeurs":"Used for driver salary entries"}</span>
+          <span style={{marginLeft:"auto",color:C.muted,fontSize:10}}>{uiText("text0394",lang)}</span>
         </div>
 
         {/* Add form toggle */}
         <div style={{background:C.surface,border:`1px solid ${showAddDriver?C.teal:C.border}33`,borderRadius:8,marginBottom:10,overflow:"hidden"}}>
           <div onClick={()=>{setShowAddDriver(v=>!v);setDriverForm({...DRIVER_BLANK});}} style={{padding:"8px 14px",cursor:"pointer",display:"flex",alignItems:"center",gap:8,userSelect:"none"}}>
             <span style={{color:showAddDriver?C.teal:C.muted,fontSize:13,fontWeight:700}}>{showAddDriver?"▲":"▼"}</span>
-            <span style={{color:showAddDriver?C.teal:C.muted,fontSize:12,fontWeight:700}}>＋ {lang==="fr"?"Ajouter un chauffeur":"Add a driver"}</span>
+            <span style={{color:showAddDriver?C.teal:C.muted,fontSize:12,fontWeight:700}}>＋ {uiText("text0395",lang)}</span>
           </div>
           {showAddDriver&&(
             <div style={{padding:"0 14px 14px",borderTop:`1px solid ${C.border}22`}}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr 1fr auto",gap:8,marginTop:10}}>
-                {[["nom",lang==="fr"?"Nom *":"Last Name *"],["prenom",lang==="fr"?"Prénom":"First Name"],["pays",lang==="fr"?"Pays":"Country"],["licenseNum",lang==="fr"?"N° Permis":"License No."]].map(([fld,lbl])=>(
+                {[["nom",uiText("text0396",lang)],["prenom",uiText("text0397",lang)],["pays",uiText("text0022",lang)],["licenseNum",uiText("text0398",lang)]].map(([fld,lbl])=>(
                   <div key={fld}>
                     <div style={{color:C.muted,fontSize:9,marginBottom:3,fontWeight:700,textTransform:"uppercase"}}>{lbl}</div>
                     <input value={driverForm[fld]||""} onChange={e=>setDriverForm(f=>({...f,[fld]:e.target.value}))}
@@ -3452,16 +3407,16 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                     const nd={id:Date.now(),nom:driverForm.nom.trim(),prenom:driverForm.prenom.trim(),pays:driverForm.pays.trim(),licenseNum:driverForm.licenseNum.trim(),licenseFile:driverForm.licenseFile};
                     syncDrivers([...drivers,nd]);setDriverForm({...DRIVER_BLANK});setShowAddDriver(false);
                   }} style={{padding:"6px 14px",background:driverForm.nom.trim()?C.teal:"rgba(255,255,255,0.1)",border:"none",borderRadius:7,color:driverForm.nom.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:driverForm.nom.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                    ＋ {lang==="fr"?"Ajouter":"Add"}
+                    ＋ {uiText("text0092",lang)}
                   </button>
                 </div>
               </div>
               {/* License upload */}
               <div style={{marginTop:8}}>
-                <div style={{color:C.muted,fontSize:9,marginBottom:3,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"Permis de conduire (fichier)":"Driving License (file)"}</div>
+                <div style={{color:C.muted,fontSize:9,marginBottom:3,fontWeight:700,textTransform:"uppercase"}}>{uiText("text0399",lang)}</div>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <label style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}44`,borderRadius:6,color:C.blue,cursor:"pointer",fontSize:11,fontWeight:700}}>
-                    📎 {driverForm.licenseFile?driverForm.licenseFile.name:(lang==="fr"?"Choisir fichier":"Choose file")}
+                    📎 {driverForm.licenseFile?driverForm.licenseFile.name:(uiText("text0400",lang))}
                     <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setDriverForm(df=>({...df,licenseFile:{name:f.name,data:ev.target.result,type:f.type}}));r.readAsDataURL(f);}}/>
                   </label>
                   {driverForm.licenseFile&&<button onClick={()=>setDriverForm(f=>({...f,licenseFile:null}))} style={{color:C.red,background:"none",border:"none",cursor:"pointer",fontSize:11}}>✕</button>}
@@ -3474,14 +3429,14 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         {/* Drivers table */}
         {drivers.length===0?(
           <div style={{textAlign:"center",padding:"20px",color:C.muted,fontSize:12}}>
-            {lang==="fr"?"Aucun chauffeur enregistré.":"No drivers registered."}
+            {uiText("text0401",lang)}
           </div>
         ):(
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
               <thead><tr>
-                {[lang==="fr"?"Nom":"Last Name",lang==="fr"?"Prénom":"First Name",lang==="fr"?"Pays":"Country",lang==="fr"?"N° Permis":"License No.",lang==="fr"?"Permis":"License",""].map((h,i)=>(
-                  <th key={i} style={{color:C.muted,fontWeight:700,padding:"5px 8px",textAlign:"left",fontSize:9,textTransform:"uppercase",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{h}</th>
+                {[uiText("text0402",lang),uiText("text0397",lang),uiText("text0022",lang),uiText("text0398",lang),uiText("text0403",lang),""].map((h,i)=>(
+                  <th key={i} style={{color:C.muted,fontWeight:700,padding:"5px 8px",textAlign:"left",fontSize:9,textTransform:"uppercase",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{translateText(h,_lang)}</th>
                 ))}
               </tr></thead>
               <tbody>
@@ -3499,7 +3454,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                         ))}
                         <td style={{padding:"4px 5px"}}>
                           <label style={{cursor:"pointer",color:C.blue,fontSize:10}}>
-                            📎 {d.licenseFile?(d.licenseFile.name.length>12?d.licenseFile.name.slice(0,12)+"…":d.licenseFile.name):(lang==="fr"?"Choisir":"Choose")}
+                            📎 {d.licenseFile?(d.licenseFile.name.length>12?d.licenseFile.name.slice(0,12)+"…":d.licenseFile.name):(uiText("text0404",lang))}
                             <input type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setDrivers(ds=>ds.map(x=>x.id!==d.id?x:{...x,licenseFile:{name:f.name,data:ev.target.result,type:f.type}}));r.readAsDataURL(f);}}/>
                           </label>
                         </td>
@@ -3522,9 +3477,9 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                         <td style={{padding:"5px 8px"}}>
                           {d.licenseFile
                             ?<div style={{display:"flex",gap:5,alignItems:"center"}}>
-                              <button onClick={()=>setLicensePreview(d.licenseFile)} title={lang==="fr"?"Voir":"View"}
+                              <button onClick={()=>setLicensePreview(d.licenseFile)} title={uiText("text0405",lang)}
                                 style={{width:26,height:26,borderRadius:6,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>👁</button>
-                              <a href={d.licenseFile.data} download={d.licenseFile.name} title={lang==="fr"?"Télécharger":"Download"}
+                              <a href={d.licenseFile.data} download={d.licenseFile.name} title={uiText("text0313",lang)}
                                 style={{width:26,height:26,borderRadius:6,background:`${C.teal}18`,border:`1px solid ${C.teal}33`,color:C.teal,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,textDecoration:"none"}}>⬇</a>
                             </div>
                             :<span style={{color:C.muted,fontSize:10}}>—</span>
@@ -3556,10 +3511,10 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                 <span style={{fontSize:16}}>🪪</span>
                 <div style={{flex:1}}>
                   <div style={{color:"#fff",fontWeight:800,fontSize:13}}>{licensePreview.name}</div>
-                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:1}}>{lang==="fr"?"Permis de conduire":"Driving License"}</div>
+                  <div style={{color:"rgba(255,255,255,0.35)",fontSize:10,marginTop:1}}>{uiText("text0406",lang)}</div>
                 </div>
                 <a href={licensePreview.data} download={licensePreview.name} style={{padding:"5px 14px",background:"rgba(20,184,166,0.18)",border:"1px solid rgba(20,184,166,0.4)",borderRadius:7,color:"#14B8A6",textDecoration:"none",fontSize:11,fontWeight:700,marginRight:6}}>
-                  ⬇ {lang==="fr"?"Télécharger":"Download"}
+                  ⬇ {uiText("text0313",lang)}
                 </a>
                 <button onClick={()=>setLicensePreview(null)} style={{width:28,height:28,borderRadius:7,background:"rgba(255,255,255,0.06)",border:"1px solid rgba(255,255,255,0.1)",color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:14,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"inherit"}}>✕</button>
               </div>
@@ -3571,7 +3526,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                     :<div style={{textAlign:"center",padding:40}}>
                       <div style={{fontSize:56,marginBottom:16}}>📄</div>
                       <div style={{color:"rgba(255,255,255,0.6)",fontSize:13}}>{licensePreview.name}</div>
-                      <a href={licensePreview.data} download={licensePreview.name} style={{display:"inline-block",marginTop:20,padding:"10px 24px",background:"#4285F4",borderRadius:8,color:"#fff",textDecoration:"none",fontWeight:700,fontSize:12}}>⬇ {lang==="fr"?"Télécharger":"Download"}</a>
+                      <a href={licensePreview.data} download={licensePreview.name} style={{display:"inline-block",marginTop:20,padding:"10px 24px",background:"#4285F4",borderRadius:8,color:"#fff",textDecoration:"none",fontWeight:700,fontSize:12}}>⬇ {uiText("text0313",lang)}</a>
                     </div>
                 }
               </div>
@@ -3584,33 +3539,31 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
             <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(420px,96vw)",boxShadow:"0 32px 80px rgba(0,0,0,0.8)",overflow:"hidden"}}>
               <div style={{padding:"20px 24px 16px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:12}}>
                 <div style={{width:60,height:60,borderRadius:14,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🔒</div>
-                <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{lang==="fr"?"Suppression impossible":"Cannot delete"}</div>
+                <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{uiText("text0407",lang)}</div>
                 <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"10px 16px",width:"100%"}}>
-                  <div style={{color:"rgba(255,255,255,0.45)",fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{lang==="fr"?"Chauffeur":"Driver"}</div>
+                  <div style={{color:"rgba(255,255,255,0.45)",fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{uiText("text0326",lang)}</div>
                   <div style={{color:"#EA4335",fontWeight:700,fontSize:14}}>{driverInUseAlert.nom} {driverInUseAlert.prenom||""}</div>
                 </div>
                 <div style={{color:"rgba(255,255,255,0.55)",fontSize:12,lineHeight:1.6}}>
-                  {lang==="fr"
-                    ?"Ce chauffeur est lié à un ou plusieurs salaires dans les rapports. Supprimez d'abord les entrées de salaire correspondantes."
-                    :"This driver is linked to one or more salary entries in reports. Remove those salary entries first."}
+                  {uiText("text0408",lang)}
                 </div>
                 <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"8px 14px",width:"100%",display:"flex",alignItems:"center",gap:8}}>
                   <span style={{fontSize:14}}>⚠️</span>
                   <span style={{color:"rgba(234,67,53,0.9)",fontSize:11,fontWeight:600}}>
-                    {lang==="fr"?"Action bloquée — chauffeur utilisé dans les rapports":"Action blocked — driver used in reports"}
+                    {uiText("text0409",lang)}
                   </span>
                 </div>
               </div>
               <div style={{padding:"12px 24px 20px",display:"flex",justifyContent:"center"}}>
                 <button onClick={()=>setDriverInUseAlert(null)} style={{padding:"9px 32px",background:"rgba(255,255,255,0.1)",border:"1px solid rgba(255,255,255,0.15)",borderRadius:10,color:"rgba(255,255,255,0.7)",cursor:"pointer",fontSize:13,fontWeight:700,fontFamily:"inherit"}}>
-                  {lang==="fr"?"Compris":"Got it"}
+                  {uiText("text0410",lang)}
                 </button>
               </div>
             </div>
           </div>
         )}
         {/* Delete confirm */}
-        <ConfirmModal open={!!confirmDeleteDriver} lang={lang} itemType={lang==="fr"?"Chauffeur":"Driver"} itemName={confirmDeleteDriver?`${confirmDeleteDriver.nom} ${confirmDeleteDriver.prenom||""}`:""} onConfirm={()=>{const updated=drivers.filter(x=>x.id!==confirmDeleteDriver.id);syncDrivers(updated);setConfirmDeleteDriver(null);}} onCancel={()=>setConfirmDeleteDriver(null)}/>
+        <ConfirmModal open={!!confirmDeleteDriver} lang={lang} itemType={uiText("text0326",lang)} itemName={confirmDeleteDriver?`${confirmDeleteDriver.nom} ${confirmDeleteDriver.prenom||""}`:""} onConfirm={()=>{const updated=drivers.filter(x=>x.id!==confirmDeleteDriver.id);syncDrivers(updated);setConfirmDeleteDriver(null);}} onCancel={()=>setConfirmDeleteDriver(null)}/>
       </div>
       )}
 
@@ -3619,7 +3572,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         {/* Min withdraw profit setting */}
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,padding:"10px 14px",background:`${C.red}08`,border:`1px solid ${C.red}22`,borderRadius:8}}>
-          <span style={{color:C.red,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",whiteSpace:"nowrap"}}>💰 {lang==="fr"?"Profit minimum requis (retrait)":"Min. profit required (withdrawal)"}</span>
+          <span style={{color:C.red,fontSize:11,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.06em",whiteSpace:"nowrap"}}>💰 {uiText("text0411",lang)}</span>
           <input type="number" value={s.minWithdrawProfit||500000}
             onChange={e=>{const v=parseFloat(e.target.value)||0;setData(d=>({...d,settings:{...d.settings,minWithdrawProfit:v}}));}}
             style={{width:140,background:C.bg,border:`1px solid ${C.red}44`,borderRadius:6,padding:"5px 8px",color:C.red,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
@@ -3627,16 +3580,16 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
         </div>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
           <span style={{fontSize:14}}>⚙️</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Paramètres opérationnels":"Operational Defaults"}</span>
-          <span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{lang==="fr"?"Projection flottes":"Fleet Projection"}</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0412",lang)}</span>
+          <span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{uiText("text0413",lang)}</span>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
 
           {/* ── Fuel Prices ── */}
           <div style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
-            <div style={{color:C.teal,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>⛽ {lang==="fr"?"Prix carburant (F/L)":"Fuel Price (F/L)"}</div>
+            <div style={{color:C.teal,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>⛽ {uiText("text0414",lang)}</div>
             <div style={{display:"flex",gap:5,marginBottom:8}}>
-              <input value={newFuelPrice.label} onChange={e=>setNewFuelPrice(f=>({...f,label:e.target.value}))} placeholder={lang==="fr"?"Label":"Label"}
+              <input value={newFuelPrice.label} onChange={e=>setNewFuelPrice(f=>({...f,label:e.target.value}))} placeholder={uiText("text0415",lang)}
                 style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
               <input type="number" value={newFuelPrice.value} onChange={e=>setNewFuelPrice(f=>({...f,value:e.target.value}))} placeholder="F/L"
                 style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
@@ -3657,13 +3610,13 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                     </>
                   ):(
                     <>
-                      <button onClick={()=>setFuelPrices(ps=>ps.map(p=>({...p,isDefault:p.id===fp.id})))} title={lang==="fr"?"Définir par défaut":"Set as default"}
+                      <button onClick={()=>setFuelPrices(ps=>ps.map(p=>({...p,isDefault:p.id===fp.id})))} title={uiText("text0416",lang)}
                         style={{width:16,height:16,borderRadius:"50%",background:fp.isDefault?C.teal:"rgba(255,255,255,0.1)",border:`1px solid ${fp.isDefault?C.teal:C.border}`,cursor:"pointer",flexShrink:0,padding:0}}/>
                       <span style={{flex:1,color:C.text,fontSize:11,fontWeight:fp.isDefault?700:400}}>{fp.label}</span>
                       <span style={{color:C.teal,fontSize:11,fontWeight:700}}>{fmtNum(fp.value)} F</span>
-                      {fp.isDefault&&<span style={{background:`${C.teal}18`,color:C.teal,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>DEFAULT</span>}
+                      {fp.isDefault&&<span style={{background:`${C.teal}18`,color:C.teal,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>{translateText("DEFAULT",_lang)}</span>}
                       <button onClick={()=>setEditFuelId(fp.id)} style={{width:20,height:20,borderRadius:4,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
-                      <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Prix carburant":"Fuel Price",label:fp.label+" ("+fmtNum(fp.value)+" F/L)",onConfirm:()=>{setFuelPrices(ps=>{const f=ps.filter(p=>p.id!==fp.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                      <button onClick={()=>setSettingsDelConfirm({type:uiText("text0417",lang),label:fp.label+" ("+fmtNum(fp.value)+" F/L)",onConfirm:()=>{setFuelPrices(ps=>{const f=ps.filter(p=>p.id!==fp.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
                     </>
                   )}
                 </div>
@@ -3674,11 +3627,11 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
 
           {/* ── Driver Salaries ── */}
           <div style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
-            <div style={{color:C.yellow,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>👤 {lang==="fr"?"Salaires chauffeurs":"Driver Salaries"}</div>
+            <div style={{color:C.yellow,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>👤 {uiText("text0418",lang)}</div>
             <div style={{display:"flex",gap:4,marginBottom:8,flexWrap:"wrap"}}>
-              <input value={newDriverSalary.label} onChange={e=>setNewDriverSalary(f=>({...f,label:e.target.value}))} placeholder="Label"
+              <input value={newDriverSalary.label} onChange={e=>setNewDriverSalary(f=>({...f,label:e.target.value}))} placeholder={translateText("Label",_lang)}
                 style={{flex:"1 0 70px",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
-              <input type="number" value={newDriverSalary.base} onChange={e=>setNewDriverSalary(f=>({...f,base:e.target.value}))} placeholder={lang==="fr"?"Base":"Base"}
+              <input type="number" value={newDriverSalary.base} onChange={e=>setNewDriverSalary(f=>({...f,base:e.target.value}))} placeholder={uiText("text0419",lang)}
                 style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
               <input type="number" value={newDriverSalary.bonus} onChange={e=>setNewDriverSalary(f=>({...f,bonus:e.target.value}))} placeholder="Bonus"
                 style={{width:72,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 6px",color:C.text,fontSize:11,fontFamily:"inherit",outline:"none"}}/>
@@ -3701,14 +3654,14 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                     </>
                   ):(
                     <>
-                      <button onClick={()=>setDriverSalaries(ps=>ps.map(p=>({...p,isDefault:p.id===ds.id})))} title={lang==="fr"?"Définir par défaut":"Set as default"}
+                      <button onClick={()=>setDriverSalaries(ps=>ps.map(p=>({...p,isDefault:p.id===ds.id})))} title={uiText("text0416",lang)}
                         style={{width:16,height:16,borderRadius:"50%",background:ds.isDefault?C.yellow:"rgba(255,255,255,0.1)",border:`1px solid ${ds.isDefault?C.yellow:C.border}`,cursor:"pointer",flexShrink:0,padding:0}}/>
                       <span style={{flex:1,color:C.text,fontSize:11,fontWeight:ds.isDefault?700:400}}>{ds.label}</span>
                       <span style={{color:C.muted,fontSize:10}}>{fmtNum(ds.base)}+{fmtNum(ds.bonus)}</span>
                       <span style={{color:C.yellow,fontSize:11,fontWeight:700}}>{fmtNum(ds.base+ds.bonus)} F</span>
-                      {ds.isDefault&&<span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>DEFAULT</span>}
+                      {ds.isDefault&&<span style={{background:`${C.yellow}18`,color:C.yellow,fontSize:8,fontWeight:700,borderRadius:3,padding:"1px 5px"}}>{translateText("DEFAULT",_lang)}</span>}
                       <button onClick={()=>setEditSalaryId(ds.id)} style={{width:20,height:20,borderRadius:4,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
-                      <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Salaire chauffeur":"Driver Salary",label:ds.label+" ("+fmtNum(ds.base+ds.bonus)+" F)",onConfirm:()=>{setDriverSalaries(ps=>{const f=ps.filter(p=>p.id!==ds.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                      <button onClick={()=>setSettingsDelConfirm({type:uiText("text0420",lang),label:ds.label+" ("+fmtNum(ds.base+ds.bonus)+" F)",onConfirm:()=>{setDriverSalaries(ps=>{const f=ps.filter(p=>p.id!==ds.id);if(f.length>0&&!f.some(p=>p.isDefault))f[0].isDefault=true;return f;});setSettingsDelConfirm(null);}})} style={{width:20,height:20,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
                     </>
                   )}
                 </div>
@@ -3725,24 +3678,24 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:20,marginBottom:12}}>
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:16}}>
           <span style={{fontSize:14}}>🗺️</span>
-          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{lang==="fr"?"Pays, Villes & Routes":"Countries, Cities & Routes"}</span>
-          <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{lang==="fr"?"Projection Flottes":"Fleet Projection"}</span>
+          <span style={{color:C.text,fontSize:13,fontWeight:700}}>{uiText("text0421",lang)}</span>
+          <span style={{background:`${C.blue}18`,color:C.blue,fontSize:10,fontWeight:700,borderRadius:6,padding:"2px 8px",marginLeft:"auto"}}>{uiText("text0422",lang)}</span>
         </div>
 
         {/* Two-column: Departures | Destinations */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:16}}>
           {/* Departure Locations */}
           {[
-            [lang==="fr"?"Départs (Pays-Ville)":"Departures (Country-City)", depsLocs, setDepsLocs, newDepLoc, setNewDepLoc, "dep"],
-            [lang==="fr"?"Destinations (Pays-Ville)":"Destinations (Country-City)", destLocs, setDestLocs, newDestLoc, setNewDestLoc, "dest"],
+            [uiText("text0423",lang), depsLocs, setDepsLocs, newDepLoc, setNewDepLoc, "dep"],
+            [uiText("text0424",lang), destLocs, setDestLocs, newDestLoc, setNewDestLoc, "dest"],
           ].map(([title,locs,setLocs,newLoc,setNew,key])=>(
             <div key={key} style={{background:C.surface,border:`1px solid ${C.border}33`,borderRadius:8,padding:12}}>
               <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{title}</div>
               {/* Add row */}
               <div style={{display:"flex",gap:5,marginBottom:8}}>
-                <input value={newLoc.country} onChange={e=>setNew(n=>({...n,country:e.target.value}))} placeholder={lang==="fr"?"Pays":"Country"}
+                <input value={newLoc.country} onChange={e=>setNew(n=>({...n,country:e.target.value}))} placeholder={uiText("text0022",lang)}
                   style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
-                <input value={newLoc.city} onChange={e=>setNew(n=>({...n,city:e.target.value}))} placeholder={lang==="fr"?"Ville":"City"}
+                <input value={newLoc.city} onChange={e=>setNew(n=>({...n,city:e.target.value}))} placeholder={uiText("text0425",lang)}
                   style={{flex:1,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
                 <button disabled={!newLoc.country.trim()||!newLoc.city.trim()}
                   onClick={()=>{setLocs(ls=>[...ls,{id:Date.now(),country:newLoc.country.trim(),city:newLoc.city.trim()}]);setNew({country:"",city:""}); }}
@@ -3766,17 +3719,17 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
 
         {/* Route Distances */}
         <div style={{marginBottom:16}}>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{lang==="fr"?"Distances entre villes":"Route Distances"}</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{uiText("text0426",lang)}</div>
           <div style={{display:"flex",gap:5,marginBottom:8,flexWrap:"wrap",alignItems:"center"}}>
             <select value={newRoute.fromId} onChange={e=>setNewRoute(r=>({...r,fromId:e.target.value}))}
               style={{flex:1,minWidth:120,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:newRoute.fromId?C.text:C.muted,fontSize:10,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-              <option value="">{lang==="fr"?"Départ":"Departure"}</option>
+              <option value="">{uiText("text0427",lang)}</option>
               {depsLocs.map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
             </select>
             <span style={{color:C.muted,fontSize:12}}>→</span>
             <select value={newRoute.toId} onChange={e=>setNewRoute(r=>({...r,toId:e.target.value}))}
               style={{flex:1,minWidth:120,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:newRoute.toId?C.text:C.muted,fontSize:10,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-              <option value="">{lang==="fr"?"Destination":"Destination"}</option>
+              <option value="">{uiText("text0428",lang)}</option>
               {destLocs.map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
             </select>
             <input type="number" value={newRoute.distanceKm||""} onChange={e=>setNewRoute(r=>({...r,distanceKm:parseFloat(e.target.value)||0}))} placeholder="km"
@@ -3795,7 +3748,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                   <div key={r.id} style={{display:"flex",alignItems:"center",padding:"5px 8px",background:"rgba(255,255,255,0.03)",borderRadius:5,gap:8}}>
                     <span style={{flex:1,color:C.text,fontSize:11}}><span style={{fontWeight:600}}>{dep?dep.country+"-"+dep.city:"?"}</span> → <span style={{fontWeight:600}}>{dest?dest.country+"-"+dest.city:"?"}</span></span>
                     <span style={{color:C.yellow,fontSize:11,fontWeight:700}}>{fmtNum(r.distanceKm)} km</span>
-                    <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Distance":"Route Distance",label:(dep?dep.country+"-"+dep.city:"?")+" → "+(dest?dest.country+"-"+dest.city:"?")+": "+fmtNum(r.distanceKm)+" km",onConfirm:()=>{setRouteDists(rs=>rs.filter(x=>x.id!==r.id));setSettingsDelConfirm(null);}})} style={{width:18,height:18,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                    <button onClick={()=>setSettingsDelConfirm({type:uiText("text0429",lang),label:(dep?dep.country+"-"+dep.city:"?")+" → "+(dest?dest.country+"-"+dest.city:"?")+": "+fmtNum(r.distanceKm)+" km",onConfirm:()=>{setRouteDists(rs=>rs.filter(x=>x.id!==r.id));setSettingsDelConfirm(null);}})} style={{width:18,height:18,borderRadius:4,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:9,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
                   </div>
                 );
               })}
@@ -3805,9 +3758,9 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
 
         {/* Fuel price by country */}
         <div>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{lang==="fr"?"Prix carburant par pays (F/L)":"Fuel Price by Country (F/L)"}</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",marginBottom:8}}>{uiText("text0430",lang)}</div>
           <div style={{display:"flex",gap:5,marginBottom:8}}>
-            <input value={newFuelCountry.country} onChange={e=>setNewFuelCountry(f=>({...f,country:e.target.value}))} placeholder={lang==="fr"?"Pays":"Country"}
+            <input value={newFuelCountry.country} onChange={e=>setNewFuelCountry(f=>({...f,country:e.target.value}))} placeholder={uiText("text0022",lang)}
               style={{flex:2,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
             <input type="number" value={newFuelCountry.pricePerLiter||""} onChange={e=>setNewFuelCountry(f=>({...f,pricePerLiter:parseFloat(e.target.value)||0}))} placeholder="F/L"
               style={{width:80,background:C.bg,border:`1px solid ${C.border}44`,borderRadius:5,padding:"4px 7px",color:C.text,fontSize:10,fontFamily:"inherit",outline:"none"}}/>
@@ -3822,7 +3775,7 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
                 <div key={f.id} style={{display:"flex",alignItems:"center",padding:"5px 8px",background:"rgba(255,255,255,0.03)",borderRadius:5,gap:6}}>
                   <span style={{flex:1,color:C.text,fontSize:11,fontWeight:600}}>{f.country}</span>
                   <span style={{color:C.teal,fontSize:11,fontWeight:700}}>{fmtNum(f.pricePerLiter)} F</span>
-                  <button onClick={()=>setSettingsDelConfirm({type:lang==="fr"?"Carburant":"Fuel Price",label:f.country+" ("+fmtNum(f.pricePerLiter)+" F/L)",onConfirm:()=>{setFuelByCountry(fs=>fs.filter(x=>x.id!==f.id));setSettingsDelConfirm(null);}})} style={{width:16,height:16,borderRadius:3,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                  <button onClick={()=>setSettingsDelConfirm({type:uiText("text0431",lang),label:f.country+" ("+fmtNum(f.pricePerLiter)+" F/L)",onConfirm:()=>{setFuelByCountry(fs=>fs.filter(x=>x.id!==f.id));setSettingsDelConfirm(null);}})} style={{width:16,height:16,borderRadius:3,background:`${C.red}18`,border:`1px solid ${C.red}33`,color:C.red,cursor:"pointer",fontSize:8,display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
                 </div>
               ))}
             </div>
@@ -3838,27 +3791,25 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
           <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(440px,96vw)",boxShadow:"0 32px 80px rgba(0,0,0,0.8)",overflow:"hidden"}}>
             <div style={{padding:"22px 24px 18px",display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",gap:12}}>
               <div style={{width:64,height:64,borderRadius:14,background:"rgba(234,67,53,0.12)",border:"1px solid rgba(234,67,53,0.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:28}}>🗑️</div>
-              <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{lang==="fr"?"Confirmer la suppression":"Confirm deletion"}</div>
+              <div style={{color:"#fff",fontWeight:800,fontSize:16}}>{uiText("text0287",lang)}</div>
               <div style={{background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:10,padding:"10px 16px",width:"100%"}}>
                 <div style={{color:"rgba(255,255,255,0.4)",fontSize:10,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:3}}>{settingsDelConfirm.type}</div>
                 <div style={{color:"#EA4335",fontWeight:700,fontSize:13}}>{settingsDelConfirm.label}</div>
               </div>
               <div style={{color:"rgba(255,255,255,0.5)",fontSize:12,lineHeight:1.6,maxWidth:340}}>
-                {lang==="fr"
-                  ?"Êtes-vous sûr de vouloir supprimer cet élément ? Cette action peut affecter les projections et les calculs."
-                  :"Are you sure you want to delete this item? This action may affect projections and calculations."}
+                {uiText("text0432",lang)}
               </div>
               <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"7px 14px",width:"100%",display:"flex",alignItems:"center",gap:8}}>
                 <span>⚠️</span>
-                <span style={{color:"rgba(234,67,53,0.9)",fontSize:11,fontWeight:600}}>{lang==="fr"?"Cette action est irréversible.":"This action is irreversible."}</span>
+                <span style={{color:"rgba(234,67,53,0.9)",fontSize:11,fontWeight:600}}>{uiText("text0433",lang)}</span>
               </div>
             </div>
             <div style={{padding:"12px 24px 20px",display:"flex",gap:10,justifyContent:"center"}}>
               <button onClick={()=>setSettingsDelConfirm(null)} style={{padding:"8px 24px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:9,color:"rgba(255,255,255,0.6)",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:600}}>
-                {lang==="fr"?"Annuler":"Cancel"}
+                {uiText("text0089",lang)}
               </button>
               <button onClick={settingsDelConfirm.onConfirm} style={{padding:"8px 24px",background:"#EA4335",border:"none",borderRadius:9,color:"#fff",cursor:"pointer",fontSize:13,fontFamily:"inherit",fontWeight:700}}>
-                🗑️ {lang==="fr"?"Confirmer la suppression":"Confirm Delete"}
+                🗑️ {uiText("text0434",lang)}
               </button>
             </div>
           </div>
@@ -3868,10 +3819,10 @@ function Settings({data,setData,session,t,lang,setLang,theme,setTheme}){
       <Btn onClick={save} icon={saved?"check":"save"} variant={saved?"green":"primary"}>{saved?t.settings.savedOk:t.settings.save}</Btn>
       <ConfirmModal
         open={!!confirmCat}
-        title={lang==="fr"?"Supprimer la categorie ?":"Delete category?"}
-        message={lang==="fr"?"Supprimer definitivement la categorie :":"Permanently delete category:"}
+        title={uiText("text0435",lang)}
+        message={uiText("text0436",lang)}
         itemName={confirmCat?.name}
-        itemType={lang==="fr"?"Categorie personnalisee":"Custom category"}
+        itemType={uiText("text0437",lang)}
         lang={lang}
         onConfirm={()=>{const newCats=(s.categories||DEFAULT_CATEGORIES).filter((_,j)=>j!==confirmCat.idx);setData(d=>({...d,settings:{...d.settings,categories:newCats}}));setConfirmCat(null);}}
         onCancel={()=>setConfirmCat(null)}
@@ -3908,19 +3859,7 @@ const MERCHANDISE_TYPES_FR=["Produits agricoles","Matériel agricole","Produits 
 const MERCHANDISE_TYPES_EN=["Agricultural products","Agricultural equipment","Agricultural maintenance products","Food products","Cosmetic products","IT equipment","Mechanical equipment","Vehicle","Industrial equipment"];
 const TRANSPORT_TYPES_FR=["Produits agricoles","Produits d'entretien agricole","Matériel agricole","Matériaux de construction","Matériel de construction","Véhicules"];
 const TRANSPORT_TYPES_EN=["Agricultural products","Agricultural maintenance products","Agricultural equipment","Construction materials","Construction equipment","Vehicles"];
-const PERMANENT_CATEGORIES_EN=[
-  "Merchandise transport","Merchandise purchase","Merchandise sale",
-  "IT expertise: consulting, installation, maintenance, software & app development",
-  "Import-Export of various goods and products",
-  "Mobile money transfer services (Orange, MTN, Moov, etc.)",
-  "Purchase and sale of land and property, land management",
-  "All building and civil engineering works (BTP): construction, development and maintenance",
-  "Agri-food, hotel and restaurant sector","Education and training in various fields",
-  "Agro-fish farming operation","Road transport",
-  "Acquisition, rental and sale of all movable and immovable property",
-  "Borrowing from financial institutions with the option to pledge company assets as collateral",
-  "All financial, commercial, industrial, movable and immovable operations related to the corporate purpose",
-];
+
 const CATEGORY_CONFIG_FR={
   "Transport de marchandise":{icon:"🚚",color:"#FBBC05",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:TRANSPORT_TYPES_FR,optionsEn:TRANSPORT_TYPES_EN},
   "Achat de marchandise":{icon:"🛒",color:"#4285F4",hasTypeDropdown:true,dropdownLabelFr:"Type de marchandise",dropdownLabelEn:"Merchandise type",optionsFr:MERCHANDISE_TYPES_FR,optionsEn:MERCHANDISE_TYPES_EN}
@@ -4038,11 +3977,11 @@ function CategoryDetail({category,lang,data,onBack,session}){
   };
   const deleteProduct=(pid)=>{
     const p=season.products.find(x=>x.id===pid);
-    setConfirmState({type:lang==="fr"?"Produit agricole":"Agricultural product",name:lang==="en"?p?.nameEn||p?.name:p?.name||"?",onConfirm:()=>{setSeasons(ss=>ss.map(s=>s.id!==activeSeason?s:{...s,products:s.products.filter(pr=>pr.id!==pid)}));setConfirmState(null);}});
+    setConfirmState({type:uiText("text0438",lang),name:lang==="en"?p?.nameEn||p?.name:p?.name||"?",onConfirm:()=>{setSeasons(ss=>ss.map(s=>s.id!==activeSeason?s:{...s,products:s.products.filter(pr=>pr.id!==pid)}));setConfirmState(null);}});
   };
   const addProduct=()=>{
     const newId=Date.now();
-    const newP={id:newId,name:lang==="fr"?"Nouveau produit":"New product",nameEn:"New product",unit:"kg",saison:"",saisonEn:"",prixBord:0,prixGros:0,transport:1.87,qtyKg:1000};
+    const newP={id:newId,name:uiText("text0439",lang),nameEn:"New product",unit:"kg",saison:"",saisonEn:"",prixBord:0,prixGros:0,transport:1.87,qtyKg:1000};
     setSeasons(ss=>ss.map(s=>s.id!==activeSeason?s:{...s,products:[...s.products,newP]}));
   };
 
@@ -4060,9 +3999,9 @@ function CategoryDetail({category,lang,data,onBack,session}){
     setShowAddSeason(false);
   };
   const deleteSeason=(sid)=>{
-    if(seasons.length<=1){alert(lang==="fr"?"Impossible de supprimer la derniere saison.":"Cannot delete the last season.");return;}
+    if(seasons.length<=1){alert(uiText("text0440",lang));return;}
     const s=seasons.find(x=>x.id===sid);
-    setConfirmState({type:lang==="fr"?"Saison agricole":"Agricultural season",name:s?.label||"?",onConfirm:()=>{setSeasons(ss=>ss.filter(x=>x.id!==sid));setActiveSeason(seasons.find(x=>x.id!==sid)?.id||seasons[0].id);setConfirmState(null);}});
+    setConfirmState({type:uiText("text0441",lang),name:s?.label||"?",onConfirm:()=>{setSeasons(ss=>ss.filter(x=>x.id!==sid));setActiveSeason(seasons.find(x=>x.id!==sid)?.id||seasons[0].id);setConfirmState(null);}});
   };
   const renameseason=(sid,label)=>{
     setSeasons(ss=>ss.map(s=>s.id!==sid?s:{...s,label}));
@@ -4088,7 +4027,7 @@ function CategoryDetail({category,lang,data,onBack,session}){
       </tr>`;
     }).join("");
     const title=lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`;
-    const formula=lang==="fr"?"Profit = (Prix usine/gros − Prix bord champ − Transport usine) × Quantité min":"Profit = (Factory price − Farm gate − Transport) × Min. quantity";
+    const formula=uiText("text0442",lang);
     const colH=(txt,right=false)=>`<th style="padding:8px 10px;text-align:${right?"right":"left"};background:#1a1a2e;color:#fff;font-size:10px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap">${txt}</th>`;
     return`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${title}</title>
     <style>
@@ -4103,24 +4042,24 @@ function CategoryDetail({category,lang,data,onBack,session}){
       @media print{@page{margin:0;size:A4 landscape}}
     </style></head>
     <body>
-${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Merchandise purchase",lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`)}
+${buildPrintHeader(uiText("text0443",lang),lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`)}
       <div class="content"><div class="formula">📐 ${formula}</div>
       <table>
         <thead><tr>
-          ${colH(lang==="fr"?"Produit":"Product")}
-          ${colH(lang==="fr"?"Disponibilité":"Availability",true)}
-          ${colH(lang==="fr"?"Prix bord champ":"Farm gate",true)}
-          ${colH(lang==="fr"?"Transport usine":"Factory transport",true)}
-          ${colH(lang==="fr"?"Prix usine / gros":"Factory / bulk",true)}
-          ${colH(lang==="fr"?"Quantité min.":"Min. qty",true)}
-          ${colH(lang==="fr"?"Achat min. (FCFA)":"Min. purchase",true)}
-          ${colH(lang==="fr"?"Profit estimé":"Est. Profit",true)}
+          ${colH(uiText("text0444",lang))}
+          ${colH(uiText("text0445",lang),true)}
+          ${colH(uiText("text0446",lang),true)}
+          ${colH(uiText("text0447",lang),true)}
+          ${colH(uiText("text0448",lang),true)}
+          ${colH(uiText("text0449",lang),true)}
+          ${colH(uiText("text0450",lang),true)}
+          ${colH(uiText("text0451",lang),true)}
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
       <div class="footer">
-        <span>${lang==="fr"?"Source : Prix officiels + moyennes marché agricole ivoirien":"Source: Official prices + Ivorian agricultural market averages"}</span>
-        <span>${lang==="fr"?"Généré le":"Generated on"} ${new Date().toLocaleDateString(lang==="fr"?"fr-FR":"en-GB",{year:"numeric",month:"long",day:"numeric"})}</span>
+        <span>${uiText("text0452",lang)}</span>
+        <span>${uiText("text0277",lang)} ${new Date().toLocaleDateString(uiText("text0290",lang),{year:"numeric",month:"long",day:"numeric"})}</span>
       </div>
       </div>
     </body></html>`;
@@ -4156,7 +4095,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
       {/* Back */}
       <div style={{marginBottom:16}}>
         <button onClick={onBack} style={{display:"flex",alignItems:"center",gap:6,background:"transparent",border:`1px solid ${C.border}44`,borderRadius:8,padding:"6px 14px",color:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
-          <Icon name="arrow" size={13} color={C.muted}/>{lang==="fr"?"Retour":"Back"}
+          <Icon name="arrow" size={13} color={C.muted}/>{uiText("text0453",lang)}
         </button>
       </div>
 
@@ -4165,9 +4104,9 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"18px 20px",display:"flex",alignItems:"center",gap:14}}>
           <div style={{width:52,height:52,borderRadius:13,background:`${color}18`,border:`1px solid ${color}40`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:26,flexShrink:0}}>{icon}</div>
           <div>
-            <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:3}}>{lang==="fr"?"Catégorie":"Category"}</div>
-            <div style={{color:C.text,fontWeight:800,fontSize:15,lineHeight:1.3}}>{lang==="en"?(PERMANENT_CATEGORIES_EN[ci]||category):category}</div>
-            <div style={{display:"flex",alignItems:"center",gap:5,marginTop:5}}><span>🔒</span><span style={{color:C.muted,fontSize:10}}>{lang==="fr"?"Catégorie permanente":"Permanent category"}</span></div>
+            <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.12em",marginBottom:3}}>{uiText("text0082",lang)}</div>
+            <div style={{color:C.text,fontWeight:800,fontSize:15,lineHeight:1.3}}>{translateData(category,lang)}</div>
+            <div style={{display:"flex",alignItems:"center",gap:5,marginTop:5}}><span>🔒</span><span style={{color:C.muted,fontSize:10}}>{uiText("text0454",lang)}</span></div>
           </div>
         </div>
         {cfg?.hasTypeDropdown&&(
@@ -4175,7 +4114,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
             <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:8}}>{lang==="fr"?cfg.dropdownLabelFr:cfg.dropdownLabelEn} *</label>
             <div style={{position:"relative"}}>
               <select value={selectedType} onChange={e=>setSelectedType(e.target.value)} style={{...inp,paddingRight:36,borderColor:selectedType?color:C.border}}>
-                <option value="">{lang==="fr"?"— Sélectionner —":"— Select —"}</option>
+                <option value="">{uiText("text0455",lang)}</option>
                 {catOptions.map((opt,i)=><option key={i} value={opt}>{opt}</option>)}
               </select>
               <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:C.muted,fontSize:11}}>▼</div>
@@ -4199,7 +4138,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
               </div>
             ))}
             <button onClick={()=>duplicateSeason(activeSeason)} style={{padding:"7px 14px",borderRadius:8,border:`1px dashed ${C.border}`,background:"transparent",color:C.muted,cursor:"pointer",fontSize:11,fontFamily:"inherit",display:"flex",alignItems:"center",gap:5}}>
-              ＋ {lang==="fr"?"Nouvelle saison":"New season"}
+              ＋ {uiText("text0456",lang)}
             </button>
           </div>
 
@@ -4211,16 +4150,16 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                 <div style={{fontWeight:800,fontSize:16,color:C.text}}>🌾 {lang==="fr"?`Produits Agricoles — ${season.label}`:`Agricultural Products — ${season.label}`}</div>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-                <div style={{background:`${C.yellow}18`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"5px 12px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>{lang==="fr"?"Profit = (Prix usine/gros − Prix bord champ − Transport usine) × Quantité min":"Profit = (Factory price − Farm gate − Transport) × Min. quantity"}</div>
-                <div style={{background:`${C.green}15`,border:`1px solid ${C.green}30`,color:C.green,borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:700}}>{season.products.length} {lang==="fr"?"produits":"products"}</div>
-                <button onClick={printAgriTable} title={lang==="fr"?"Imprimer":"Print"} style={{padding:"6px 13px",borderRadius:8,border:`1px solid ${C.blue}`,background:`${C.blue}15`,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-                  🖨️ {lang==="fr"?"Imprimer":"Print"}
+                <div style={{background:`${C.yellow}18`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"5px 12px",fontSize:11,fontWeight:700,whiteSpace:"nowrap"}}>{uiText("text0442",lang)}</div>
+                <div style={{background:`${C.green}15`,border:`1px solid ${C.green}30`,color:C.green,borderRadius:8,padding:"5px 12px",fontSize:11,fontWeight:700}}>{season.products.length} {uiText("text0457",lang)}</div>
+                <button onClick={printAgriTable} title={uiText("text0058",lang)} style={{padding:"6px 13px",borderRadius:8,border:`1px solid ${C.blue}`,background:`${C.blue}15`,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
+                  🖨️ {uiText("text0058",lang)}
                 </button>
-                <button onClick={downloadAgriPDF} title={lang==="fr"?"Télécharger PDF":"Download PDF"} style={{padding:"6px 13px",borderRadius:8,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-                  ⬇️ {lang==="fr"?"Télécharger":"Download"}
+                <button onClick={downloadAgriPDF} title={uiText("text0458",lang)} style={{padding:"6px 13px",borderRadius:8,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
+                  ⬇️ {uiText("text0313",lang)}
                 </button>
                 {isAdmin&&<button onClick={()=>{setShowAgriForm(v=>!v);setAgriForm({...AGRI_BLANK});}} style={{padding:"6px 14px",borderRadius:8,border:`1px solid ${showAgriForm?C.red:color}`,background:showAgriForm?`${C.red}15`:`${color}15`,color:showAgriForm?C.red:color,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:5}}>
-                  {showAgriForm?("✕ "+(lang==="fr"?"Annuler":"Cancel")):("＋ "+(lang==="fr"?"Ajouter":"Add"))}
+                  {showAgriForm?("✕ "+(uiText("text0089",lang))):("＋ "+(uiText("text0092",lang)))}
                 </button>}
               </div>
             </div>
@@ -4229,16 +4168,16 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
             {isAdmin&&showAgriForm&&(
               <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,background:`${C.blue}05`}}>
                 <div style={{color:C.text,fontSize:12,fontWeight:700,marginBottom:10}}>
-                  ＋ {lang==="fr"?"Nouveau produit agricole":"New agricultural product"}
+                  ＋ {uiText("text0459",lang)}
                 </div>
                 <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
                   {[
-                    {label:lang==="fr"?"Produit":"Product",field:"name",type:"text",placeholder:lang==="fr"?"ex: Cacao":"ex: Cacao"},
-                    {label:lang==="fr"?"Disponibilité (saison)":"Availability (season)",field:"saison",type:"text",placeholder:lang==="fr"?"ex: Oct – Sept":"ex: Oct – Sept"},
-                    {label:lang==="fr"?"Prix bord champ (F/kg)":"Farm gate (F/kg)",field:"prixBord",type:"number"},
-                    {label:lang==="fr"?"Transport usine (F/kg)":"Factory transport (F/kg)",field:"transport",type:"number"},
-                    {label:lang==="fr"?"Prix usine/gros (F/kg)":"Factory/wholesale (F/kg)",field:"prixGros",type:"number"},
-                    {label:lang==="fr"?"Quantité min (kg)":"Min. quantity (kg)",field:"qtyKg",type:"number"},
+                    {label:uiText("text0444",lang),field:"name",type:"text",placeholder:uiText("text0460",lang)},
+                    {label:uiText("text0461",lang),field:"saison",type:"text",placeholder:uiText("text0462",lang)},
+                    {label:uiText("text0463",lang),field:"prixBord",type:"number"},
+                    {label:uiText("text0464",lang),field:"transport",type:"number"},
+                    {label:uiText("text0465",lang),field:"prixGros",type:"number"},
+                    {label:uiText("text0466",lang),field:"qtyKg",type:"number"},
                   ].map(f=>(
                     <div key={f.field}>
                       <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:".05em",marginBottom:4}}>{f.label}</div>
@@ -4250,15 +4189,15 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                   <div>
                     <button onClick={saveAgriRow} disabled={!agriForm.name.trim()}
                       style={{padding:"7px 16px",borderRadius:7,border:"none",background:agriForm.name.trim()?C.green:"#333",color:"#fff",cursor:agriForm.name.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                      ✓ {lang==="fr"?"Enregistrer":"Save"}
+                      ✓ {uiText("text0467",lang)}
                     </button>
                   </div>
                 </div>
                 {/* Auto-profit preview */}
                 {agriForm.prixGros>0&&agriForm.prixBord>0&&(
                   <div style={{marginTop:8,fontSize:10,fontWeight:700,color:C.green}}>
-                    {lang==="fr"?"Profit auto :":"Auto profit:"} {fmtNum((agriForm.prixGros-agriForm.prixBord-agriForm.transport)*agriForm.qtyKg)} F CFA
-                    ({lang==="fr"?"pour":"for"} {fmtNum(agriForm.qtyKg)} kg)
+                    {uiText("text0071",lang)} {fmtNum((agriForm.prixGros-agriForm.prixBord-agriForm.transport)*agriForm.qtyKg)} F CFA
+                    ({uiText("text0468",lang)} {fmtNum(agriForm.qtyKg)} kg)
                   </div>
                 )}
               </div>
@@ -4268,14 +4207,14 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
             <div style={{overflowX:"auto"}}>
               <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
                 <thead><tr>
-                  <TH ch={lang==="fr"?"Produit":"Product"} w="160px"/>
-                  <TH ch={lang==="fr"?"Disponibilité":"Availability"} right w="130px"/>
-                  <TH ch={lang==="fr"?"Prix bord champ":"Farm gate"} right w="130px"/>
-                  <TH ch={lang==="fr"?"Transport usine":"Factory transport"} right w="130px"/>
-                  <TH ch={lang==="fr"?"Prix usine / gros":"Factory / bulk"} right w="130px"/>
-                  <TH ch={lang==="fr"?"Quantité min.":"Min. quantity"} right w="120px"/>
-                  <TH ch={lang==="fr"?"Achat min. (F CFA)":"Min. purchase (FCFA)"} right w="150px"/>
-                  <TH ch={lang==="fr"?"Profit estimé":"Est. Profit"} right w="160px"/>
+                  <TH ch={uiText("text0444",lang)} w="160px"/>
+                  <TH ch={uiText("text0445",lang)} right w="130px"/>
+                  <TH ch={uiText("text0446",lang)} right w="130px"/>
+                  <TH ch={uiText("text0447",lang)} right w="130px"/>
+                  <TH ch={uiText("text0448",lang)} right w="130px"/>
+                  <TH ch={uiText("text0469",lang)} right w="120px"/>
+                  <TH ch={uiText("text0470",lang)} right w="150px"/>
+                  <TH ch={uiText("text0451",lang)} right w="160px"/>
                   <TH ch="" w="40px"/>
                 </tr></thead>
                 <tbody>
@@ -4292,14 +4231,14 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 
                         {/* Product name */}
                         <td style={{padding:"10px 13px",minWidth:160}}>
-                          <InlineCell value={lang==="en"?p.nameEn:p.name} onChange={v=>updateProduct(p.id,lang==="en"?"nameEn":"name",v)}
+                          <InlineCell value={lang==="en"?p.nameEn:p.name} onChange={v=>updateProduct(p.id,uiText("text0471",lang),v)}
                             style={{fontWeight:800,fontSize:14,color:C.dim}}/>
                           <div style={{color:C.muted,fontSize:10,marginTop:1}}>/ {p.unit}</div>
                         </td>
 
                         {/* Availability */}
                         <td style={{padding:"10px 13px",textAlign:"right",minWidth:130}}>
-                          <InlineCell value={lang==="en"?p.saisonEn:p.saison} onChange={v=>updateProduct(p.id,lang==="en"?"saisonEn":"saison",v)}
+                          <InlineCell value={lang==="en"?p.saisonEn:p.saison} onChange={v=>updateProduct(p.id,uiText("text0472",lang),v)}
                             style={{display:"inline-block",background:`${C.yellow}18`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"3px 9px",fontSize:11,fontWeight:700,whiteSpace:"nowrap",textAlign:"center"}}/>
                         </td>
 
@@ -4348,7 +4287,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 
                         {/* Delete */}
                         <td style={{padding:"10px 8px",textAlign:"center"}}>
-                          <button onClick={()=>deleteProduct(p.id)} title={lang==="fr"?"Supprimer":"Delete"} style={{background:"transparent",border:`1px solid ${C.red}44`,borderRadius:6,color:C.red,cursor:"pointer",padding:"4px 7px",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                          <button onClick={()=>deleteProduct(p.id)} title={uiText("text0195",lang)} style={{background:"transparent",border:`1px solid ${C.red}44`,borderRadius:6,color:C.red,cursor:"pointer",padding:"4px 7px",fontSize:11,display:"flex",alignItems:"center",justifyContent:"center"}}>
                             <Icon name="trash" size={12} color={C.red}/>
                           </button>
                         </td>
@@ -4361,8 +4300,8 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
 
             {/* Footer */}
             <div style={{padding:"11px 22px",borderTop:`1px solid ${C.border}44`,display:"flex",gap:16,flexWrap:"wrap",alignItems:"center"}}>
-              <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{lang==="fr"?"Cliquez sur une valeur pour la modifier directement dans le tableau":"Click any value to edit it directly in the table"}</span></div>
-              <div style={{fontSize:10,color:C.muted,marginLeft:"auto",fontStyle:"italic"}}>{lang==="fr"?"Source : Prix officiels + moyennes marché agricole ivoirien · 2025–2026":"Source: Official prices + Ivorian agricultural market averages · 2025–2026"}</div>
+              <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{uiText("text0473",lang)}</span></div>
+              <div style={{fontSize:10,color:C.muted,marginLeft:"auto",fontStyle:"italic"}}>{uiText("text0474",lang)}</div>
             </div>
           </div>
         </div>
@@ -4376,7 +4315,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
             <div style={{position:"relative",flex:"0 0 320px"}}>
               <select value={selectedCompany} onChange={e=>setSelectedCompany(e.target.value)}
                 style={{width:"100%",background:C.card,border:`1px solid ${selectedCompany?C.blue:C.border}`,borderRadius:8,padding:"8px 36px 8px 12px",color:selectedCompany?C.text:C.muted,fontSize:12,outline:"none",fontFamily:"inherit",cursor:"pointer",appearance:"none",WebkitAppearance:"none"}}>
-                <option value="">{lang==="fr"?"— Sélectionner une société —":"— Select a company —"}</option>
+                <option value="">{uiText("text0475",lang)}</option>
                 {(data.settings.partnerCompanies||[]).map((c,i)=>{const name=typeof c==="string"?c:c.name;return(<option key={i} value={name}>{name}</option>);})}
               </select>
               <div style={{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",pointerEvents:"none",color:C.muted,fontSize:11}}>▼</div>
@@ -4389,11 +4328,11 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
               <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8}}>
                 <div>
                   <div style={{fontWeight:800,fontSize:15,color:C.text}}>🏭 {selectedCompany}</div>
-                  <div style={{color:C.muted,fontSize:11,marginTop:2}}>{lang==="fr"?"Tarifs de transport ALEPE → destinations · Tonnage initial : 35T":"Transport rates ALEPE → destinations · Initial tonnage: 35T"}</div>
+                  <div style={{color:C.muted,fontSize:11,marginTop:2}}>{uiText("text0476",lang)}</div>
                 </div>
                 <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                  <div style={{background:`${C.yellow}15`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>📐 Profit = Tonnage − Transport facturé</div>
-                  <div style={{background:`${C.green}15`,color:C.green,border:`1px solid ${C.green}30`,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>{kedaRows.length} trajets</div>
+                  <div style={{background:`${C.yellow}15`,border:`1px solid ${C.yellow}30`,color:C.yellow,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>{translateText("📐 Profit = Tonnage − Transport facturé",_lang)}</div>
+                  <div style={{background:`${C.green}15`,color:C.green,border:`1px solid ${C.green}30`,borderRadius:7,padding:"4px 12px",fontSize:10,fontWeight:700}}>{kedaRows.length}{translateText("trajets",_lang)}</div>
                   <button onClick={()=>{
                     const win=window.open("","_blank","width=1200,height=750");if(!win)return;
                     const kdSettings=data?.settings||{rates:DEFAULT_RATES,selectedCurrencies:["GBP"]};
@@ -4413,9 +4352,9 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                       <td style="text-align:right">${profCell(r.t50,r.transport)}</td>
                     </tr>`).join("");
                     const html=`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${selectedCompany}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;background:#fff}.content{padding:14px 22px 20px}p.formula{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;border-radius:6px;padding:6px 12px;font-size:10px;font-weight:700;margin-bottom:12px}table{width:100%;border-collapse:collapse}th{background:#1a1a2e;color:#fff;padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;text-align:right;white-space:normal;vertical-align:top}th:first-child{text-align:left}td{padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:11px}td:first-child{text-align:left;font-weight:700}@media print{@page{size:A4 landscape;margin:0}}</style></head><body>${buildPrintHeader("Catégorie : Transport de marchandise",`Matériel de construction — ${selectedCompany}`)}<div class="content"><p class="formula">📐 Profit = Tonnage − Transport facturé</p><table><thead><tr><th style="text-align:left">Trajet<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">ALEPE →</div></th><th style="color:#CE93D8">Transport<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">facturé</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">35T – 40T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">35T – 40T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">40T – 45T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">40T – 45T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">45T – 50T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">45T – 50T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">50T+</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">50T+</div></th></tr></thead><tbody>${rows}</tbody></table></div></body></html>`;
-                    win.document.write(html);win.document.close();win.focus();setTimeout(()=>win.print(),400);
+                    win.document.write(translateMarkup(html,lang));win.document.close();win.focus();setTimeout(()=>win.print(),400);
                   }} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.blue}`,background:`${C.blue}15`,color:C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
-                    🖨️ {lang==="fr"?"Imprimer":"Print"}
+                    🖨️ {uiText("text0058",lang)}
                   </button>
                   <button onClick={()=>{
                     const kdSettings2=data?.settings||{rates:DEFAULT_RATES,selectedCurrencies:["GBP"]};
@@ -4437,10 +4376,10 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                     const html=`<!DOCTYPE html><html><head><meta charset="utf-8"/><title>${selectedCompany}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Segoe UI',Arial,sans-serif;font-size:11px;background:#fff}.content{padding:14px 22px 20px}p.formula{background:#fef3c7;border:1px solid #fbbf24;color:#92400e;border-radius:6px;padding:6px 12px;font-size:10px;font-weight:700;margin-bottom:12px}table{width:100%;border-collapse:collapse}th{background:#1a1a2e;color:#fff;padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;text-align:right;white-space:normal;vertical-align:top}th:first-child{text-align:left}td{padding:6px 10px;border-bottom:1px solid #f1f5f9;text-align:right}td:first-child{text-align:left;font-weight:700}@media print{@page{size:A4 landscape;margin:0}}</style></head><body>${buildPrintHeader("Catégorie : Transport de marchandise",`Matériel de construction — ${selectedCompany}`)}<div class="content"><p class="formula">📐 Profit = Tonnage − Transport facturé</p><table><thead><tr><th style="text-align:left">Trajet<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">ALEPE →</div></th><th style="color:#CE93D8">Transport<div style="font-weight:400;font-size:9px;opacity:.65;text-transform:none;margin-top:2px">facturé</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">35T – 40T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">35T – 40T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">40T – 45T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">40T – 45T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">45T – 50T</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">45T – 50T</div></th><th>Quantité<div style="font-weight:400;font-size:9px;color:#aaa;text-transform:none;margin-top:2px">50T+</div></th><th style="color:#81C995">Profit<div style="font-weight:400;font-size:9px;color:#81C995;opacity:.7;text-transform:none;margin-top:2px">50T+</div></th></tr></thead><tbody>${rows}</tbody></table></div></body></html>`;
                     const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download=`${(selectedCompany||"transport").replace(/[^a-zA-Z0-9]/g,"-")}.html`;a.click();
                   }} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${C.purple}`,background:`${C.purple}15`,color:C.purple,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
-                    ⬇️ {lang==="fr"?"Télécharger":"Download"}
+                    ⬇️ {uiText("text0313",lang)}
                   </button>
                   {isAdmin&&<button onClick={()=>{setShowKedaForm(v=>!v);setKedaForm({...KEDA_BLANK});}} style={{padding:"5px 12px",borderRadius:7,border:`1px solid ${showKedaForm?C.red:C.green}`,background:showKedaForm?`${C.red}15`:`${C.green}15`,color:showKedaForm?C.red:C.green,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:700,display:"flex",alignItems:"center",gap:4}}>
-                    {showKedaForm?("✕ "+(lang==="fr"?"Annuler":"Cancel")):("＋ "+(lang==="fr"?"Ajouter":"Add"))}
+                    {showKedaForm?("✕ "+(uiText("text0089",lang))):("＋ "+(uiText("text0092",lang)))}
                   </button>}
                 </div>
               </div>
@@ -4449,8 +4388,8 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                 <div style={{padding:"14px 20px",borderBottom:`1px solid ${C.border}44`,background:`${C.green}08`}}>
                   <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr 1fr 1fr auto",gap:8,alignItems:"end"}}>
                     {[
-                      {label:lang==="fr"?"Trajet (destination)":"Route (destination)",field:"dest",type:"text",placeholder:"ex: YAKASSE-ATTOBROU"},
-                      {label:lang==="fr"?"Transport facturé (F)":"Charged transport (F)",field:"transport",type:"number"},
+                      {label:uiText("text0477",lang),field:"dest",type:"text",placeholder:"ex: YAKASSE-ATTOBROU"},
+                      {label:uiText("text0478",lang),field:"transport",type:"number"},
                       {label:"35T – 40T (F)",field:"t35",type:"number"},
                       {label:"40T – 45T (F)",field:"t40",type:"number"},
                       {label:"45T – 50T (F)",field:"t45",type:"number"},
@@ -4466,7 +4405,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                     <div style={{paddingBottom:0}}>
                       <button onClick={saveKedaRow} disabled={!kedaForm.dest.trim()}
                         style={{padding:"7px 16px",borderRadius:7,border:"none",background:kedaForm.dest.trim()?C.green:"#333",color:"#fff",cursor:kedaForm.dest.trim()?"pointer":"not-allowed",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                        ✓ {lang==="fr"?"Enregistrer":"Save"}
+                        ✓ {uiText("text0467",lang)}
                       </button>
                     </div>
                   </div>
@@ -4475,8 +4414,7 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                     <div style={{marginTop:8,display:"flex",gap:12,flexWrap:"wrap"}}>
                       {[{k:"t35",l:"35T–40T"},{k:"t40",l:"40T–45T"},{k:"t45",l:"45T–50T"},{k:"t50",l:"50T+"}].map(({k,l})=>{
                         const p=kedaForm[k]-kedaForm.transport;
-                        return kedaForm[k]>0?(<span key={k} style={{fontSize:10,fontWeight:700,color:p>=0?C.green:C.red}}>
-                          Profit {l}: {p>=0?"+":""}{fmtNum(p)} F
+                        return kedaForm[k]>0?(<span key={k} style={{fontSize:10,fontWeight:700,color:p>=0?C.green:C.red}}>{translateText("Profit",_lang)}{l}: {p>=0?"+":""}{fmtNum(p)} F
                         </span>):null;
                       })}
                     </div>
@@ -4487,15 +4425,15 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                 <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
                   <thead><tr>
                     {[
-                      {label:lang==="fr"?"Trajet":"Route",right:false,sub:"ALEPE →",w:"170px",color:"#fff"},
-                      {label:lang==="fr"?"Transport":"Charged",right:true,sub:lang==="fr"?"facturé":"transport",color:"#9C27B0",w:"120px"},
-                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"35T – 40T",w:"130px",color:"#fff"},
-                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"35T – 40T",color:"#34A853",w:"130px"},
-                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"40T – 45T",w:"130px",color:"#fff"},
-                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"40T – 45T",color:"#34A853",w:"130px"},
-                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"45T – 50T",w:"130px",color:"#fff"},
-                      {label:lang==="fr"?"Profit":"Profit",right:true,sub:"45T – 50T",color:"#34A853",w:"130px"},
-                      {label:lang==="fr"?"Quantité":"Qty",right:true,sub:"50T+",w:"130px",color:"#fff"},
+                      {label:uiText("text0479",lang),right:false,sub:"ALEPE →",w:"170px",color:"#fff"},
+                      {label:uiText("text0480",lang),right:true,sub:uiText("text0481",lang),color:"#9C27B0",w:"120px"},
+                      {label:uiText("text0482",lang),right:true,sub:"35T – 40T",w:"130px",color:"#fff"},
+                      {label:uiText("text0087",lang),right:true,sub:"35T – 40T",color:"#34A853",w:"130px"},
+                      {label:uiText("text0482",lang),right:true,sub:"40T – 45T",w:"130px",color:"#fff"},
+                      {label:uiText("text0087",lang),right:true,sub:"40T – 45T",color:"#34A853",w:"130px"},
+                      {label:uiText("text0482",lang),right:true,sub:"45T – 50T",w:"130px",color:"#fff"},
+                      {label:uiText("text0087",lang),right:true,sub:"45T – 50T",color:"#34A853",w:"130px"},
+                      {label:uiText("text0482",lang),right:true,sub:"50T+",w:"130px",color:"#fff"},
                       {label:lang==="fi"?"Profit":"Profit",right:true,sub:"50T+",color:"#34A853",w:"130px"},
                     ].map((h,i)=>(
                       <th key={i} style={{padding:"8px 8px",textAlign:h.right?"right":"left",background:C.surface,color:h.color||C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.05em",borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap",borderLeft:h.color?`2px solid ${h.color}30`:"none",width:h.w,minWidth:h.w,maxWidth:h.w}}>
@@ -4568,8 +4506,8 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
                 </table>
               </div>
               <div style={{padding:"10px 20px",borderTop:`1px solid ${C.border}44`,display:"flex",gap:16,alignItems:"center",flexWrap:"wrap"}}>
-                <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{lang==="fr"?"Cliquez sur n'importe quelle cellule pour la modifier — les profits se recalculent automatiquement":"Click any cell to edit it — profits recalculate automatically"}</span></div>
-                <div style={{marginLeft:"auto",color:C.muted,fontSize:10,fontStyle:"italic"}}>{lang==="fr"?"Source : Grille tarifaire KEDA CI 2025–2026":"Source: KEDA CI rate schedule 2025–2026"}</div>
+                <div style={{color:C.muted,fontSize:10}}>✏️ <span style={{color:C.dim}}>{uiText("text0483",lang)}</span></div>
+                <div style={{marginLeft:"auto",color:C.muted,fontSize:10,fontStyle:"italic"}}>{uiText("text0484",lang)}</div>
               </div>
             </div>
           )}
@@ -4578,14 +4516,14 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"36px 24px",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:10}}>🚧</div>
               <div style={{color:C.dim,fontWeight:700,fontSize:14,marginBottom:6}}>MELCHAT GHANA LIMITED</div>
-              <div style={{color:C.muted,fontSize:12}}>{lang==="fr"?"Tableau disponible prochainement.":"Table coming soon."}</div>
+              <div style={{color:C.muted,fontSize:12}}>{uiText("text0485",lang)}</div>
             </div>
           )}
 
           {!selectedCompany&&(
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"30px 24px",textAlign:"center",opacity:0.6}}>
               <div style={{fontSize:32,marginBottom:8}}>👆</div>
-              <div style={{color:C.muted,fontSize:13}}>{lang==="fr"?"Sélectionnez une société pour afficher les tarifs de transport.":"Select a company to display transport rates."}</div>
+              <div style={{color:C.muted,fontSize:13}}>{uiText("text0486",lang)}</div>
             </div>
           )}
         </div>
@@ -4596,25 +4534,25 @@ ${buildPrintHeader(lang==="fr"?"Catégorie : Achat de marchandise":"Category: Me
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"36px 24px",textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:12}}>🚧</div>
           <div style={{color:C.dim,fontWeight:700,fontSize:15,marginBottom:6}}>{selectedType}</div>
-          <div style={{color:C.muted,fontSize:12}}>{lang==="fr"?"Tableau disponible prochainement.":"Table coming soon."}</div>
+          <div style={{color:C.muted,fontSize:12}}>{uiText("text0485",lang)}</div>
         </div>
       )}
       {!selectedType&&cfg?.hasTypeDropdown&&(
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"32px 24px",textAlign:"center",opacity:0.55}}>
           <div style={{fontSize:36,marginBottom:10}}>👆</div>
-          <div style={{color:C.muted,fontSize:13}}>{lang==="fr"?"Sélectionnez un type de marchandise pour afficher le tableau.":"Select a merchandise type to display the table."}</div>
+          <div style={{color:C.muted,fontSize:13}}>{uiText("text0487",lang)}</div>
         </div>
       )}
       {!cfg&&(
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:14,padding:"32px 24px",textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:12}}>&#128679;</div>
-          <div style={{color:C.dim,fontWeight:700,fontSize:14}}>{lang==="fr"?"Fonctionnalite a venir":"Feature coming soon"}</div>
+          <div style={{color:C.dim,fontWeight:700,fontSize:14}}>{uiText("text0488",lang)}</div>
         </div>
       )}
       <ConfirmModal
         open={!!confirmState}
-        title={lang==="fr"?"Confirmer la suppression":"Confirm deletion"}
-        message={lang==="fr"?"Vous allez supprimer definitivement :":"You are about to permanently delete:"}
+        title={uiText("text0287",lang)}
+        message={uiText("text0288",lang)}
         itemName={confirmState?.name}
         itemType={confirmState?.type}
         lang={lang}
@@ -4669,12 +4607,12 @@ function WithdrawPage({data,setData,session,t,lang}){
   const [confirmDelW,setConfirmDelW]=useState(null);
 
   const TYPES=[
-    {key:"bank_transfer",label:lang==="fr"?"Virement bancaire":"Bank Transfer",icon:"🏦",delay:lang==="fr"?"3 jours ouvrables":"3 business days"},
-    {key:"orange_money",  label:"Orange Money",  icon:"🟠",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
-    {key:"mtn_money",     label:"MTN Money",     icon:"🟡",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
-    {key:"wave",          label:"Wave",          icon:"🌊",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
-    {key:"moov",          label:"Moov",          icon:"🔵",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
-    {key:"djamo",         label:"Djamo",         icon:"💳",delay:lang==="fr"?"1 jour ouvrable":"1 business day"},
+    {key:"bank_transfer",label:uiText("text0337",lang),icon:"🏦",delay:uiText("text0489",lang)},
+    {key:"orange_money",  label:"Orange Money",  icon:"🟠",delay:uiText("text0490",lang)},
+    {key:"mtn_money",     label:"MTN Money",     icon:"🟡",delay:uiText("text0490",lang)},
+    {key:"wave",          label:"Wave",          icon:"🌊",delay:uiText("text0490",lang)},
+    {key:"moov",          label:"Moov",          icon:"🔵",delay:uiText("text0490",lang)},
+    {key:"djamo",         label:"Djamo",         icon:"💳",delay:uiText("text0490",lang)},
   ];
 
   const typeLabel=(k)=>TYPES.find(t=>t.key===k)?.label||k;
@@ -4682,10 +4620,10 @@ function WithdrawPage({data,setData,session,t,lang}){
 
   const STATUS_COLORS={pending:C.yellow,in_process:C.blue,accepted:C.green,rejected:C.red};
   const STATUS_LABELS={
-    pending:    lang==="fr"?"En attente":"Pending",
-    in_process: lang==="fr"?"En cours":"In Process",
-    accepted:   lang==="fr"?"Accepté":"Accepted",
-    rejected:   lang==="fr"?"Rejeté":"Rejected",
+    pending:    uiText("text0124",lang),
+    in_process: uiText("text0491",lang),
+    accepted:   uiText("text0492",lang),
+    rejected:   uiText("text0493",lang),
   };
 
   // ── Withdrawals list (filtered by investor for non-admin) ────────────────────
@@ -4715,10 +4653,10 @@ function WithdrawPage({data,setData,session,t,lang}){
   const submitWithdrawal=()=>{
     const amt=parseFloat(withdrawAmount)||0;
     if(!amt||amt<=0)return;
-    if(avail-amt<minProfit){alert(lang==="fr"?"Montant dépasse le profit disponible après minimum requis.":"Amount exceeds available profit after minimum threshold.");return;}
+    if(avail-amt<minProfit){alert(uiText("text0494",lang));return;}
     const w={id:Date.now(),investorId:viewInvId,date:fmtDateTime(),type:withdrawType,payMethod:selPayMethod,amount:amt,status:"pending",evidence:null,rejectionReason:null,claimText:null,claimEvidence:null,claimStatus:null};
     setData(d=>({...d,withdrawals:[...(d.withdrawals||[]),w]}));
-    addAudit(setData,session,lang==="fr"?"Demande retrait":"Withdrawal request",fmtNum(amt)+" F","create");
+    addAudit(setData,session,uiText("text0495",lang),fmtNum(amt)+" F","create");
     setWithdrawAmount("");setSelPayMethod("");
   };
 
@@ -4788,13 +4726,13 @@ function WithdrawPage({data,setData,session,t,lang}){
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
         <div>
-          <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{lang==="fr"?"Retrait de profits":"Profit Withdrawal"}</h2>
-          <div style={{color:C.muted,fontSize:12,marginTop:2}}>{lang==="fr"?"Gérez vos demandes de retrait de profits":"Manage your profit withdrawal requests"}</div>
+          <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{uiText("text0496",lang)}</h2>
+          <div style={{color:C.muted,fontSize:12,marginTop:2}}>{uiText("text0497",lang)}</div>
         </div>
         {isAdmin&&(
           <select value={adminViewInv||""} onChange={e=>setAdminViewInv(parseInt(e.target.value))}
             style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:8,padding:"7px 12px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-            <option value="">{lang==="fr"?"— Sélectionner investisseur —":"— Select investor —"}</option>
+            <option value="">{uiText("text0498",lang)}</option>
             {allInvestors.map(i=><option key={i.id} value={i.id}>{i.name}</option>)}
           </select>
         )}
@@ -4805,12 +4743,12 @@ function WithdrawPage({data,setData,session,t,lang}){
         {/* Profit overview banner */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
           {[
-            [lang==="fr"?"Profit disponible":"Available Profit",avail,C.green],
-            [lang==="fr"?"Minimum requis":"Required Minimum",minProfit,C.yellow],
-            [lang==="fr"?"Retraits acceptés":"Accepted Withdrawals",(data.withdrawals||[]).filter(w=>w.investorId===viewInvId&&w.status==="accepted").reduce((s,w)=>s+w.amount,0),C.red],
+            [uiText("text0499",lang),avail,C.green],
+            [uiText("text0500",lang),minProfit,C.yellow],
+            [uiText("text0501",lang),(data.withdrawals||[]).filter(w=>w.investorId===viewInvId&&w.status==="accepted").reduce((s,w)=>s+w.amount,0),C.red],
           ].map(([label,val,col])=>(
             <div key={label} style={{background:C.card,border:`1px solid ${col}33`,borderRadius:10,padding:"14px 16px"}}>
-              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
+              <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{translateText(label,_lang)}</div>
               <div style={{color:col,fontSize:18,fontWeight:800}}>{fmtNum(val)} F</div>
             </div>
           ))}
@@ -4821,7 +4759,7 @@ function WithdrawPage({data,setData,session,t,lang}){
           <div style={{background:`${C.red}10`,border:`1px solid ${C.red}33`,borderRadius:8,padding:"10px 14px",marginBottom:12,display:"flex",gap:8,alignItems:"center"}}>
             <span style={{fontSize:16}}>⚠️</span>
             <span style={{color:C.red,fontSize:12,fontWeight:600}}>
-              {lang==="fr"?"Vous avez atteint le minimum de profit requis. Retrait impossible.":"You have reached the required minimum profit. Withdrawal not possible."}
+              {uiText("text0502",lang)}
             </span>
           </div>
         )}
@@ -4830,20 +4768,20 @@ function WithdrawPage({data,setData,session,t,lang}){
         {(isInvestor||isAdmin)&&!blocked&&(
           <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:18,marginBottom:14}}>
             <div style={{color:C.text,fontSize:13,fontWeight:700,marginBottom:14}}>
-              ➕ {lang==="fr"?"Nouvelle demande de retrait":"New withdrawal request"}
+              ➕ {uiText("text0503",lang)}
             </div>
             <div style={{display:"grid",gridTemplateColumns:"1.6fr 0.8fr auto",gap:10,alignItems:"end"}}>
               {/* Single unified payment method selector from investor's saved methods */}
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:5}}>
-                  <span style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"Moyen de paiement":"Payment method"}</span>
+                  <span style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase"}}>{uiText("text0504",lang)}</span>
                   {selPayMethod&&(()=>{const pm=payMethods.find(p=>String(p.id)===String(selPayMethod));const pt=TYPES.find(t=>t.key===pm?.type);return pt?<span style={{color:C.muted,fontSize:9,background:`${C.border}44`,borderRadius:4,padding:"1px 6px"}}>⏱ {pt.delay}</span>:null;})()}
                 </div>
                 {payMethods.length===0?(
                   <div style={{background:`${C.yellow}10`,border:`1px solid ${C.yellow}33`,borderRadius:7,padding:"8px 12px",display:"flex",alignItems:"center",gap:7}}>
                     <span style={{fontSize:13}}>⚠️</span>
                     <span style={{color:C.yellow,fontSize:11}}>
-                      {lang==="fr"?"Ajouter un moyen de paiement dans votre page paramètres":"Add a payment method in your settings page"}
+                      {uiText("text0505",lang)}
                     </span>
                   </div>
                 ):(
@@ -4853,7 +4791,7 @@ function WithdrawPage({data,setData,session,t,lang}){
                       if(pm) setWithdrawType(pm.type);
                     }}
                     style={{width:"100%",background:C.bg,border:`1px solid ${selPayMethod?C.blue:C.border}44`,borderRadius:7,padding:"7px 10px",color:selPayMethod?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                    <option value="">{lang==="fr"?"— Sélectionner un compte —":"— Select an account —"}</option>
+                    <option value="">{uiText("text0506",lang)}</option>
                     {payMethods.map(p=>{
                       const pt=TYPES.find(t=>t.key===p.type);
                       const detail=p.type==="bank_transfer"?(p.iban?" · "+p.iban.slice(0,10)+"…":p.swift?" · "+p.swift:""):(p.phone?" · "+p.phone:"");
@@ -4864,19 +4802,19 @@ function WithdrawPage({data,setData,session,t,lang}){
               </div>
               {/* Amount */}
               <div>
-                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{lang==="fr"?"Montant (F CFA)":"Amount (F CFA)"}</div>
+                <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:5}}>{uiText("text0098",lang)}</div>
                 <input type="number" value={withdrawAmount} onChange={e=>setWithdrawAmount(e.target.value)}
-                  placeholder={lang==="fr"?"Ex: 500 000":"Ex: 500,000"}
+                  placeholder={uiText("text0507",lang)}
                   style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none"}}/>
                 {withdrawAmount&&avail-(parseFloat(withdrawAmount)||0)<minProfit&&(
-                  <div style={{color:C.red,fontSize:9,marginTop:2}}>⚠ {lang==="fr"?"Dépasse le seuil min":"Exceeds minimum threshold"}</div>
+                  <div style={{color:C.red,fontSize:9,marginTop:2}}>⚠ {uiText("text0508",lang)}</div>
                 )}
               </div>
               <button
                 disabled={!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit}
                 onClick={submitWithdrawal}
                 style={{padding:"8px 18px",background:(!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0||avail-(parseFloat(withdrawAmount)||0)<minProfit)?`rgba(255,255,255,0.1)`:C.green,border:"none",borderRadius:8,color:(!selPayMethod||!withdrawAmount||parseFloat(withdrawAmount)<=0)?`rgba(255,255,255,0.3)`:"#fff",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit",whiteSpace:"nowrap"}}>
-                {lang==="fr"?"Soumettre":"Submit"}
+                {uiText("text0026",lang)}
               </button>
             </div>
           </div>
@@ -4884,11 +4822,11 @@ function WithdrawPage({data,setData,session,t,lang}){
 
         {/* Filter bar */}
         <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
-          <span style={{color:C.muted,fontSize:11}}>Filtrer :</span>
+          <span style={{color:C.muted,fontSize:11}}>{translateText("Filtrer :",_lang)}</span>
           {["all","pending","in_process","accepted","rejected"].map(s=>(
             <button key={s} onClick={()=>setFilterStatus(s)}
               style={{padding:"4px 12px",background:filterStatus===s?STATUS_COLORS[s]||C.blue:(STATUS_COLORS[s]||C.blue)+"18",border:`1px solid ${STATUS_COLORS[s]||C.blue}44`,borderRadius:6,color:filterStatus===s?"#fff":STATUS_COLORS[s]||C.blue,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:filterStatus===s?700:400}}>
-              {s==="all"?(lang==="fr"?"Tous":"All"):STATUS_LABELS[s]}
+              {s==="all"?(uiText("text0170",lang)):STATUS_LABELS[s]}
               {s!=="all"&&<span style={{marginLeft:4,background:"rgba(255,255,255,0.2)",borderRadius:3,padding:"0 5px",fontSize:9}}>{(data.withdrawals||[]).filter(w=>w.investorId===viewInvId&&w.status===s).length}</span>}
             </button>
           ))}
@@ -4900,19 +4838,19 @@ function WithdrawPage({data,setData,session,t,lang}){
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
               <thead>
                 <tr>
-                  <SortTh col="date">{lang==="fr"?"Date":"Date"}</SortTh>
-                  {isAdmin&&<SortTh col="investorName">{lang==="fr"?"Investisseur":"Investor"}</SortTh>}
-                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Type":"Type"}</th>
-                  <SortTh col="amount">{lang==="fr"?"Montant":"Amount"}</SortTh>
-                  <SortTh col="status">{lang==="fr"?"Statut":"Status"}</SortTh>
-                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Preuve":"Evidence"}</th>
-                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{lang==="fr"?"Actions":"Actions"}</th>
+                  <SortTh col="date">{uiText("text0081",lang)}</SortTh>
+                  {isAdmin&&<SortTh col="investorName">{uiText("text0271",lang)}</SortTh>}
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",textAlign:"left",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{uiText("text0169",lang)}</th>
+                  <SortTh col="amount">{uiText("text0091",lang)}</SortTh>
+                  <SortTh col="status">{uiText("text0131",lang)}</SortTh>
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{uiText("text0509",lang)}</th>
+                  <th style={{color:C.muted,fontWeight:700,padding:"8px 10px",fontSize:9,textTransform:"uppercase",letterSpacing:"0.07em",borderBottom:`1px solid ${C.border}44`}}>{uiText("text0123",lang)}</th>
                 </tr>
               </thead>
               <tbody>
                 {sorted.length===0&&(
                   <tr><td colSpan={isAdmin?7:6} style={{padding:"30px",textAlign:"center",color:C.muted}}>
-                    {lang==="fr"?"Aucune demande de retrait.":"No withdrawal requests."}
+                    {uiText("text0510",lang)}
                   </td></tr>
                 )}
                 {sorted.map(w=>{
@@ -4943,28 +4881,28 @@ function WithdrawPage({data,setData,session,t,lang}){
                           {w.status==="rejected"&&w.rejectionReason&&(
                             <button onClick={()=>setRejectModal({...w,showReason:true})}
                               style={{padding:"2px 7px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
-                              👁 {lang==="fr"?"Raison":"Reason"}
+                              👁 {uiText("text0511",lang)}
                             </button>
                           )}
                           {w.claimStatus==="pending_review"&&(
-                            <span style={{padding:"2px 7px",background:`${C.yellow}18`,color:C.yellow,borderRadius:4,fontSize:9,fontWeight:700}}>⚖ Claim</span>
+                            <span style={{padding:"2px 7px",background:`${C.yellow}18`,color:C.yellow,borderRadius:4,fontSize:9,fontWeight:700}}>{translateText("⚖ Claim",_lang)}</span>
                           )}
                         </div>
                         {/* Admin status changer */}
                         {isAdmin&&w.status==="pending"&&(
                           <div style={{display:"flex",gap:4,marginTop:5}}>
                             <button onClick={()=>updateStatus(w.id,"in_process")}
-                              style={{padding:"2px 8px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:4,color:C.blue,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>→ In Process</button>
+                              style={{padding:"2px 8px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:4,color:C.blue,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>{translateText("→ In Process",_lang)}</button>
                             <button onClick={()=>{setRejectModal(w);setRejectReason("");}}
-                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✕ Reject</button>
+                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>{translateText("✕ Reject",_lang)}</button>
                           </div>
                         )}
                         {isAdmin&&w.status==="in_process"&&(
                           <div style={{display:"flex",gap:4,marginTop:5}}>
                             <button onClick={()=>uploadEvidence(w.id,true)}
-                              style={{padding:"2px 8px",background:`${C.green}18`,border:`1px solid ${C.green}33`,borderRadius:4,color:C.green,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✓ Accept + Proof</button>
+                              style={{padding:"2px 8px",background:`${C.green}18`,border:`1px solid ${C.green}33`,borderRadius:4,color:C.green,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>{translateText("✓ Accept + Proof",_lang)}</button>
                             <button onClick={()=>{setRejectModal(w);setRejectReason("");}}
-                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>✕ Reject</button>
+                              style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>{translateText("✕ Reject",_lang)}</button>
                           </div>
                         )}
                       </td>
@@ -4972,7 +4910,7 @@ function WithdrawPage({data,setData,session,t,lang}){
                       <td style={{padding:"8px 10px"}}>
                         <div style={{display:"flex",gap:4,alignItems:"center",flexWrap:"wrap"}}>
                           <button onClick={()=>uploadEvidence(w.id,isAdmin)}
-                            title={lang==="fr"?"Ajouter preuve":"Add evidence"}
+                            title={uiText("text0512",lang)}
                             style={{width:26,height:26,borderRadius:6,background:`${C.teal}18`,border:`1px solid ${C.teal}33`,color:C.teal,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>📎</button>
                           {evidenceCount>0&&(
                             <span style={{color:C.teal,fontSize:10,fontWeight:700,background:`${C.teal}12`,padding:"1px 6px",borderRadius:4}}>{evidenceCount}</span>
@@ -4989,19 +4927,19 @@ function WithdrawPage({data,setData,session,t,lang}){
                           {w.status==="in_process"&&(isInvestor||isAdmin)&&(
                             <button onClick={()=>cancelWithdrawal(w.id)}
                               style={{padding:"2px 8px",background:`${C.yellow}18`,border:`1px solid ${C.yellow}33`,borderRadius:4,color:C.yellow,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
-                              {lang==="fr"?"Annuler":"Cancel"}
+                              {uiText("text0089",lang)}
                             </button>
                           )}
                           {w.status==="pending"&&(
                             <button onClick={()=>setConfirmDelW(w)}
                               style={{padding:"2px 8px",background:`${C.red}18`,border:`1px solid ${C.red}33`,borderRadius:4,color:C.red,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
-                              {lang==="fr"?"Supprimer":"Delete"}
+                              {uiText("text0195",lang)}
                             </button>
                           )}
                           {w.status==="rejected"&&!w.claimText&&isInvestor&&(
                             <button onClick={()=>{setClaimModal(w);setClaimText("");}}
                               style={{padding:"2px 8px",background:`${C.purple}18`,border:`1px solid ${C.purple}33`,borderRadius:4,color:C.purple,cursor:"pointer",fontSize:9,fontFamily:"inherit"}}>
-                              ⚖ {lang==="fr"?"Réclamation":"Claim"}
+                              ⚖ {uiText("text0513",lang)}
                             </button>
                           )}
                         </div>
@@ -5021,27 +4959,27 @@ function WithdrawPage({data,setData,session,t,lang}){
         <div onClick={()=>setRejectModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(234,67,53,0.3)",borderRadius:18,width:"min(440px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
             <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:12}}>
-              {rejectModal.showReason?(lang==="fr"?"Raison du rejet":"Rejection reason"):(lang==="fr"?"Rejeter la demande":"Reject request")}
+              {rejectModal.showReason?(uiText("text0514",lang)):(uiText("text0515",lang))}
             </div>
             {rejectModal.showReason?(
               <div style={{background:"rgba(234,67,53,0.08)",border:"1px solid rgba(234,67,53,0.2)",borderRadius:8,padding:"10px 14px",color:C.red,fontSize:12}}>{rejectModal.rejectionReason}</div>
             ):(
               <>
                 <textarea value={rejectReason} onChange={e=>setRejectReason(e.target.value)} rows={3}
-                  placeholder={lang==="fr"?"Motif du rejet...":"Reason for rejection..."}
+                  placeholder={uiText("text0516",lang)}
                   style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 10px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",resize:"vertical",marginBottom:12}}/>
                 <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
                   <button onClick={()=>setRejectModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>
-                    {lang==="fr"?"Annuler":"Cancel"}
+                    {uiText("text0089",lang)}
                   </button>
                   <button disabled={!rejectReason.trim()} onClick={()=>{updateStatus(rejectModal.id,"rejected",{rejectionReason:rejectReason});setRejectModal(null);}}
                     style={{padding:"7px 18px",background:rejectReason.trim()?C.red:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:rejectReason.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
-                    ✕ {lang==="fr"?"Confirmer rejet":"Confirm Reject"}
+                    ✕ {uiText("text0517",lang)}
                   </button>
                 </div>
               </>
             )}
-            {rejectModal.showReason&&<button onClick={()=>setRejectModal(null)} style={{marginTop:12,width:"100%",padding:"8px",background:"rgba(255,255,255,0.08)",border:"none",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Fermer":"Close"}</button>}
+            {rejectModal.showReason&&<button onClick={()=>setRejectModal(null)} style={{marginTop:12,width:"100%",padding:"8px",background:"rgba(255,255,255,0.08)",border:"none",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{uiText("text0051",lang)}</button>}
           </div>
         </div>
       )}
@@ -5050,16 +4988,16 @@ function WithdrawPage({data,setData,session,t,lang}){
       {claimModal&&(
         <div onClick={()=>setClaimModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.82)",backdropFilter:"blur(8px)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"#1a1a1a",border:"1px solid rgba(156,39,176,0.3)",borderRadius:18,width:"min(440px,96vw)",padding:24,boxShadow:"0 32px 80px rgba(0,0,0,0.8)"}}>
-            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:4}}>⚖ {lang==="fr"?"Déposer une réclamation":"Submit a claim"}</div>
-            <div style={{color:"rgba(255,255,255,0.4)",fontSize:11,marginBottom:14}}>{lang==="fr"?"Expliquez le problème et joignez une preuve de non-réception.":"Explain the issue and attach proof of non-receipt."}</div>
+            <div style={{color:"#fff",fontWeight:800,fontSize:15,marginBottom:4}}>⚖ {uiText("text0518",lang)}</div>
+            <div style={{color:"rgba(255,255,255,0.4)",fontSize:11,marginBottom:14}}>{uiText("text0519",lang)}</div>
             <textarea value={claimText} onChange={e=>setClaimText(e.target.value)} rows={4}
-              placeholder={lang==="fr"?"Décrivez votre réclamation...":"Describe your claim..."}
+              placeholder={uiText("text0520",lang)}
               style={{width:"100%",background:"#111",border:"1px solid rgba(255,255,255,0.12)",borderRadius:8,padding:"8px 10px",color:"#fff",fontSize:12,fontFamily:"inherit",outline:"none",resize:"vertical",marginBottom:12}}/>
             <div style={{display:"flex",gap:8,justifyContent:"flex-end"}}>
-              <button onClick={()=>setClaimModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{lang==="fr"?"Annuler":"Cancel"}</button>
+              <button onClick={()=>setClaimModal(null)} style={{padding:"7px 18px",background:"transparent",border:"1px solid rgba(255,255,255,0.15)",borderRadius:8,color:"rgba(255,255,255,0.5)",cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>{uiText("text0089",lang)}</button>
               <button disabled={!claimText.trim()} onClick={()=>submitClaim(claimModal)}
                 style={{padding:"7px 18px",background:claimText.trim()?C.purple:"rgba(255,255,255,0.1)",border:"none",borderRadius:8,color:claimText.trim()?"#fff":"rgba(255,255,255,0.3)",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"inherit"}}>
-                ⚖ {lang==="fr"?"Soumettre":"Submit"}
+                ⚖ {uiText("text0026",lang)}
               </button>
             </div>
           </div>
@@ -5067,7 +5005,7 @@ function WithdrawPage({data,setData,session,t,lang}){
       )}
 
       {/* Delete confirm */}
-      <ConfirmModal open={!!confirmDelW} lang={lang} itemType={lang==="fr"?"Demande de retrait":"Withdrawal request"} itemName={confirmDelW?fmtNum(confirmDelW.amount)+" F — "+typeLabel(confirmDelW.type):""} onConfirm={()=>{deleteWithdrawal(confirmDelW.id);setConfirmDelW(null);}} onCancel={()=>setConfirmDelW(null)}/>
+      <ConfirmModal open={!!confirmDelW} lang={lang} itemType={uiText("text0521",lang)} itemName={confirmDelW?fmtNum(confirmDelW.amount)+" F — "+typeLabel(confirmDelW.type):""} onConfirm={()=>{deleteWithdrawal(confirmDelW.id);setConfirmDelW(null);}} onCancel={()=>setConfirmDelW(null)}/>
     </div>
   );
 }
@@ -5078,7 +5016,7 @@ function FPField({label,children,hint}){
   const C=_C;
   return(
     <div style={{marginBottom:14}}>
-      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{label}</div>
+      <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:4}}>{translateText(label,_lang)}</div>
       {children}
       {hint&&<div style={{color:C.muted,fontSize:9,marginTop:2}}>{hint}</div>}
     </div>
@@ -5398,8 +5336,8 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 </div></body></html>`;
   };
 
-  const doPrint=(f,c)=>{const w=window.open("","_blank");w.document.write(buildFleetHTML(f,c));w.document.close();setTimeout(()=>w.print(),500);};
-  const doDownload=(f,c)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buildFleetHTML(f,c)],{type:"text/html"}));a.download=`fleet-projection-${f.numTrucks}trucks.html`;a.click();};
+  const doPrint=(f,c)=>{const w=window.open("","_blank");w.document.write(translateMarkup(buildFleetHTML(f,c),lang));w.document.close();setTimeout(()=>w.print(),500);};
+  const doDownload=(f,c)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([translateMarkup(buildFleetHTML(f,c),lang)],{type:"text/html"}));a.download=`fleet-projection-${f.numTrucks}trucks.html`;a.click();};
 
   // Field and Inp are now top-level components (above FleetProjection)
 
@@ -5413,16 +5351,16 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
       <div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div>
-            <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{lang==="fr"?"Projection Flotte":"Fleet Projection"}</h2>
-            <div style={{color:C.muted,fontSize:12,marginTop:2}}>{lang==="fr"?"Own Trucks vs Rental Trucks — Analyse d'investissement":"Own Trucks vs Rental Trucks — Investment Analysis"}</div>
+            <h2 style={{color:C.text,fontSize:20,fontWeight:800,margin:0}}>{uiText("text0522",lang)}</h2>
+            <div style={{color:C.muted,fontSize:12,marginTop:2}}>{uiText("text0523",lang)}</div>
           </div>
-          {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="secondary" icon="plus">{lang==="fr"?"+ Nouvelle Projection":"+ New Projection"}</Btn>}
+          {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="secondary" icon="plus">{uiText("text0524",lang)}</Btn>}
         </div>
         {projList.length===0?(
           <div style={{textAlign:"center",padding:"60px 20px",background:C.card,borderRadius:12,border:`1px solid ${C.border}44`}}>
             <div style={{fontSize:48,marginBottom:14,opacity:.4}}>🚛</div>
-            <div style={{color:C.muted,fontSize:14,marginBottom:20}}>{lang==="fr"?"Aucune projection. Créez votre première analyse.":"No projections yet. Create your first fleet analysis."}</div>
-            {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="primary" icon="plus">{lang==="fr"?"Créer une projection":"Create projection"}</Btn>}
+            <div style={{color:C.muted,fontSize:14,marginBottom:20}}>{uiText("text0525",lang)}</div>
+            {isAdmin&&<Btn onClick={()=>{setForm(blankForm());setEditingId(null);setView("form");}} variant="primary" icon="plus">{uiText("text0526",lang)}</Btn>}
           </div>
         ):(
           <div style={{display:"flex",flexDirection:"column",gap:10}}>
@@ -5436,11 +5374,11 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
                   <div style={{width:44,height:44,borderRadius:10,background:`${C.blue}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flexShrink:0}}>🚛</div>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{color:C.text,fontWeight:700,fontSize:13}}>{p.title||`${p.numTrucks} Trucks — ${p.country1}→${p.country2}`}</div>
-                    <div style={{color:C.muted,fontSize:10,marginTop:2}}>{p.numTrucks} trucks · {p.distanceKm}km · {p.tripsPerMonth} trips/mo · {p.createdAt}</div>
+                    <div style={{color:C.muted,fontSize:10,marginTop:2}}>{p.numTrucks}{translateText("trucks ·",_lang)}{p.distanceKm}km · {p.tripsPerMonth}{translateText("trips/mo ·",_lang)}{p.createdAt}</div>
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <div style={{color:C.green,fontWeight:700,fontSize:13}}>{fmtNum(c.ownProfitFleetMonth)} F/mo</div>
-                    <div style={{color:C.yellow,fontSize:10,marginTop:2}}>Payback: ~{Math.ceil(c.ownPaybackMonths)} months</div>
+                    <div style={{color:C.yellow,fontSize:10,marginTop:2}}>{translateText("Payback: ~",_lang)}{Math.ceil(c.ownPaybackMonths)}{translateText("months",_lang)}</div>
                   </div>
                   {isAdmin&&<div style={{display:"flex",gap:5,flexShrink:0}} onClick={e=>e.stopPropagation()}>
                     <button onClick={()=>{setForm({...p});setEditingId(p.id);setView("form");}} style={{width:30,height:30,borderRadius:7,background:`${C.blue}18`,border:`1px solid ${C.blue}33`,color:C.blue,cursor:"pointer",fontSize:12,display:"flex",alignItems:"center",justifyContent:"center"}}>✏</button>
@@ -5451,7 +5389,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
             })}
           </div>
         )}
-        <ConfirmModal open={!!confirmDel} lang={lang} itemType={lang==="fr"?"Projection":"Projection"} itemName={confirmDel?.title||`${confirmDel?.numTrucks} Trucks`} onConfirm={()=>{deleteProj(confirmDel.id);setConfirmDel(null);}} onCancel={()=>setConfirmDel(null)}/>
+        <ConfirmModal open={!!confirmDel} lang={lang} itemType={uiText("text0527",lang)} itemName={confirmDel?.title||`${confirmDel?.numTrucks} Trucks`} onConfirm={()=>{deleteProj(confirmDel.id);setConfirmDel(null);}} onCancel={()=>setConfirmDel(null)}/>
       </div>
     );
   }
@@ -5463,8 +5401,8 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
     return(
       <div>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:20}}>
-          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {lang==="fr"?"Retour":"Back"}</button>
-          <h2 style={{color:C.text,fontSize:18,fontWeight:800,margin:0}}>{editingId?(lang==="fr"?"Modifier projection":"Edit projection"):(lang==="fr"?"Nouvelle projection flotte":"New Fleet Projection")}</h2>
+          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {uiText("text0453",lang)}</button>
+          <h2 style={{color:C.text,fontSize:18,fontWeight:800,margin:0}}>{editingId?(uiText("text0528",lang)):(uiText("text0529",lang))}</h2>
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
@@ -5472,21 +5410,21 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
           <div style={{display:"flex",flexDirection:"column",gap:0}}>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
-              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🚛 {lang==="fr"?"Investissement flotte":"Fleet Investment"}</div>
-              <FPField label={lang==="fr"?"Titre de la projection":"Projection Title"}>
+              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🚛 {uiText("text0530",lang)}</div>
+              <FPField label={uiText("text0531",lang)}>
                 <FPInp type="text" val={form.title} onChange={v=>setForm(f=>({...f,title:v}))} ph="Ex: Fleet Projection 2025"/>
               </FPField>
-              <FPField label={lang==="fr"?"Nombre de camions":"Number of Trucks"}>
+              <FPField label={uiText("text0532",lang)}>
                 <FPInp val={form.numTrucks} onChange={v=>setForm(f=>({...f,numTrucks:v}))}/>
               </FPField>
-              <FPField label={lang==="fr"?"Prix par camion (F CFA)":"Price per Truck (F CFA)"} hint={`Total: ${fmtNum(form.numTrucks*form.pricePerTruck)} F CFA`}>
+              <FPField label={uiText("text0533",lang)} hint={`Total: ${fmtNum(form.numTrucks*form.pricePerTruck)} F CFA`}>
                 <FPInp val={form.pricePerTruck} onChange={v=>setForm(f=>({...f,pricePerTruck:v}))}/>
               </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
-              <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🗺 {lang==="fr"?"Données de route":"Route Data"}</div>
-              <FPField label={lang==="fr"?"Départ (Pays-Ville)":"Departure (Country-City)"}>
+              <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>🗺 {uiText("text0534",lang)}</div>
+              <FPField label={uiText("text0535",lang)}>
                 <select value={form.depLocId||""} onChange={e=>{
                   const loc=(data.settings.departureLocations||[]).find(l=>String(l.id)===e.target.value);
                   if(loc){
@@ -5498,11 +5436,11 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
                     }));
                   }
                 }} style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:form.depLocId?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  <option value="">{lang==="fr"?"— Sélectionner le départ —":"— Select departure —"}</option>
+                  <option value="">{uiText("text0536",lang)}</option>
                   {(data.settings.departureLocations||[]).map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
                 </select>
               </FPField>
-              <FPField label={lang==="fr"?"Destination (Pays-Ville)":"Destination (Country-City)"}>
+              <FPField label={uiText("text0537",lang)}>
                 <select value={form.destLocId||""} onChange={e=>{
                   const loc=(data.settings.destinationLocations||[]).find(l=>String(l.id)===e.target.value);
                   if(loc){
@@ -5512,53 +5450,53 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
                     }));
                   }
                 }} style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:form.destLocId?C.text:C.muted,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  <option value="">{lang==="fr"?"— Sélectionner la destination —":"— Select destination —"}</option>
+                  <option value="">{uiText("text0538",lang)}</option>
                   {(data.settings.destinationLocations||[]).map(l=><option key={l.id} value={l.id}>{l.country}-{l.city}</option>)}
                 </select>
               </FPField>
-              <FPField label={lang==="fr"?"Distance (km) — auto depuis Paramètres":"Route Distance (km) — auto from Settings"} hint={form.depLocId&&form.destLocId?"✅ Distance auto-remplie depuis les Paramètres":"Sélectionnez départ & destination pour auto-remplir"}>
+              <FPField label={uiText("text0539",lang)} hint={form.depLocId&&form.destLocId?"✅ Distance auto-remplie depuis les Paramètres":"Sélectionnez départ & destination pour auto-remplir"}>
                 <FPInp val={form.distanceKm} onChange={v=>setForm(f=>({...f,distanceKm:v}))}/>
               </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
-              <div style={{color:C.red,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⛽ {lang==="fr"?"Coûts carburant":"Fuel Costs"}</div>
-              <FPField label={lang==="fr"?"Consommation (L/100km)":"Fuel Consumption (L/100km)"}>
+              <div style={{color:C.red,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⛽ {uiText("text0540",lang)}</div>
+              <FPField label={uiText("text0541",lang)}>
                 <FPInp val={form.fuelConsumptionPer100km} onChange={v=>setForm(f=>({...f,fuelConsumptionPer100km:v}))}/>
               </FPField>
-              <FPField label={lang==="fr"?"Prix carburant F/L — auto depuis pays départ":"Fuel Price F/L — auto from departure country"} hint={`Coût carburant/trajet: ${fmtNum(Math.round(C2l.fuelCostPerTrip))} F (${Math.round(fuelLiters)}L)`}>
+              <FPField label={uiText("text0542",lang)} hint={`Coût carburant/trajet: ${fmtNum(Math.round(C2l.fuelCostPerTrip))} F (${Math.round(fuelLiters)}L)`}>
                 <div style={{display:"flex",gap:6,alignItems:"center"}}>
                   <FPInp val={form.fuelPricePerLiter} onChange={v=>setForm(f=>({...f,fuelPricePerLiter:v}))}/>
                   <button onClick={()=>{
                     const depLoc=(data.settings.departureLocations||[]).find(l=>String(l.id)===String(form.depLocId));
                     const fe=depLoc&&(data.settings.fuelByCountry||[]).find(f=>f.country===depLoc.country);
                     setForm(f=>({...f,fuelPricePerLiter:fe?fe.pricePerLiter:fuelPriceSetting}));
-                  }} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}} title={lang==="fr"?"Auto depuis pays départ ou défaut":"Auto from departure country or default"}>↺ {lang==="fr"?"Pays":"Country"} ({fmtNum(fuelPriceSetting)} F)</button>
+                  }} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}} title={uiText("text0543",lang)}>↺ {uiText("text0022",lang)} ({fmtNum(fuelPriceSetting)} F)</button>
                 </div>
               </FPField>
-              <FPField label={lang==="fr"?"Dépenses de route/trajet":"Road Expenses/trip"}>
+              <FPField label={uiText("text0544",lang)}>
                 <FPInp val={form.roadExpensesPerTrip} onChange={v=>setForm(f=>({...f,roadExpensesPerTrip:v}))}/>
               </FPField>
             </div>
 
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
-              <div style={{color:C.green,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>💰 {lang==="fr"?"Revenus & Opérations":"Revenue & Operations"}</div>
-              <FPField label={lang==="fr"?"Revenu par trajet (F CFA)":"Revenue per Trip (F CFA)"}>
+              <div style={{color:C.green,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>💰 {uiText("text0545",lang)}</div>
+              <FPField label={uiText("text0546",lang)}>
                 <FPInp val={form.revenuePerTrip} onChange={v=>setForm(f=>({...f,revenuePerTrip:v}))}/>
               </FPField>
-              <FPField label={lang==="fr"?"Coût camion location/trajet":"Rental Truck Cost/trip"}>
+              <FPField label={uiText("text0547",lang)}>
                 <FPInp val={form.rentalCostPerTrip} onChange={v=>setForm(f=>({...f,rentalCostPerTrip:v}))}/>
               </FPField>
-              <FPField label={lang==="fr"?"Salaire chauffeur/mois — Paramètres":"Driver Salary/month — from Settings"} hint={`Base + Bonus: ${fmtNum(driverSalarySetting)} F`}>
+              <FPField label={uiText("text0548",lang)} hint={`Base + Bonus: ${fmtNum(driverSalarySetting)} F`}>
                 <div style={{display:"flex",gap:6}}>
                   <FPInp val={form.driverSalaryMonth} onChange={v=>setForm(f=>({...f,driverSalaryMonth:v}))}/>
-                  <button onClick={()=>setForm(f=>({...f,driverSalaryMonth:driverSalarySetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {lang==="fr"?"Défaut":"Default"} ({fmtNum(driverSalarySetting)} F)</button>
+                  <button onClick={()=>setForm(f=>({...f,driverSalaryMonth:driverSalarySetting}))} style={{padding:"5px 10px",background:`${C.teal}18`,border:`1px solid ${C.teal}44`,borderRadius:7,color:C.teal,cursor:"pointer",fontSize:10,fontFamily:"inherit",whiteSpace:"nowrap"}}>↺ {uiText("text0549",lang)} ({fmtNum(driverSalarySetting)} F)</button>
                 </div>
               </FPField>
-              <FPField label={lang==="fr"?"Trajets par mois (défaut: 3)":"Trips per Month (default: 3)"}>
+              <FPField label={uiText("text0550",lang)}>
                 <select value={form.tripsPerMonth} onChange={e=>setForm(f=>({...f,tripsPerMonth:parseInt(e.target.value)}))}
                   style={{width:"100%",background:C.bg,border:`1px solid ${C.border}44`,borderRadius:7,padding:"7px 10px",color:C.text,fontSize:12,fontFamily:"inherit",outline:"none",cursor:"pointer"}}>
-                  {[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>{n} trips/month</option>)}
+                  {[1,2,3,4,5,6,7,8].map(n=><option key={n} value={n}>{n}{translateText("trips/month",_lang)}</option>)}
                 </select>
               </FPField>
             </div>
@@ -5568,17 +5506,17 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
           {/* Right column: Live preview */}
           <div style={{position:"sticky",top:20,alignSelf:"start"}}>
             <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:20,marginBottom:12}}>
-              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⚡ {lang==="fr"?"Aperçu en temps réel":"Live Preview"}</div>
+              <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:14}}>⚡ {uiText("text0551",lang)}</div>
 
               {/* Own truck summary */}
               <div style={{background:`${C.green}0d`,border:`1px solid ${C.green}25`,borderRadius:10,padding:14,marginBottom:10}}>
-                <div style={{color:C.green,fontWeight:700,fontSize:11,marginBottom:8}}>🚛 Own Trucks</div>
+                <div style={{color:C.green,fontWeight:700,fontSize:11,marginBottom:8}}>{translateText("🚛 Own Trucks",_lang)}</div>
                 {[
-                  [lang==="fr"?"Carburant/trajet":"Fuel/trip", C2l.fuelCostPerTrip, "red"],
-                  [lang==="fr"?"Profit net/trajet":"Net profit/trip", C2l.ownNetProfitPerTrip, "green"],
-                  [lang==="fr"?"Profit/camion/mois":"Profit/truck/mo", C2l.ownProfitPerTruckMonth, "green"],
-                  [lang==="fr"?"Profit flotte/mois":"Fleet profit/mo", C2l.ownProfitFleetMonth, "green"],
-                  [lang==="fr"?"Profit flotte/an":"Fleet profit/yr", C2l.ownProfitFleetYear, "green"],
+                  [uiText("text0552",lang), C2l.fuelCostPerTrip, "red"],
+                  [uiText("text0553",lang), C2l.ownNetProfitPerTrip, "green"],
+                  [uiText("text0554",lang), C2l.ownProfitPerTruckMonth, "green"],
+                  [uiText("text0555",lang), C2l.ownProfitFleetMonth, "green"],
+                  [uiText("text0556",lang), C2l.ownProfitFleetYear, "green"],
                 ].map(([l,v,col])=>(
                   <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:`1px solid ${C.border}22`}}>
                     <span style={{color:C.muted,fontSize:11}}>{l}</span>
@@ -5589,11 +5527,11 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
               {/* Rental summary */}
               <div style={{background:`${C.red}0d`,border:`1px solid ${C.red}25`,borderRadius:10,padding:14,marginBottom:10}}>
-                <div style={{color:C.red,fontWeight:700,fontSize:11,marginBottom:8}}>📋 Rental Trucks</div>
+                <div style={{color:C.red,fontWeight:700,fontSize:11,marginBottom:8}}>{translateText("📋 Rental Trucks",_lang)}</div>
                 {[
-                  [lang==="fr"?"Commission/trajet":"Commission/trip", C2l.rentalCommission, "green"],
-                  [lang==="fr"?"Profit/camion/mois":"Profit/truck/mo", C2l.rentalProfitPerTruckMonth, "green"],
-                  [lang==="fr"?"Profit flotte/mois":"Fleet profit/mo", C2l.rentalProfitFleetMonth, "green"],
+                  [uiText("text0557",lang), C2l.rentalCommission, "green"],
+                  [uiText("text0554",lang), C2l.rentalProfitPerTruckMonth, "green"],
+                  [uiText("text0555",lang), C2l.rentalProfitFleetMonth, "green"],
                 ].map(([l,v])=>(
                   <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderBottom:`1px solid ${C.border}22`}}>
                     <span style={{color:C.muted,fontSize:11}}>{l}</span>
@@ -5604,23 +5542,21 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
               {/* Payback */}
               <div style={{background:`${C.yellow}0d`,border:`1px solid ${C.yellow}25`,borderRadius:10,padding:14}}>
-                <div style={{color:C.yellow,fontWeight:700,fontSize:11,marginBottom:8}}>⏱ Payback</div>
+                <div style={{color:C.yellow,fontWeight:700,fontSize:11,marginBottom:8}}>{translateText("⏱ Payback",_lang)}</div>
                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                  <span style={{color:C.muted,fontSize:11}}>🚛 Own Trucks</span>
-                  <span style={{color:C.green,fontWeight:800,fontSize:13}}>~{Math.ceil(C2l.ownPaybackMonths)} months</span>
+                  <span style={{color:C.muted,fontSize:11}}>{translateText("🚛 Own Trucks",_lang)}</span>
+                  <span style={{color:C.green,fontWeight:800,fontSize:13}}>~{Math.ceil(C2l.ownPaybackMonths)}{translateText("months",_lang)}</span>
                 </div>
                 <div style={{display:"flex",justifyContent:"space-between"}}>
-                  <span style={{color:C.muted,fontSize:11}}>📋 Rental</span>
-                  <span style={{color:C.red,fontWeight:800,fontSize:13}}>~{Math.min(999,Math.ceil(C2l.rentalPaybackMonths))} months</span>
+                  <span style={{color:C.muted,fontSize:11}}>{translateText("📋 Rental",_lang)}</span>
+                  <span style={{color:C.red,fontWeight:800,fontSize:13}}>~{Math.min(999,Math.ceil(C2l.rentalPaybackMonths))}{translateText("months",_lang)}</span>
                 </div>
-                <div style={{marginTop:8,padding:"6px 10px",background:`${C.green}15`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700,textAlign:"center"}}>
-                  Own is {C2l.multiplier}× more profitable
-                </div>
+                <div style={{marginTop:8,padding:"6px 10px",background:`${C.green}15`,borderRadius:7,color:C.green,fontSize:11,fontWeight:700,textAlign:"center"}}>{translateText("Own is",_lang)}{C2l.multiplier}{translateText("× more profitable",_lang)}</div>
               </div>
             </div>
 
             <Btn onClick={saveProjection} variant="primary" icon="save" full>
-              {lang==="fr"?"Sauvegarder la projection":"Save Projection"}
+              {uiText("text0558",lang)}
             </Btn>
           </div>
         </div>
@@ -5640,25 +5576,25 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
       <div>
         {/* Toolbar */}
         <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:20,flexWrap:"wrap"}}>
-          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {lang==="fr"?"Liste":"List"}</button>
+          <button onClick={()=>setView("list")} style={{padding:"5px 12px",background:`${C.blue}18`,border:`1px solid ${C.blue}33`,borderRadius:7,color:C.blue,cursor:"pointer",fontSize:12,fontFamily:"inherit"}}>← {uiText("text0559",lang)}</button>
           <div style={{flex:1}}>
             <div style={{color:C.text,fontWeight:800,fontSize:16}}>{p.title||`${p.numTrucks} Trucks — ${p.country1}→${p.country2}`}</div>
             <div style={{color:C.muted,fontSize:10,marginTop:1}}>{p.createdAt}</div>
           </div>
-          {isAdmin&&<><Btn onClick={()=>{setForm({...p});setEditingId(p.id);setView("form");}} variant="ghost" icon="edit" small>Edit</Btn></>}
-          <Btn onClick={()=>doPrint(p,c)} variant="ghost" icon="print" small>Print</Btn>
-          <Btn onClick={()=>doDownload(p,c)} variant="orange" icon="download" small>Download</Btn>
+          {isAdmin&&<><Btn onClick={()=>{setForm({...p});setEditingId(p.id);setView("form");}} variant="ghost" icon="edit" small>{translateText("Edit",_lang)}</Btn></>}
+          <Btn onClick={()=>doPrint(p,c)} variant="ghost" icon="print" small>{translateText("Print",_lang)}</Btn>
+          <Btn onClick={()=>doDownload(p,c)} variant="orange" icon="download" small>{translateText("Download",_lang)}</Btn>
         </div>
 
         {/* Cover banner */}
         <div style={{background:`linear-gradient(135deg,${C.card},${C.surface})`,border:`1px solid ${C.blue}33`,borderRadius:16,padding:"28px 32px",marginBottom:16,position:"relative",overflow:"hidden"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${C.blue},${C.yellow},${C.blue})`}}/>
           <div style={{position:"absolute",right:24,top:"50%",transform:"translateY(-50%)",fontSize:80,opacity:.06,pointerEvents:"none"}}>🚛</div>
-          <div style={{color:C.blue,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:12}}>Fleet Investment Analysis</div>
-          <div style={{fontSize:22,fontWeight:900,color:C.text,marginBottom:6}}>Fleet Investment <span style={{color:C.yellow}}>Projection</span> — {p.numTrucks} Trucks</div>
-          <div style={{color:C.muted,fontSize:12,marginBottom:20}}>{p.country1} → {p.country2} corridor · {p.city1} · {fmtNum(p.distanceKm)} km</div>
+          <div style={{color:C.blue,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:12}}>{translateText("Fleet Investment Analysis",_lang)}</div>
+          <div style={{fontSize:22,fontWeight:900,color:C.text,marginBottom:6}}>{translateText("Fleet Investment",_lang)}<span style={{color:C.yellow}}>{translateText("Projection",_lang)}</span> — {p.numTrucks}{translateText("Trucks",_lang)}</div>
+          <div style={{color:C.muted,fontSize:12,marginBottom:20}}>{p.country1} → {p.country2}{translateText("corridor ·",_lang)}{p.city1} · {fmtNum(p.distanceKm)} km</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
-            {[[lang==="fr"?"Invest. Total":"Total Investment",fmtNum(c.totalInvestment)+" F"],[lang==="fr"?"Distance":"Route Distance",fmtNum(p.distanceKm)+" km"],[lang==="fr"?"Flotte":"Fleet Size",p.numTrucks+" Trucks"]].map(([l,v])=>(
+            {[[uiText("text0560",lang),fmtNum(c.totalInvestment)+" F"],[uiText("text0429",lang),fmtNum(p.distanceKm)+" km"],[uiText("text0561",lang),p.numTrucks+" Trucks"]].map(([l,v])=>(
               <div key={l}><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:4}}>{l}</div><div style={{color:C.yellow,fontSize:20,fontWeight:700}}>{v}</div></div>
             ))}
           </div>
@@ -5666,7 +5602,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
         {/* Section 01: Investment banner */}
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"16px 20px",marginBottom:12,display:"flex",gap:0,overflowX:"auto"}}>
-          {[[lang==="fr"?"Prix/camion":"Price/truck",fmtNum(p.pricePerTruck)+" F",""],["Fleet Total",fmtNum(c.totalInvestment)+" F","Total capital"],["Route",`${p.country1}→${p.country2}`," "+p.city1+" · "+fmtNum(p.distanceKm)+"km"],["Trips/month",p.tripsPerMonth+" trips",""]].map(([l,v,s],i,arr)=>(
+          {[[uiText("text0562",lang),fmtNum(p.pricePerTruck)+" F",""],["Fleet Total",fmtNum(c.totalInvestment)+" F","Total capital"],["Route",`${p.country1}→${p.country2}`," "+p.city1+" · "+fmtNum(p.distanceKm)+"km"],["Trips/month",p.tripsPerMonth+" trips",""]].map(([l,v,s],i,arr)=>(
             <div key={l} style={{flex:1,textAlign:"center",padding:"0 16px",borderRight:i<arr.length-1?`1px solid ${C.border}44`:""}} >
               <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:5}}>{l}</div>
               <div style={{color:C.yellow,fontWeight:700,fontSize:15}}>{v}</div>
@@ -5681,15 +5617,15 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
           <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"14px 18px 12px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:36,height:36,borderRadius:8,background:`${C.green}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>🚛</div>
-              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>Own Trucks</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>Full operational model</div></div>
+              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>{translateText("Own Trucks",_lang)}</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>{translateText("Full operational model",_lang)}</div></div>
             </div>
             <div style={{padding:"14px 18px"}}>
-              {[[lang==="fr"?"Revenu/trajet":"Revenue/trip",fmtNum(p.revenuePerTrip)+" F","yellow"],
+              {[[uiText("text0563",lang),fmtNum(p.revenuePerTrip)+" F","yellow"],
                 [`Fuel (${fuelLiters}L × ${fmtNum(p.fuelPricePerLiter)}F)`,`− ${fmtNum(Math.round(c.fuelCostPerTrip))} F`,"red"],
-                [lang==="fr"?"Dépenses route":"Road expenses",`− ${fmtNum(p.roadExpensesPerTrip)} F`,"red"],
-                [lang==="fr"?"Marge nette/trajet":"Net margin/trip",fmtNum(Math.round(c.netMarginPerTrip))+" F","green"],
+                [uiText("text0564",lang),`− ${fmtNum(p.roadExpensesPerTrip)} F`,"red"],
+                [uiText("text0565",lang),fmtNum(Math.round(c.netMarginPerTrip))+" F","green"],
                 [`Driver salary ÷ ${p.tripsPerMonth}`,`− ${fmtNum(Math.round(c.driverPerTrip))} F`,"red"],
-                [lang==="fr"?"Profit net/trajet":"Net profit/trip",fmtNum(Math.round(c.ownNetProfitPerTrip))+" F","green"],
+                [uiText("text0553",lang),fmtNum(Math.round(c.ownNetProfitPerTrip))+" F","green"],
                 [`× ${p.tripsPerMonth} trips/mo`,`× ${p.tripsPerMonth}`,"blue"],
               ].map(([l,v,col])=>(
                 <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.border}22`}}>
@@ -5698,7 +5634,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
                 </div>
               ))}
               <div style={{marginTop:12,padding:"12px 14px",background:`${C.green}12`,border:`1px solid ${C.green}25`,borderRadius:8,display:"flex",justifyContent:"space-between"}}>
-                <span style={{fontSize:12,fontWeight:600}}>Profit / Truck / Month</span>
+                <span style={{fontSize:12,fontWeight:600}}>{translateText("Profit / Truck / Month",_lang)}</span>
                 <span style={{color:C.green,fontWeight:800,fontSize:18}}>{fmtNum(Math.round(c.ownProfitPerTruckMonth))} F</span>
               </div>
             </div>
@@ -5707,15 +5643,15 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
           <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,overflow:"hidden"}}>
             <div style={{padding:"14px 18px 12px",borderBottom:`1px solid ${C.border}44`,display:"flex",alignItems:"center",gap:10}}>
               <div style={{width:36,height:36,borderRadius:8,background:`${C.red}18`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>📋</div>
-              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>Rental Trucks</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>Commission-based model</div></div>
+              <div><div style={{color:C.text,fontWeight:700,fontSize:14}}>{translateText("Rental Trucks",_lang)}</div><div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.06em"}}>{translateText("Commission-based model",_lang)}</div></div>
             </div>
             <div style={{padding:"14px 18px"}}>
-              {[[lang==="fr"?"Revenu/trajet":"Revenue/trip",fmtNum(p.revenuePerTrip)+" F","yellow"],
-                [lang==="fr"?"Coût location":"Rental cost",`− ${fmtNum(p.rentalCostPerTrip)} F`,"red"],
+              {[[uiText("text0563",lang),fmtNum(p.revenuePerTrip)+" F","yellow"],
+                [uiText("text0566",lang),`− ${fmtNum(p.rentalCostPerTrip)} F`,"red"],
                 ["Our commission",fmtNum(Math.round(c.rentalCommission))+" F","green"],
                 ["No fuel costs","N/A","muted"],
                 ["No driver salary","N/A","muted"],
-                [lang==="fr"?"Commission/trajet":"Commission/trip",fmtNum(Math.round(c.rentalCommission))+" F","green"],
+                [uiText("text0557",lang),fmtNum(Math.round(c.rentalCommission))+" F","green"],
                 [`× ${p.tripsPerMonth} trips/mo`,`× ${p.tripsPerMonth}`,"blue"],
               ].map(([l,v,col])=>(
                 <div key={l} style={{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:`1px solid ${C.border}22`}}>
@@ -5724,7 +5660,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
                 </div>
               ))}
               <div style={{marginTop:12,padding:"12px 14px",background:`${C.red}12`,border:`1px solid ${C.red}25`,borderRadius:8,display:"flex",justifyContent:"space-between"}}>
-                <span style={{fontSize:12,fontWeight:600}}>Profit / Truck / Month</span>
+                <span style={{fontSize:12,fontWeight:600}}>{translateText("Profit / Truck / Month",_lang)}</span>
                 <span style={{color:C.red,fontWeight:800,fontSize:18}}>{fmtNum(Math.round(c.rentalProfitPerTruckMonth))} F</span>
               </div>
             </div>
@@ -5733,20 +5669,20 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
         {/* Section 03: Annual table */}
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12,overflowX:"auto"}}>
-          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{p.numTrucks}-Truck Annual Revenue</div>
+          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{p.numTrucks}{translateText("-Truck Annual Revenue",_lang)}</div>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:11}}>
-            <thead><tr>{["Metric","Per Truck/Mo",`${p.numTrucks} Trucks/Mo`,"Per Truck/Yr",`${p.numTrucks} Trucks/Yr`].map(h=><th key={h} style={{background:C.surface,padding:"8px 12px",textAlign:"left",color:C.yellow,fontSize:9,textTransform:"uppercase",fontWeight:700,borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+            <thead><tr>{["Metric","Per Truck/Mo",`${p.numTrucks} Trucks/Mo`,"Per Truck/Yr",`${p.numTrucks} Trucks/Yr`].map(h=><th key={h} style={{background:C.surface,padding:"8px 12px",textAlign:"left",color:C.yellow,fontSize:9,textTransform:"uppercase",fontWeight:700,borderBottom:`1px solid ${C.border}44`,whiteSpace:"nowrap"}}>{translateText(h,_lang)}</th>)}</tr></thead>
             <tbody>
               <tr style={{borderBottom:`1px solid ${C.border}22`}}>
-                <td style={{padding:"8px 12px",fontWeight:700}}>🚛 Own Trucks</td>
+                <td style={{padding:"8px 12px",fontWeight:700}}>{translateText("🚛 Own Trucks",_lang)}</td>
                 {[c.ownProfitPerTruckMonth,c.ownProfitFleetMonth,c.ownProfitPerTruckMonth*12,c.ownProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.green,fontWeight:600}}>{fmtNum(Math.round(v))} F</td>)}
               </tr>
               <tr style={{borderBottom:`1px solid ${C.border}22`}}>
-                <td style={{padding:"8px 12px",fontWeight:700}}>📋 Rental</td>
+                <td style={{padding:"8px 12px",fontWeight:700}}>{translateText("📋 Rental",_lang)}</td>
                 {[c.rentalProfitPerTruckMonth,c.rentalProfitFleetMonth,c.rentalProfitPerTruckMonth*12,c.rentalProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.red,fontWeight:600}}>{fmtNum(Math.round(v))} F</td>)}
               </tr>
               <tr style={{background:C.surface}}>
-                <td style={{padding:"8px 12px",fontWeight:700,color:C.yellow}}>Difference</td>
+                <td style={{padding:"8px 12px",fontWeight:700,color:C.yellow}}>{translateText("Difference",_lang)}</td>
                 {[c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth,c.ownProfitFleetMonth-c.rentalProfitFleetMonth,(c.ownProfitPerTruckMonth-c.rentalProfitPerTruckMonth)*12,c.ownProfitFleetYear-c.rentalProfitFleetYear].map((v,i)=><td key={i} style={{padding:"8px 12px",color:C.yellow,fontWeight:700}}>+{fmtNum(Math.round(v))} F</td>)}
               </tr>
             </tbody>
@@ -5759,7 +5695,7 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
            [false,"📋 Rental","Payback",Math.min(999,Math.ceil(c.rentalPaybackMonths)),"months",`÷ ${fmtNum(Math.round(c.rentalProfitFleetMonth))}/mo = ${c.rentalPaybackMonths>900?"∞":c.rentalPaybackMonths.toFixed(1)} months`,C.red,`≈ ${renPbYrs}y ${renPbMo}mo`]
           ].map(([isOwn,name,,val,unit,sub,col,approx])=>(
             <div key={name} style={{background:C.card,border:`1px solid ${isOwn?C.green:C.red}44`,borderRadius:12,padding:24,textAlign:"center",background:isOwn?`linear-gradient(135deg,${C.card},rgba(52,168,83,0.05))`:`linear-gradient(135deg,${C.card},rgba(234,67,53,0.05))`}}>
-              <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:10}}>{name} — Payback Period</div>
+              <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.1em",marginBottom:10}}>{name}{translateText("— Payback Period",_lang)}</div>
               <div style={{fontSize:52,fontWeight:900,color:col,lineHeight:1,marginBottom:4}}>~{val}</div>
               <div style={{color:col,fontWeight:600,marginBottom:6}}>{unit}</div>
               <div style={{color:C.muted,fontSize:11}}>{sub}<br/><strong style={{color:col}}>{approx}</strong></div>
@@ -5769,31 +5705,31 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
 
         {/* Recovery progress bars */}
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12}}>
-          <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{lang==="fr"?"Récupération sur 12 mois":"12-Month Recovery"}</div>
+          <div style={{color:C.yellow,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{uiText("text0567",lang)}</div>
           {[[`🚛 Own Trucks`,c.ownRecovery12,C.green,c.ownProfitFleetYear],[`📋 Rental`,c.rentalRecovery12,C.red,c.rentalProfitFleetYear]].map(([name,pct,col,earned])=>(
             <div key={name} style={{marginBottom:16}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-                <span style={{fontWeight:600,fontSize:12}}>{name}</span>
+                <span style={{fontWeight:600,fontSize:12}}>{translateText(name,_lang)}</span>
                 <span style={{fontWeight:700,fontSize:16,color:col}}>{pct.toFixed(1)}%</span>
               </div>
               <div style={{height:10,background:"rgba(255,255,255,0.06)",borderRadius:99,overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${Math.min(100,pct).toFixed(1)}%`,background:`linear-gradient(90deg,${col},${col}aa)`,borderRadius:99,transition:"width 1s ease"}}/>
               </div>
-              <div style={{color:C.muted,fontSize:10,marginTop:3}}>{fmtNum(Math.round(earned))} F recovered out of {fmtNum(Math.round(c.totalInvestment))} F investment</div>
+              <div style={{color:C.muted,fontSize:10,marginTop:3}}>{fmtNum(Math.round(earned))}{translateText("F recovered out of",_lang)}{fmtNum(Math.round(c.totalInvestment))}{translateText("F investment",_lang)}</div>
             </div>
           ))}
         </div>
 
         {/* Section 05: Month-by-month grid */}
         <div style={{background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:16,marginBottom:12}}>
-          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>Month-by-Month Cumulative Recovery (Own Trucks)</div>
+          <div style={{color:C.blue,fontWeight:700,fontSize:11,textTransform:"uppercase",letterSpacing:".07em",marginBottom:12}}>{translateText("Month-by-Month Cumulative Recovery (Own Trucks)",_lang)}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(6,1fr)",gap:6}}>
             {months12.map((m,i)=>{
               const isLast=i===11;
               const pctF=parseFloat(m.pct);
               return(
                 <div key={i} style={{background:isLast?`rgba(52,168,83,0.1)`:C.surface,border:`1px solid ${isLast?"rgba(52,168,83,0.4)":C.border+"33"}`,borderRadius:8,padding:"10px 4px",textAlign:"center"}}>
-                  <div style={{color:isLast?C.green:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:4}}>Month {i+1}</div>
+                  <div style={{color:isLast?C.green:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.05em",marginBottom:4}}>{translateText("Month",_lang)}{i+1}</div>
                   <div style={{color:isLast?C.yellow:C.green,fontWeight:700,fontSize:11}}>{m.cum>=1e6?(m.cum/1e6).toFixed(1)+"M":(m.cum/1e3).toFixed(0)+"K"} F</div>
                   <div style={{color:isLast?C.green:C.muted,fontSize:9,marginTop:2,fontWeight:isLast?700:400}}>{m.pct}%{isLast?" ✓":""}</div>
                 </div>
@@ -5805,10 +5741,8 @@ tbody tr.total-row td{background:var(--dark3);font-weight:700;font-size:13px;bor
         {/* Verdict */}
         <div style={{background:`linear-gradient(135deg,#0f1e12,#122018)`,border:`1px solid ${C.green}44`,borderRadius:12,padding:"28px 32px",marginBottom:12,position:"relative",overflow:"hidden"}}>
           <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,${C.green},transparent)`}}/>
-          <div style={{color:C.green,fontWeight:800,fontSize:20,marginBottom:12}}>✅ {lang==="fr"?"Verdict : Own Fleet gagne":"Verdict: Own Fleet Wins"}</div>
-          <div style={{color:C.muted,fontSize:12,lineHeight:1.9,maxWidth:700}}>
-            Operating with <strong style={{color:C.text}}>own trucks generates {c.multiplier}× more monthly revenue</strong> than a rental model on the {p.country1}–{p.country2} corridor. With {p.numTrucks} trucks, the fleet earns <strong style={{color:C.text}}>{fmtNum(Math.round(c.ownProfitFleetYear))} F annually</strong>, recovering <strong style={{color:C.text}}>{c.ownRecovery12.toFixed(1)}% of the full investment within the first 12 months</strong> — and reaching full payback in approximately <strong style={{color:C.text}}>{Math.ceil(c.ownPaybackMonths)} months ({ownPbYrs} years {ownPbMo} months)</strong>.<br/><br/>
-            By contrast, rental operations yield only {fmtNum(Math.round(c.rentalProfitFleetYear))} F per year — recovering just <strong style={{color:C.text}}>{c.rentalRecovery12.toFixed(1)}%</strong> in Year 1, with a payback stretching to nearly <strong style={{color:C.text}}>{renPbYrs} years</strong>.
+          <div style={{color:C.green,fontWeight:800,fontSize:20,marginBottom:12}}>✅ {uiText("text0568",lang)}</div>
+          <div style={{color:C.muted,fontSize:12,lineHeight:1.9,maxWidth:700}}>{translateText("Operating with",_lang)}<strong style={{color:C.text}}>{translateText("own trucks generates",_lang)}{c.multiplier}{translateText("× more monthly revenue",_lang)}</strong>{translateText("than a rental model on the",_lang)}{p.country1}–{p.country2}{translateText("corridor. With",_lang)}{p.numTrucks}{translateText("trucks, the fleet earns",_lang)}<strong style={{color:C.text}}>{fmtNum(Math.round(c.ownProfitFleetYear))}{translateText("F annually",_lang)}</strong>{translateText(", recovering",_lang)}<strong style={{color:C.text}}>{c.ownRecovery12.toFixed(1)}{translateText("% of the full investment within the first 12 months",_lang)}</strong>{translateText("— and reaching full payback in approximately",_lang)}<strong style={{color:C.text}}>{Math.ceil(c.ownPaybackMonths)}{translateText("months (",_lang)}{ownPbYrs}{translateText("years",_lang)}{ownPbMo}{translateText("months)",_lang)}</strong>.<br/><br/>{translateText("By contrast, rental operations yield only",_lang)}{fmtNum(Math.round(c.rentalProfitFleetYear))}{translateText("F per year — recovering just",_lang)}<strong style={{color:C.text}}>{c.rentalRecovery12.toFixed(1)}%</strong>{translateText("in Year 1, with a payback stretching to nearly",_lang)}<strong style={{color:C.text}}>{renPbYrs}{translateText("years",_lang)}</strong>.
           </div>
         </div>
       </div>
@@ -5916,8 +5850,8 @@ function Forecast({data,setData,session,t,lang}){
   };
 
   const saveProjection=()=>{
-    if(!form.investorId){alert(lang==="fr"?"Sélectionnez un investisseur":"Select an investor");return;}
-    if(!form.title.trim()){alert(lang==="fr"?"Ajoutez un titre":"Add a title");return;}
+    if(!form.investorId){alert(uiText("text0569",lang));return;}
+    if(!form.title.trim()){alert(uiText("text0570",lang));return;}
     const proj={
       ...form,
       id:form.id||Date.now(),
@@ -5955,9 +5889,9 @@ function Forecast({data,setData,session,t,lang}){
     const total=calcTotal(proj.entries);
     const rows=proj.entries.map(e=>{
       const m=calcMonth(e);
-      return `<tr><td>${e.label}</td><td>${fmtNum(m.invested)} F CFA</td><td>${fmtNum(m.revenue)} F CFA</td><td>${fmtNum(m.expenses)} F CFA</td><td style="color:${m.profit>=0?"#34A853":"#EA4335"};font-weight:700">${fmtNum(m.profit)} F CFA</td></tr>`;
+      return `<tr><td>${escapeHTML(translateData(e.label,lang,e.translations?.label))}</td><td>${fmtNum(m.invested)} F CFA</td><td>${fmtNum(m.revenue)} F CFA</td><td>${fmtNum(m.expenses)} F CFA</td><td style="color:${m.profit>=0?"#34A853":"#EA4335"};font-weight:700">${fmtNum(m.profit)} F CFA</td></tr>`;
     }).join("");
-    const actRows=proj.entries.flatMap(e=>e.activities.map(a=>`<tr><td>${e.label}</td><td>${a.category}</td><td>${a.description}</td><td>${fmtNum(a.invested)}</td><td>${fmtNum(a.revenue)}</td><td>${fmtNum(a.expenses)}</td><td style="color:${a.revenue-a.expenses-a.invested>=0?"green":"red"}">${fmtNum(a.revenue-a.expenses-a.invested)}</td></tr>`)).join("");
+    const actRows=proj.entries.flatMap(e=>e.activities.map(a=>`<tr><td>${escapeHTML(translateData(e.label,lang,e.translations?.label))}</td><td>${escapeHTML(translateData(a.category,lang,a.translations?.category))}</td><td>${escapeHTML(translateData(a.description,lang,a.translations?.description))}</td><td>${fmtNum(a.invested)}</td><td>${fmtNum(a.revenue)}</td><td>${fmtNum(a.expenses)}</td><td style="color:${a.revenue-a.expenses-a.invested>=0?"green":"red"}">${fmtNum(a.revenue-a.expenses-a.invested)}</td></tr>`)).join("");
     const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${proj.title}</title>
     <style>body{font-family:Arial,sans-serif;padding:24px;color:#1a1a2e;}
     
@@ -5970,21 +5904,21 @@ function Forecast({data,setData,session,t,lang}){
     .card .val{font-size:16px;font-weight:800;margin-top:4px;}
     .card .lbl{font-size:10px;color:#64748b;text-transform:uppercase;}
     </style></head><body>
-    ${buildPrintHeader(lang==="fr"?"Catégorie: Projection / Forecast":"Category: Projection / Forecast",proj.title)}
-    <h2>${lang==="fr"?"Résumé Global":"Global Summary"}</h2>
+    ${buildPrintHeader(uiText("text0571",lang),proj.title)}
+    <h2>${uiText("text0572",lang)}</h2>
     <div class="summary">
-      <div class="card"><div class="lbl">${lang==="fr"?"Investi":"Invested"}</div><div class="val" style="color:#4285F4">${fmtNum(total.invested)} F</div></div>
-      <div class="card"><div class="lbl">${lang==="fr"?"Revenus":"Revenue"}</div><div class="val" style="color:#34A853">${fmtNum(total.revenue)} F</div></div>
-      <div class="card"><div class="lbl">${lang==="fr"?"Dépenses":"Expenses"}</div><div class="val" style="color:#EA4335">${fmtNum(total.expenses)} F</div></div>
+      <div class="card"><div class="lbl">${uiText("text0084",lang)}</div><div class="val" style="color:#4285F4">${fmtNum(total.invested)} F</div></div>
+      <div class="card"><div class="lbl">${uiText("text0573",lang)}</div><div class="val" style="color:#34A853">${fmtNum(total.revenue)} F</div></div>
+      <div class="card"><div class="lbl">${uiText("text0086",lang)}</div><div class="val" style="color:#EA4335">${fmtNum(total.expenses)} F</div></div>
       <div class="card"><div class="lbl">Profit Net</div><div class="val" style="color:${total.profit>=0?"#34A853":"#EA4335"}">${fmtNum(total.profit)} F</div></div>
     </div>
-    <h2>${lang==="fr"?"Résumé par Mois":"Monthly Summary"}</h2>
-    <table><thead><tr><th>${lang==="fr"?"Mois":"Month"}</th><th>${lang==="fr"?"Investi":"Invested"}</th><th>${lang==="fr"?"Revenus":"Revenue"}</th><th>${lang==="fr"?"Dépenses":"Expenses"}</th><th>Profit</th></tr></thead>
+    <h2>${uiText("text0574",lang)}</h2>
+    <table><thead><tr><th>${uiText("text0575",lang)}</th><th>${uiText("text0084",lang)}</th><th>${uiText("text0573",lang)}</th><th>${uiText("text0086",lang)}</th><th>Profit</th></tr></thead>
     <tbody>${rows}<tr class="total"><td><strong>TOTAL</strong></td><td>${fmtNum(total.invested)} F</td><td>${fmtNum(total.revenue)} F</td><td>${fmtNum(total.expenses)} F</td><td style="font-weight:800;color:${total.profit>=0?"#34A853":"#EA4335"}">${fmtNum(total.profit)} F</td></tr></tbody></table>
-    <h2>${lang==="fr"?"Détail des Activités":"Activity Details"}</h2>
-    <table><thead><tr><th>${lang==="fr"?"Mois":"Month"}</th><th>${lang==="fr"?"Catégorie":"Category"}</th><th>Description</th><th>${lang==="fr"?"Investi":"Invested"}</th><th>${lang==="fr"?"Revenus":"Revenue"}</th><th>${lang==="fr"?"Dépenses":"Expenses"}</th><th>Profit</th></tr></thead><tbody>${actRows}</tbody></table>
+    <h2>${uiText("text0576",lang)}</h2>
+    <table><thead><tr><th>${uiText("text0575",lang)}</th><th>${uiText("text0082",lang)}</th><th>Description</th><th>${uiText("text0084",lang)}</th><th>${uiText("text0573",lang)}</th><th>${uiText("text0086",lang)}</th><th>Profit</th></tr></thead><tbody>${actRows}</tbody></table>
     <script>window.onload=()=>window.print();</script></body></html>`;
-    const w=window.open("","_blank");w.document.write(html);w.document.close();
+    const w=window.open("","_blank");w.document.write(translateMarkup(html,lang));w.document.close();
   };
 
   const shareProjection=(proj,method)=>{
@@ -5993,11 +5927,11 @@ function Forecast({data,setData,session,t,lang}){
     const text=`📊 ${proj.title}
 🏢 Thunderfam Investment
 👤 ${investor?investor.name:""}
-📅 ${proj.months} ${lang==="fr"?"mois":"months"}
+📅 ${proj.months} ${uiText("text0577",lang)}
 
-💰 ${lang==="fr"?"Investi":"Invested"}: ${fmtNum(total.invested)} F CFA
-📈 ${lang==="fr"?"Revenus":"Revenue"}: ${fmtNum(total.revenue)} F CFA
-📉 ${lang==="fr"?"Dépenses":"Expenses"}: ${fmtNum(total.expenses)} F CFA
+💰 ${uiText("text0084",lang)}: ${fmtNum(total.invested)} F CFA
+📈 ${uiText("text0573",lang)}: ${fmtNum(total.revenue)} F CFA
+📉 ${uiText("text0086",lang)}: ${fmtNum(total.expenses)} F CFA
 ✅ Profit Net: ${fmtNum(total.profit)} F CFA
 
 Créé le ${proj.createdAt}`;
@@ -6021,18 +5955,18 @@ Créé le ${proj.createdAt}`;
       {/* Header */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24}}>
         <div>
-          <div style={{fontSize:20,fontWeight:800,color:C.text}}>{lang==="fr"?"📊 Projections":"📊 Forecast"}</div>
-          <div style={{color:C.muted,fontSize:12,marginTop:2}}>{lang==="fr"?"Planifiez et visualisez les performances futures":"Plan and visualize future performance"}</div>
+          <div style={{fontSize:20,fontWeight:800,color:C.text}}>{uiText("text0578",lang)}</div>
+          <div style={{color:C.muted,fontSize:12,marginTop:2}}>{uiText("text0579",lang)}</div>
         </div>
-        {isAdmin&&<Btn onClick={()=>{setForm({...emptyForm(),entries:syncEntries(3)});setActiveMonth(0);setView("create");}} icon="add">{lang==="fr"?"+ Nouvelle Projection":"+ New Forecast"}</Btn>}
+        {isAdmin&&<Btn onClick={()=>{setForm({...emptyForm(),entries:syncEntries(3)});setActiveMonth(0);setView("create");}} icon="add">{uiText("text0580",lang)}</Btn>}
       </div>
 
       {/* Empty state */}
       {myProjections.length===0&&(
         <div style={{...card,textAlign:"center",padding:48}}>
           <div style={{fontSize:48,marginBottom:12}}>📊</div>
-          <div style={{color:C.dim,fontWeight:700,marginBottom:6}}>{lang==="fr"?"Aucune projection":"No forecasts yet"}</div>
-          <div style={{color:C.muted,fontSize:12}}>{isAdmin?(lang==="fr"?"Créez votre première projection ci-dessus":"Create your first forecast above"):(lang==="fr"?"L'administrateur n'a pas encore créé de projection":"No forecasts have been created yet")}</div>
+          <div style={{color:C.dim,fontWeight:700,marginBottom:6}}>{uiText("text0581",lang)}</div>
+          <div style={{color:C.muted,fontSize:12}}>{isAdmin?(uiText("text0582",lang)):(uiText("text0583",lang))}</div>
         </div>
       )}
 
@@ -6048,13 +5982,13 @@ Créé le ${proj.createdAt}`;
                   <div style={{fontWeight:800,color:C.text,fontSize:14,marginBottom:3}}>{proj.title}</div>
                   <div style={{color:C.muted,fontSize:11}}>{investor?.name||"—"}</div>
                 </div>
-                <div style={{background:`${"#9C27B0"}18`,border:`1px solid ${"#9C27B0"}44`,color:"#9C27B0",borderRadius:6,padding:"2px 8px",fontSize:10,fontWeight:700,whiteSpace:"nowrap"}}>{proj.months} {lang==="fr"?"mois":"mo."}</div>
+                <div style={{background:`${"#9C27B0"}18`,border:`1px solid ${"#9C27B0"}44`,color:"#9C27B0",borderRadius:6,padding:"2px 8px",fontSize:10,fontWeight:700,whiteSpace:"nowrap"}}>{proj.months} {uiText("text0584",lang)}</div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
                 {[
-                  {l:lang==="fr"?"Revenus":"Revenue",v:total.revenue,c:C.green},
-                  {l:lang==="fr"?"Dépenses":"Expenses",v:total.expenses,c:C.red},
-                  {l:lang==="fr"?"Investi":"Invested",v:total.invested,c:C.blue},
+                  {l:uiText("text0573",lang),v:total.revenue,c:C.green},
+                  {l:uiText("text0086",lang),v:total.expenses,c:C.red},
+                  {l:uiText("text0084",lang),v:total.invested,c:C.blue},
                   {l:"Profit Net",v:total.profit,c:total.profit>=0?C.green:C.red},
                 ].map((s,i)=>(
                   <div key={i} style={{background:C.surface,borderRadius:8,padding:"8px 10px"}}>
@@ -6089,16 +6023,16 @@ Créé le ${proj.createdAt}`;
       <div style={{padding:"24px",maxWidth:1000,margin:"0 auto"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <Btn small variant="secondary" onClick={()=>{setSelProj(null);setView("list");}}><Icon name="arrow" size={12}/> {lang==="fr"?"Retour":"Back"}</Btn>
+            <Btn small variant="secondary" onClick={()=>{setSelProj(null);setView("list");}}><Icon name="arrow" size={12}/> {uiText("text0453",lang)}</Btn>
             <div>
               <div style={{fontWeight:800,fontSize:18,color:C.text}}>{proj.title}</div>
-              <div style={{color:C.muted,fontSize:11}}>{investor?.name} · {proj.months} {lang==="fr"?"mois":"months"}</div>
+              <div style={{color:C.muted,fontSize:11}}>{investor?.name} · {proj.months} {uiText("text0577",lang)}</div>
             </div>
           </div>
           <div style={{display:"flex",gap:8,position:"relative"}}>
-            <Btn small variant="secondary" onClick={()=>printProjection(proj)}><Icon name="print" size={11}/> PDF</Btn>
+            <Btn small variant="secondary" onClick={()=>printProjection(proj)}><Icon name="print" size={11}/>{translateText("PDF",_lang)}</Btn>
             <div>
-              <Btn small variant="secondary" onClick={()=>setShowShare(s=>!s)}>📤 {lang==="fr"?"Partager":"Share"}</Btn>
+              <Btn small variant="secondary" onClick={()=>setShowShare(s=>!s)}>📤 {uiText("text0258",lang)}</Btn>
               {showShare&&(
                 <div style={{position:"absolute",right:0,top:"110%",zIndex:200,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:8,minWidth:170,boxShadow:"0 8px 24px rgba(0,0,0,0.4)"}}>
                   {[["email","📧 Email"],["whatsapp","💬 WhatsApp"],["telegram","✈️ Telegram"],["native","📱 Partager"]].map(([m,lb])=>(
@@ -6107,16 +6041,16 @@ Créé le ${proj.createdAt}`;
                 </div>
               )}
             </div>
-            {isAdmin&&<Btn small onClick={()=>openEdit(proj)}><Icon name="edit" size={11}/> {lang==="fr"?"Modifier":"Edit"}</Btn>}
+            {isAdmin&&<Btn small onClick={()=>openEdit(proj)}><Icon name="edit" size={11}/> {uiText("text0106",lang)}</Btn>}
           </div>
         </div>
 
         {/* Global summary */}
         <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}}>
           {[
-            {l:lang==="fr"?"Total Investi":"Total Invested",v:total.invested,c:C.blue,icon:"💰"},
-            {l:lang==="fr"?"Total Revenus":"Total Revenue",v:total.revenue,c:C.green,icon:"📈"},
-            {l:lang==="fr"?"Total Dépenses":"Total Expenses",v:total.expenses,c:C.red,icon:"📉"},
+            {l:uiText("text0585",lang),v:total.invested,c:C.blue,icon:"💰"},
+            {l:uiText("text0056",lang),v:total.revenue,c:C.green,icon:"📈"},
+            {l:uiText("text0057",lang),v:total.expenses,c:C.red,icon:"📉"},
             {l:"Profit Net Total",v:total.profit,c:total.profit>=0?C.green:C.red,icon:"✅"},
           ].map((s,i)=>(
             <div key={i} style={{...card,textAlign:"center"}}>
@@ -6130,13 +6064,13 @@ Créé le ${proj.createdAt}`;
 
         {/* Monthly breakdown */}
         <div style={{...card,marginBottom:16}}>
-          <div style={{fontWeight:700,color:C.text,marginBottom:14,fontSize:13}}>{lang==="fr"?"Résumé par Mois":"Monthly Breakdown"}</div>
+          <div style={{fontWeight:700,color:C.text,marginBottom:14,fontSize:13}}>{uiText("text0586",lang)}</div>
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
               <thead>
                 <tr style={{background:C.surface}}>
-                  {[lang==="fr"?"Mois":"Month",lang==="fr"?"Investi":"Invested",lang==="fr"?"Revenus":"Revenue",lang==="fr"?"Dépenses":"Expenses","Profit"].map((h,i)=>(
-                    <th key={i} style={{padding:"8px 12px",textAlign:i===0?"left":"right",color:C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}44`}}>{h}</th>
+                  {[uiText("text0575",lang),uiText("text0084",lang),uiText("text0573",lang),uiText("text0086",lang),"Profit"].map((h,i)=>(
+                    <th key={i} style={{padding:"8px 12px",textAlign:i===0?"left":"right",color:C.muted,fontWeight:700,fontSize:10,textTransform:"uppercase",letterSpacing:"0.06em",borderBottom:`1px solid ${C.border}44`}}>{translateText(h,_lang)}</th>
                   ))}
                 </tr>
               </thead>
@@ -6145,7 +6079,7 @@ Créé le ${proj.createdAt}`;
                   const m=calcMonth(e);
                   return(
                     <tr key={i} style={{borderBottom:`1px solid ${C.border}44`}}>
-                      <td style={{padding:"8px 12px",color:C.dim,fontWeight:600}}>{e.label}</td>
+                      <td style={{padding:"8px 12px",color:C.dim,fontWeight:600}}>{translateData(e.label,lang,e.translations?.label)}</td>
                       <td style={{padding:"8px 12px",textAlign:"right",color:C.blue}}>{fmtNum(m.invested)}</td>
                       <td style={{padding:"8px 12px",textAlign:"right",color:C.green}}>{fmtNum(m.revenue)}</td>
                       <td style={{padding:"8px 12px",textAlign:"right",color:C.red}}>{fmtNum(m.expenses)}</td>
@@ -6154,7 +6088,7 @@ Créé le ${proj.createdAt}`;
                   );
                 })}
                 <tr style={{background:C.surface,fontWeight:800}}>
-                  <td style={{padding:"8px 12px",color:C.text}}>TOTAL</td>
+                  <td style={{padding:"8px 12px",color:C.text}}>{translateText("TOTAL",_lang)}</td>
                   <td style={{padding:"8px 12px",textAlign:"right",color:C.blue}}>{fmtNum(total.invested)}</td>
                   <td style={{padding:"8px 12px",textAlign:"right",color:C.green}}>{fmtNum(total.revenue)}</td>
                   <td style={{padding:"8px 12px",textAlign:"right",color:C.red}}>{fmtNum(total.expenses)}</td>
@@ -6184,8 +6118,8 @@ Créé le ${proj.createdAt}`;
                   <div key={a.id} style={{background:C.surface,borderRadius:8,padding:"10px 12px",marginBottom:6,border:`1px solid ${C.border}44`}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
                       <div>
-                        <div style={{fontWeight:600,color:C.dim,fontSize:12}}>{a.category}</div>
-                        {a.description&&<div style={{color:C.muted,fontSize:11,marginTop:2}}>{a.description}</div>}
+                        <div style={{fontWeight:600,color:C.dim,fontSize:12}}>{translateData(a.category,lang,a.translations?.category)}</div>
+                        {a.description&&<div style={{color:C.muted,fontSize:11,marginTop:2}}>{translateData(a.description,lang,a.translations?.description)}</div>}
                       </div>
                       <div style={{textAlign:"right"}}>
                         <div style={{color:p>=0?C.green:C.red,fontWeight:700,fontSize:12}}>{fmtNum(p)} F</div>
@@ -6193,7 +6127,7 @@ Créé le ${proj.createdAt}`;
                       </div>
                     </div>
                     <div style={{display:"flex",gap:16,marginTop:8}}>
-                      {[{l:lang==="fr"?"Investi":"Inv.",v:a.invested,c:C.blue},{l:lang==="fr"?"Revenus":"Rev.",v:a.revenue,c:C.green},{l:lang==="fr"?"Dépenses":"Exp.",v:a.expenses,c:C.red}].map((s,i)=>(
+                      {[{l:uiText("text0587",lang),v:a.invested,c:C.blue},{l:uiText("text0588",lang),v:a.revenue,c:C.green},{l:uiText("text0589",lang),v:a.expenses,c:C.red}].map((s,i)=>(
                         <div key={i}><span style={{color:C.muted,fontSize:10}}>{s.l}: </span><span style={{color:s.c,fontWeight:600,fontSize:11}}>{fmtNum(s.v)}</span></div>
                       ))}
                     </div>
@@ -6216,23 +6150,23 @@ Créé le ${proj.createdAt}`;
         {/* Header */}
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10}}>
-            <Btn small variant="secondary" onClick={()=>{setView("list");setForm(emptyForm());}}><Icon name="arrow" size={12}/> {lang==="fr"?"Retour":"Back"}</Btn>
-            <div style={{fontWeight:800,fontSize:18,color:C.text}}>{form.id?(lang==="fr"?"Modifier Projection":"Edit Forecast"):(lang==="fr"?"Nouvelle Projection":"New Forecast")}</div>
+            <Btn small variant="secondary" onClick={()=>{setView("list");setForm(emptyForm());}}><Icon name="arrow" size={12}/> {uiText("text0453",lang)}</Btn>
+            <div style={{fontWeight:800,fontSize:18,color:C.text}}>{form.id?(uiText("text0590",lang)):(uiText("text0591",lang))}</div>
           </div>
-          <Btn onClick={saveProjection}><Icon name="save" size={13}/> {lang==="fr"?"Enregistrer":"Save"}</Btn>
+          <Btn onClick={saveProjection}><Icon name="save" size={13}/> {uiText("text0467",lang)}</Btn>
         </div>
 
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
           {/* Title */}
           <div>
-            <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{lang==="fr"?"Titre *":"Title *"}</label>
-            <input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} style={inp} placeholder={lang==="fr"?"Ex: Projection Q1 2026":"E.g. Q1 2026 Forecast"}/>
+            <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{uiText("text0592",lang)}</label>
+            <input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} style={inp} placeholder={uiText("text0593",lang)}/>
           </div>
           {/* Investor selector */}
           <div>
-            <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{lang==="fr"?"Investisseur *":"Investor *"}</label>
+            <label style={{display:"block",color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>{uiText("text0594",lang)}</label>
             <select value={form.investorId} onChange={e=>{const inv=data.investors.find(i=>i.id===parseInt(e.target.value));setForm(f=>({...f,investorId:inv?inv.id:"",investorName:inv?inv.name:""}));}} style={{...inp,cursor:"pointer"}}>
-              <option value="">{lang==="fr"?"— Sélectionner —":"— Select —"}</option>
+              <option value="">{uiText("text0455",lang)}</option>
               {data.investors.map(inv=><option key={inv.id} value={inv.id}>{inv.name}</option>)}
             </select>
           </div>
@@ -6240,7 +6174,7 @@ Créé le ${proj.createdAt}`;
 
         {/* Months selector */}
         <div style={{...card,marginBottom:16}}>
-          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>{lang==="fr"?"Nombre de mois":"Number of months"}</div>
+          <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:10}}>{uiText("text0595",lang)}</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
             {Array.from({length:12},(_,i)=>i+1).map(n=>(
               <button key={n} onClick={()=>setMonths(n)} style={{padding:"6px 14px",borderRadius:7,border:`1px solid ${form.months===n?C.blue:C.border}`,background:form.months===n?C.blue+"22":"transparent",color:form.months===n?C.blue:C.muted,cursor:"pointer",fontFamily:"inherit",fontWeight:700,fontSize:12,transition:"all .15s"}}>{n}</button>
@@ -6252,20 +6186,20 @@ Créé le ${proj.createdAt}`;
         <div style={{display:"grid",gridTemplateColumns:"200px 1fr",gap:16}}>
           {/* Left: month tabs */}
           <div style={{...card,padding:8}}>
-            <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",padding:"4px 8px",marginBottom:6}}>{lang==="fr"?"Mois":"Months"}</div>
+            <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.08em",padding:"4px 8px",marginBottom:6}}>{uiText("text0596",lang)}</div>
             {form.entries.map((e,mi)=>{
               const m=calcMonth(e);
               const isActive=activeMonth===mi;
               return(
                 <div key={mi} onClick={()=>setActiveMonth(mi)} style={{padding:"8px 10px",borderRadius:8,cursor:"pointer",background:isActive?C.blue+"18":"transparent",border:`1px solid ${isActive?C.blue:C.border}`,marginBottom:4,transition:"all .15s"}}>
                   <div style={{fontWeight:isActive?700:500,color:isActive?C.blue:C.dim,fontSize:12}}>{monthLabels[mi]}</div>
-                  <div style={{fontSize:10,color:m.profit>=0?C.green:m.profit<0?C.red:C.muted,marginTop:1}}>{e.activities.length} act. · {fmtNum(m.profit)} F</div>
+                  <div style={{fontSize:10,color:m.profit>=0?C.green:m.profit<0?C.red:C.muted,marginTop:1}}>{e.activities.length}{translateText("act. ·",_lang)}{fmtNum(m.profit)} F</div>
                 </div>
               );
             })}
             {/* Grand total */}
             <div style={{padding:"8px 10px",borderRadius:8,background:C.surface,border:`1px solid ${C.border}44`,marginTop:8}}>
-              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{lang==="fr"?"TOTAL":"TOTAL"}</div>
+              <div style={{color:C.muted,fontSize:10,fontWeight:700,textTransform:"uppercase"}}>{uiText("text0279",lang)}</div>
               <div style={{color:grandTotal.profit>=0?C.green:C.red,fontWeight:800,fontSize:13,marginTop:2}}>{fmtNum(grandTotal.profit)} F</div>
             </div>
           </div>
@@ -6277,9 +6211,9 @@ Créé le ${proj.createdAt}`;
                 <div style={{fontWeight:700,color:C.text,fontSize:14}}>📅 {monthLabels[activeMonth]}</div>
                 <div style={{display:"flex",gap:12,alignItems:"center"}}>
                   {[
-                    {l:lang==="fr"?"Investi":"Inv.",v:monthTotal.invested,c:C.blue},
-                    {l:lang==="fr"?"Rev.":"Rev.",v:monthTotal.revenue,c:C.green},
-                    {l:lang==="fr"?"Dép.":"Exp.",v:monthTotal.expenses,c:C.red},
+                    {l:uiText("text0587",lang),v:monthTotal.invested,c:C.blue},
+                    {l:uiText("text0597",lang),v:monthTotal.revenue,c:C.green},
+                    {l:uiText("text0598",lang),v:monthTotal.expenses,c:C.red},
                     {l:"Profit",v:monthTotal.profit,c:monthTotal.profit>=0?C.green:C.red},
                   ].map((s,i)=>(
                     <div key={i} style={{textAlign:"center"}}>
@@ -6296,10 +6230,10 @@ Créé le ${proj.createdAt}`;
                 return(
                   <div key={act.id} style={{background:C.surface,border:`1px solid ${C.border}44`,borderRadius:10,padding:"12px 14px",marginBottom:10}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-                      <div style={{color:C.dim,fontWeight:600,fontSize:12}}>Activité {ai+1}</div>
+                      <div style={{color:C.dim,fontWeight:600,fontSize:12}}>{translateText("Activité",_lang)}{ai+1}</div>
                       <div style={{display:"flex",alignItems:"center",gap:10}}>
                         <div style={{fontSize:11}}>
-                          <span style={{color:C.muted}}>Profit: </span>
+                          <span style={{color:C.muted}}>{translateText("Profit:",_lang)}</span>
                           <span style={{color:profit>=0?C.green:C.red,fontWeight:700}}>{fmtNum(profit)} F CFA</span>
                         </div>
                         <Btn small variant="danger" onClick={()=>removeActivity(activeMonth,act.id)}><Icon name="trash" size={10}/></Btn>
@@ -6307,21 +6241,21 @@ Créé le ${proj.createdAt}`;
                     </div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
                       <div>
-                        <label style={{display:"block",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:3}}>{lang==="fr"?"Catégorie":"Category"}</label>
+                        <label style={{display:"block",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:3}}>{uiText("text0082",lang)}</label>
                         <select value={act.category} onChange={e=>updateActivity(activeMonth,act.id,"category",e.target.value)} style={{...inp,fontSize:11,padding:"6px 10px"}}>
-                          {data.settings.categories.map((c,i)=>{const pIdx=PERMANENT_CATEGORIES.indexOf(c);const label=lang==="en"&&pIdx>=0?(PERMANENT_CATEGORIES_EN[pIdx]||c):c;const disp=label.length>55?label.substring(0,55)+"...":label;return<option key={i} value={c}>{disp}</option>;})}
+                          {data.settings.categories.map((c,i)=>{const label=translateData(c,lang);const disp=label.length>55?label.substring(0,55)+"...":label;return<option key={i} value={c}>{disp}</option>;})}
                         </select>
                       </div>
                       <div>
-                        <label style={{display:"block",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:3}}>Description</label>
-                        <input value={act.description} onChange={e=>updateActivity(activeMonth,act.id,"description",e.target.value)} style={{...inp,fontSize:11,padding:"6px 10px"}} placeholder={lang==="fr"?"Description libre...":"Free description..."}/>
+                        <label style={{display:"block",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:3}}>{translateText("Description",_lang)}</label>
+                        <input value={act.description} onChange={e=>updateActivity(activeMonth,act.id,"description",e.target.value)} style={{...inp,fontSize:11,padding:"6px 10px"}} placeholder={uiText("text0599",lang)}/>
                       </div>
                     </div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
                       {[
-                        {k:"invested",l:"💰 "+(lang==="fr"?"Investi (F CFA)":"Invested (F CFA)"),c:C.blue},
-                        {k:"revenue",l:"📈 "+(lang==="fr"?"Revenus (F CFA)":"Revenue (F CFA)"),c:C.green},
-                        {k:"expenses",l:"📉 "+(lang==="fr"?"Dépenses (F CFA)":"Expenses (F CFA)"),c:C.red},
+                        {k:"invested",l:"💰 "+(uiText("text0600",lang)),c:C.blue},
+                        {k:"revenue",l:"📈 "+(uiText("text0601",lang)),c:C.green},
+                        {k:"expenses",l:"📉 "+(uiText("text0602",lang)),c:C.red},
                       ].map(f=>(
                         <div key={f.k}>
                           <label style={{display:"block",color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",marginBottom:3}}>{f.l}</label>
@@ -6333,15 +6267,15 @@ Créé le ${proj.createdAt}`;
                 );
               })}
 
-              <Btn variant="secondary" small onClick={()=>addActivity(activeMonth)}>+ {lang==="fr"?"Ajouter une activité":"Add activity"}</Btn>
+              <Btn variant="secondary" small onClick={()=>addActivity(activeMonth)}>+ {uiText("text0603",lang)}</Btn>
             </div>
           </div>
         </div>
       
       <ConfirmModal
         open={!!confirmProj}
-        title={lang==="fr"?"Confirmer la suppression":"Confirm deletion"}
-        message={lang==="fr"?"Supprimer definitivement la projection :":"Permanently delete projection:"}
+        title={uiText("text0287",lang)}
+        message={uiText("text0604",lang)}
         itemName={confirmProj?(confirmProj.name+(confirmProj.investor?" - "+confirmProj.investor:"")):""}
         itemType="Projection / Forecast"
         lang={lang}
@@ -6350,10 +6284,10 @@ Créé le ${proj.createdAt}`;
       />
       <ConfirmModal
         open={!!confirmAct}
-        title={lang==="fr"?"Supprimer l activite ?":"Delete activity?"}
-        message={lang==="fr"?"Supprimer definitivement l activite :":"Permanently delete activity:"}
+        title={uiText("text0605",lang)}
+        message={uiText("text0606",lang)}
         itemName={confirmAct?.name}
-        itemType={lang==="fr"?"Activite de projection":"Projection activity"}
+        itemType={uiText("text0607",lang)}
         lang={lang}
         onConfirm={()=>{if(confirmAct){setForm(f=>{const entries=f.entries.map((e,i)=>i!==confirmAct.monthIdx?e:{...e,activities:e.activities.filter(a=>a.id!==confirmAct.actId)});return{...f,entries};});setConfirmAct(null);}}}
         onCancel={()=>setConfirmAct(null)}
@@ -6427,7 +6361,7 @@ function SupabaseSetup({onDone, lang="fr"}){
   const fr=lang==="fr";
 
   const test=async()=>{
-    if(!url||!key){setMsg({ok:false,t:fr?"Remplissez les deux champs.":"Fill in both fields."});return;}
+    if(!url||!key){setMsg({ok:false,t:uiText("text0608",lang)});return;}
     setTesting(true);setMsg(null);
     try{
       // Try to create the table if it doesn't exist via a simple select
@@ -6436,10 +6370,10 @@ function SupabaseSetup({onDone, lang="fr"}){
       });
       if(r.status===200||r.status===404||r.ok){
         saveSbConfig({url:url.replace(/\/+$/,""),key});
-        setMsg({ok:true,t:fr?"Connexion réussie ! Chargement...":"Connected! Loading..."});
+        setMsg({ok:true,t:uiText("text0609",lang)});
         setTimeout(()=>onDone({url:url.replace(/\/+$/,""),key}),800);
       } else {
-        setMsg({ok:false,t:`${fr?"Erreur":"Error"} ${r.status}: ${fr?"Vérifiez l'URL et la clé.":"Check URL and key."}`});
+        setMsg({ok:false,t:`${uiText("text0610",lang)} ${r.status}: ${uiText("text0611",lang)}`});
       }
     }catch(e){setMsg({ok:false,t:fr?`Connexion échouée: ${e.message}`:`Connection failed: ${e.message}`});}
     setTesting(false);
@@ -6467,19 +6401,18 @@ function SupabaseSetup({onDone, lang="fr"}){
         </div>
 
         <h2 style={{color:"#fff",fontSize:16,fontWeight:800,marginBottom:6}}>
-          {fr?"🔗 Connexion base de données":"🔗 Database connection"}
+          {uiText("text0612",lang)}
         </h2>
         <p style={{color:"rgba(255,255,255,0.5)",fontSize:12,marginBottom:20,lineHeight:1.6}}>
-          {fr?"Connectez votre projet Supabase pour synchroniser les données entre tous les utilisateurs en temps réel.":
-              "Connect your Supabase project to sync data across all users in real time."}
+          {uiText("text0613",lang)}
         </p>
 
         {/* Instructions */}
         <div style={{background:"rgba(66,133,244,0.1)",border:"1px solid rgba(66,133,244,0.3)",borderRadius:8,padding:14,marginBottom:20,fontSize:11,color:"rgba(255,255,255,0.7)",lineHeight:1.8}}>
-          <div style={{color:"#4285F4",fontWeight:700,marginBottom:6}}>📋 {fr?"Configuration Supabase (gratuit)":"Supabase Setup (free)"}</div>
-          <div>1. {fr?"Créez un compte sur":"Create account at"} <strong style={{color:"#4285F4"}}>supabase.com</strong></div>
-          <div>2. {fr?"Créez un nouveau projet":"Create a new project"}</div>
-          <div>3. {fr?"Dans SQL Editor, exécutez:":"In SQL Editor, run:"}</div>
+          <div style={{color:"#4285F4",fontWeight:700,marginBottom:6}}>📋 {uiText("text0614",lang)}</div>
+          <div>1. {uiText("text0615",lang)} <strong style={{color:"#4285F4"}}>supabase.com</strong></div>
+          <div>2. {uiText("text0616",lang)}</div>
+          <div>3. {uiText("text0617",lang)}</div>
           <div style={{background:"rgba(0,0,0,0.4)",borderRadius:5,padding:"8px 10px",margin:"6px 0",fontFamily:"monospace",fontSize:10,color:"#81C995"}}>
             {"CREATE TABLE IF NOT EXISTS app_data ("}
             <br/>{"  id TEXT PRIMARY KEY,"}
@@ -6491,16 +6424,16 @@ function SupabaseSetup({onDone, lang="fr"}){
             <br/>{"-- Activer le realtime sur la table:"}
             <br/>{"ALTER PUBLICATION supabase_realtime ADD TABLE app_data;"}
           </div>
-          <div>4. {fr?"Copiez l'URL et la clé anon depuis":"Copy URL and anon key from"} <strong style={{color:"#4285F4"}}>Settings → API</strong></div>
+          <div>4. {uiText("text0618",lang)} <strong style={{color:"#4285F4"}}>{translateText("Settings → API",_lang)}</strong></div>
         </div>
 
         <div style={{marginBottom:12}}>
-          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Project URL</div>
+          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{translateText("Project URL",_lang)}</div>
           <input value={url} onChange={e=>setUrl(e.target.value)} placeholder="https://xxxxxxxxxxxx.supabase.co"
             style={{width:"100%",background:"#161820",border:"1px solid #252733",borderRadius:8,padding:"10px 14px",color:"#fff",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
         </div>
         <div style={{marginBottom:20}}>
-          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>Anon / Public Key</div>
+          <div style={{color:"rgba(255,255,255,0.6)",fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:".07em",marginBottom:5}}>{translateText("Anon / Public Key",_lang)}</div>
           <input value={key} onChange={e=>setKey(e.target.value)} placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
             style={{width:"100%",background:"#161820",border:"1px solid #252733",borderRadius:8,padding:"10px 14px",color:"#fff",fontSize:13,outline:"none",boxSizing:"border-box"}}/>
         </div>
@@ -6509,12 +6442,12 @@ function SupabaseSetup({onDone, lang="fr"}){
 
         <button onClick={test} disabled={testing}
           style={{width:"100%",padding:"12px",background:testing?"#252733":"#4285F4",border:"none",borderRadius:9,color:"#fff",fontSize:14,fontWeight:700,cursor:testing?"not-allowed":"pointer",borderRadius:9}}>
-          {testing?(fr?"Vérification...":"Checking..."):(fr?"Connecter":"Connect")}
+          {testing?(uiText("text0619",lang)):(uiText("text0620",lang))}
         </button>
 
         <div style={{marginTop:14,textAlign:"center"}}>
           <button onClick={()=>onDone(null)} style={{background:"transparent",border:"none",color:"rgba(255,255,255,0.35)",fontSize:11,cursor:"pointer",textDecoration:"underline"}}>
-            {fr?"Utiliser sans backend (localStorage)":"Use without backend (localStorage)"}
+            {uiText("text0621",lang)}
           </button>
         </div>
       </div>
@@ -6553,7 +6486,7 @@ export default function App(){
   // ── Load data from Supabase OR localStorage on mount ─────────────────────────
   useEffect(()=>{
     const load=async()=>{
-      if(sbCfg){
+      if(sbCfg&&!sbCfg.skip){
         setDbStatus("loading");
         try{
           const remote=await sbLoad(sbCfg);
@@ -6681,7 +6614,7 @@ export default function App(){
     return(
       <div style={{minHeight:"100vh",background:"#0e0f14",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Segoe UI',Arial,sans-serif",gap:16}}>
         <div style={{fontSize:32,animation:"spin 1s linear infinite"}}>⚡</div>
-        <div style={{color:"rgba(255,255,255,0.7)",fontSize:14}}>Chargement depuis la base de données...</div>
+        <div style={{color:"rgba(255,255,255,0.7)",fontSize:14}}>{translateText("Chargement depuis la base de données...",_lang)}</div>
         <style>{"@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}"}</style>
       </div>
     );
@@ -6700,17 +6633,17 @@ export default function App(){
   const navTabs=[
     {key:"dashboard",icon:"dashboard",label:t.nav.dashboard,color:C.blue,show:true},
     {key:"analytics", icon:"analytics", label:t.nav.analytics, color:C.teal, show:true},
-    {key:"finance", icon:"reports", label:lang==="fr"?"Finance":"Finance", color:C.red, show:true, hasDropdown:true, subItems:[
+    {key:"finance", icon:"reports", label:uiText("text0622",lang), color:C.red, show:true, hasDropdown:true, subItems:[
       {key:"reports",  label:lang==="fr"?"Rapports":t.nav.reports,          icon:"reports"},
-      {key:"withdraw", label:lang==="fr"?"Retrait":"Withdraw",               icon:"money"},
+      {key:"withdraw", label:uiText("text0623",lang),               icon:"money"},
     ]},
     {key:"investors", icon:"investors", label:t.nav.investors,  color:C.yellow, show:true},
     {key:"users",     icon:"users",     label:t.nav.users,      color:C.purple, show:can(session,"manage_users")},
     {key:"audit",     icon:"audit",     label:t.nav.audit,      color:C.green,  show:can(session,"view_audit")},
     {key:"categories",icon:"activity",  label:t.nav.categories, color:"#FBBC05", show:true, hasSub:true},
-    {key:"projections", icon:"forecast", label:lang==="fr"?"Projections":"Projections", color:"#9C27B0", show:role==="admin"||role==="investor", hasDropdown:true, subItems:[
-      {key:"forecast",          label:lang==="fr"?"Projection Marchandises":"Projection for Goods",  icon:"chart"},
-      {key:"fleet_projection",  label:lang==="fr"?"Projection Flottes":"Fleet Projection",            icon:"truck"},
+    {key:"projections", icon:"forecast", label:uiText("text0624",lang), color:"#9C27B0", show:role==="admin"||role==="investor", hasDropdown:true, subItems:[
+      {key:"forecast",          label:uiText("text0625",lang),  icon:"chart"},
+      {key:"fleet_projection",  label:uiText("text0422",lang),            icon:"truck"},
     ]},
     {key:"settings",  icon:"settings",  label:t.nav.settings,   color:C.green,  show:true},
   ].filter(n=>n.show);
@@ -6758,14 +6691,14 @@ export default function App(){
                   <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:12,padding:"8px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:340,maxWidth:420,maxHeight:"70vh",overflowY:"auto"}}
                     onClick={e=>e.stopPropagation()}>
                     <div style={{padding:"8px 16px 6px",borderBottom:`1px solid ${C.border}44`,marginBottom:4}}>
-                      <div style={{color:n.color,fontWeight:800,fontSize:12,textTransform:"uppercase",letterSpacing:"0.08em"}}>{lang==="fr"?"Secteurs d'Activité":"Activity Sectors"}</div>
-                      <div style={{color:C.muted,fontSize:10,marginTop:1}}>{lang==="fr"?"Catégories permanentes de Thunderfam Investment":"Thunderfam Investment permanent categories"}</div>
+                      <div style={{color:n.color,fontWeight:800,fontSize:12,textTransform:"uppercase",letterSpacing:"0.08em"}}>{uiText("text0626",lang)}</div>
+                      <div style={{color:C.muted,fontSize:10,marginTop:1}}>{uiText("text0627",lang)}</div>
                     </div>
                     {PERMANENT_CATEGORIES.map((cat,i)=>{
                       const icons=["🚚","🛒","📦","💻","🌍","📱","🏠","🏗️","🍽️","📚","🐟","🚛","🏘️","🏦","⚙️"];
                       const colors=[C.yellow,C.blue,C.green,"#4285F4","#EA4335","#34A853","#FBBC05","#EA4335","#34A853","#9C27B0","#34A853",C.yellow,"#FBBC05","#4285F4","#9C27B0"];
                       const locked=i>1;
-                      const catLabel=lang==="en"?(PERMANENT_CATEGORIES_EN[i]||cat):cat;
+                      const catLabel=translateData(cat,lang);
                       return(
                         <div key={i} onClick={()=>{setSelCategory(cat);setView("category_detail");setShowCatMenu(false);}} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"8px 16px",borderRadius:0,cursor:"pointer",borderBottom:i<PERMANENT_CATEGORIES.length-1?`1px solid ${C.border}22`:"none"}}
                           onMouseEnter={e=>e.currentTarget.style.background=C.surface}
@@ -6780,7 +6713,7 @@ export default function App(){
                       );
                     })}
                     <div style={{padding:"8px 16px",borderTop:`1px solid ${C.border}44`,marginTop:4}}>
-                      <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em"}}>{fmtNum(PERMANENT_CATEGORIES.length)} {lang==="fr"?"catégories au total":"categories total"}</div>
+                      <div style={{color:C.muted,fontSize:9,textTransform:"uppercase",letterSpacing:"0.08em"}}>{fmtNum(PERMANENT_CATEGORIES.length)} {uiText("text0628",lang)}</div>
                     </div>
                   </div>
                 )}
@@ -6791,13 +6724,13 @@ export default function App(){
                 <button onClick={e=>{e.stopPropagation();setShowFinMenu(v=>!v);setShowCatMenu(false);setShowProjMenu(false);}}
                   className="nav-btn"
                   style={{"--nav-color":C.red,"--nav-color-bg":C.red+"18",padding:"0 10px",height:36,border:"none",background:showFinMenu?C.red+"18":"transparent",color:showFinMenu?C.red:C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showFinMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showFinMenu?`2px solid ${C.red}`:"2px solid transparent",transition:"all .15s"}}>
-                  <Icon name="reports" size={12} color={showFinMenu?C.red:C.muted}/>{lang==="fr"?"Finance":"Finance"}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showFinMenu?"▲":"▼"}</span>
+                  <Icon name="reports" size={12} color={showFinMenu?C.red:C.muted}/>{uiText("text0622",lang)}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showFinMenu?"▲":"▼"}</span>
                 </button>
                 {showFinMenu&&(
                   <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:"6px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:200}} onClick={e=>e.stopPropagation()}>
                     {[
-                      {key:"reports",  label:lang==="fr"?"Rapports":"Reports",  icon:"reports"},
-                      {key:"withdraw", label:lang==="fr"?"Retrait":"Withdraw",  icon:"money"},
+                      {key:"reports",  label:uiText("text0002",lang),  icon:"reports"},
+                      {key:"withdraw", label:uiText("text0623",lang),  icon:"money"},
                     ].map(sub=>(
                       <button key={sub.key} onClick={()=>{setView(sub.key);setShowFinMenu(false);}}
                         style={{width:"100%",padding:"9px 16px",background:view===sub.key?C.red+"18":"transparent",border:"none",color:view===sub.key?C.red:C.text,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:view===sub.key?700:400,display:"flex",alignItems:"center",gap:8,textAlign:"left"}}>
@@ -6814,13 +6747,13 @@ export default function App(){
                 <button onClick={e=>{e.stopPropagation();setShowProjMenu(v=>!v);setShowCatMenu(false);setShowFinMenu(false);}}
                   className="nav-btn"
                   style={{"--nav-color":"#9C27B0","--nav-color-bg":"#9C27B018",padding:"0 10px",height:36,border:"none",background:showProjMenu?"#9C27B018":"transparent",color:showProjMenu?"#9C27B0":C.muted,borderRadius:7,cursor:"pointer",fontSize:11,fontFamily:"inherit",fontWeight:showProjMenu?700:500,display:"flex",alignItems:"center",gap:5,borderBottom:showProjMenu?"2px solid #9C27B0":"2px solid transparent",transition:"all .15s"}}>
-                  <Icon name="forecast" size={12} color={showProjMenu?"#9C27B0":C.muted}/>{lang==="fr"?"Projections":"Projections"}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showProjMenu?"▲":"▼"}</span>
+                  <Icon name="forecast" size={12} color={showProjMenu?"#9C27B0":C.muted}/>{uiText("text0624",lang)}<span style={{fontSize:9,marginLeft:2,opacity:0.7}}>{showProjMenu?"▲":"▼"}</span>
                 </button>
                 {showProjMenu&&(
                   <div style={{position:"absolute",top:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",zIndex:500,background:C.card,border:`1px solid ${C.border}44`,borderRadius:10,padding:"6px 0",boxShadow:"0 16px 48px rgba(0,0,0,0.6)",minWidth:220}} onClick={e=>e.stopPropagation()}>
                     {[
-                      {key:"forecast",         label:lang==="fr"?"Projection Marchandises":"Projection for Goods",  icon:"chart"},
-                      {key:"fleet_projection", label:lang==="fr"?"Projection Flottes":"Fleet Projection",            icon:"truck"},
+                      {key:"forecast",         label:uiText("text0625",lang),  icon:"chart"},
+                      {key:"fleet_projection", label:uiText("text0422",lang),            icon:"truck"},
                     ].map(sub=>(
                       <button key={sub.key} onClick={()=>{setView(sub.key);setShowProjMenu(false);}}
                         style={{width:"100%",padding:"9px 16px",background:view===sub.key?"#9C27B018":"transparent",border:"none",color:view===sub.key?"#9C27B0":C.text,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:view===sub.key?700:400,display:"flex",alignItems:"center",gap:8,textAlign:"left"}}>
@@ -6860,7 +6793,7 @@ export default function App(){
                   <div key={n.id} style={{padding:"10px 14px",borderBottom:`1px solid ${C.border}44`,background:n.read?"transparent":C.surface,opacity:n.read?0.6:1}}>
                     <div style={{display:"flex",gap:8}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:n.type==="success"?C.green:n.type==="warning"?C.yellow:C.blue,flexShrink:0,marginTop:4}}/>
-                      <div><div style={{color:C.dim,fontSize:11}}>{n.msg}</div><div style={{color:C.muted,fontSize:9,marginTop:2}}>{n.date}</div></div>
+                      <div><div style={{color:C.dim,fontSize:11}}>{translateData(n.msg,_lang)}</div><div style={{color:C.muted,fontSize:9,marginTop:2}}>{n.date}</div></div>
                     </div>
                   </div>
                 ))}
@@ -6869,8 +6802,8 @@ export default function App(){
           </div>
 
           {/* Lang toggle */}
-          <button onClick={()=>setLang(l=>l==="fr"?"en":"fr")} style={{padding:"4px 8px",border:`1px solid ${C.border}44`,borderRadius:7,background:"transparent",color:C.dim,cursor:"pointer",fontSize:10,fontFamily:"inherit",display:"flex",alignItems:"center",gap:3}}>
-            <Icon name="globe" size={10} color={C.dim}/>{lang==="fr"?"EN":"FR"}
+          <button onClick={()=>setLang(l=>supportedLanguages[(supportedLanguages.indexOf(l)+1)%supportedLanguages.length])} style={{padding:"4px 8px",border:`1px solid ${C.border}44`,borderRadius:7,background:"transparent",color:C.dim,cursor:"pointer",fontSize:10,fontFamily:"inherit",display:"flex",alignItems:"center",gap:3}}>
+            <Icon name="globe" size={10} color={C.dim}/>{supportedLanguages[(supportedLanguages.indexOf(lang)+1)%supportedLanguages.length]?.toUpperCase()}
           </button>
 
           {/* DB sync dot */}
@@ -6893,7 +6826,7 @@ export default function App(){
                   <div>
                     <div style={{color:C.text,fontSize:13,fontWeight:800}}>{session.name}</div>
                     <div style={{color:C.muted,fontSize:10,marginTop:1}}>{session.email||""}</div>
-                    <div style={{display:"inline-block",marginTop:4,background:(roleInfo?.color||C.blue)+"22",color:roleInfo?.color||C.blue,fontSize:9,fontWeight:800,textTransform:"uppercase",letterSpacing:"0.06em",padding:"2px 7px",borderRadius:5}}>{lang==="fr"?roleInfo?.label:roleInfo?.labelEn}</div>
+                    <div style={{display:"inline-block",marginTop:4,background:(roleInfo?.color||C.blue)+"22",color:roleInfo?.color||C.blue,fontSize:9,fontWeight:800,textTransform:"uppercase",letterSpacing:"0.06em",padding:"2px 7px",borderRadius:5}}>{translateText(roleInfo?.label,lang)}</div>
                   </div>
                 </div>
 
@@ -6902,7 +6835,7 @@ export default function App(){
                   <div style={{color:C.muted,fontSize:9,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.07em",marginBottom:6}}>{t.settings.currencies}</div>
                   <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
                     <span style={{padding:"3px 10px",borderRadius:6,background:`${C.blue}22`,color:C.blue,fontSize:11,fontWeight:800}}>F CFA</span>
-                    {activeCurs.map(c=><span key={c.code} style={{padding:"3px 10px",borderRadius:6,background:c.color+"22",color:c.color,fontSize:13,fontWeight:800}}>{c.sym} {c.name}</span>)}
+                    {activeCurs.map(c=><span key={c.code} style={{padding:"3px 10px",borderRadius:6,background:c.color+"22",color:c.color,fontSize:13,fontWeight:800}}>{c.sym} {translateText(c.name,_lang)}</span>)}
                     {activeCurs.length===0&&<span style={{color:C.muted,fontSize:10,fontStyle:"italic"}}>{t.settings.noCurrencies}</span>}
                   </div>
                 </div>
@@ -6920,9 +6853,9 @@ export default function App(){
 
                 {/* DB status */}
                 {sbCfg&&!sbCfg.skip&&(
-                  <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:8,borderTop:`1px solid ${C.border}44`,cursor:"pointer"}} onClick={()=>{if(window.confirm(lang==="fr"?"Reconfigurer la connexion base de données ?":"Reconfigure database connection?")){saveSbConfig(null);window.location.reload();}}}>
+                  <div style={{padding:"8px 16px",display:"flex",alignItems:"center",gap:8,borderTop:`1px solid ${C.border}44`,cursor:"pointer"}} onClick={()=>{if(window.confirm(uiText("text0630",lang))){saveSbConfig(null);window.location.reload();}}}>
                     <span style={{width:8,height:8,borderRadius:"50%",background:dbStatus==="ok"?"#34A853":dbStatus==="error"?"#EA4335":"#FBBC05",display:"inline-block"}}/>
-                    <span style={{color:C.muted,fontSize:11}}>Supabase — {dbStatus==="ok"?(lang==="fr"?"Synchronisé":"Synced"):dbStatus==="saving"?(lang==="fr"?"Sauvegarde...":"Saving..."):dbStatus==="error"?(lang==="fr"?"Erreur sync":"Sync error"):(lang==="fr"?"Chargement":"Loading")}</span>
+                    <span style={{color:C.muted,fontSize:11}}>Supabase — {dbStatus==="ok"?(uiText("text0631",lang)):dbStatus==="saving"?(uiText("text0632",lang)):dbStatus==="error"?(uiText("text0633",lang)):(uiText("text0634",lang))}</span>
                   </div>
                 )}
                 {/* Logout */}
