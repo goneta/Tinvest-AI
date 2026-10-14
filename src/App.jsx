@@ -1444,6 +1444,25 @@ function Reports({data,setData,session,t,lang}){
   const [selId,setSelId]=useState(visibleReports[visibleReports.length-1]?.id);
   const [lockModal,setLockModal]=useState(false);const [lockPwd,setLockPwd]=useState("");const [lockErr,setLockErr]=useState("");const [lockTarget,setLockTarget]=useState(null);
   const [addingRep,setAddingRep]=useState(false);const [newRepLabel,setNewRepLabel]=useState("");
+  const [editingTitleId,setEditingTitleId]=useState(null);
+  const [titleDraft,setTitleDraft]=useState("");
+  const canRenameReport=can(session,"create_report");
+  const startRenameReport=r=>{
+    if(!canRenameReport)return;
+    setSelId(r.id);setEditingTitleId(r.id);setTitleDraft(r.label);
+  };
+  const saveReportTitle=e=>{
+    e.preventDefault();
+    const label=titleDraft.trim();
+    if(!canRenameReport||!label)return;
+    const previous=data.reports.find(r=>r.id===editingTitleId);
+    if(!previous)return;
+    if(previous.label!==label){
+      setData(d=>({...d,reports:d.reports.map(r=>r.id===editingTitleId?{...r,label}:r)}));
+      addAudit(setData,session,"Rapport renommé",`${previous.label} → ${label}`,"update");
+    }
+    setEditingTitleId(null);setTitleDraft("");
+  };
   const [editActId,setEditActId]=useState(null);const [actDraft,setActDraft]=useState(null);
   const [editExpId,setEditExpId]=useState(null);const [expDraft,setExpDraft]=useState(null);
   const [shareModal,setShareModal]=useState(false);const [shareToken,setShareToken]=useState(null);
@@ -1620,10 +1639,24 @@ function Reports({data,setData,session,t,lang}){
     {visibleReports.length>0&&(
       <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14,background:C.surface,padding:5,borderRadius:10,border:`1px solid ${C.border}44`}}>
         {visibleReports.map((r,i)=>{const col=tabColors[i%4];const active=selId===r.id;const lc=calcReport(r);return(
-          <button key={r.id} onClick={()=>setSelId(r.id)} style={{padding:"6px 12px",borderRadius:7,border:"none",background:active?col+"20":"transparent",color:active?col:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:active?700:400,borderLeft:active?`3px solid ${col}`:"3px solid transparent",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
+          editingTitleId===r.id&&canRenameReport?(
+            <form key={r.id} onSubmit={saveReportTitle} style={{position:"relative",padding:"6px 38px 6px 9px",borderRadius:7,background:col+"20",borderLeft:`3px solid ${col}`,maxWidth:"100%",boxSizing:"border-box"}}>
+              <input autoFocus aria-label={t.report.newLabel} value={titleDraft} required
+                onFocus={e=>e.target.select()} onChange={e=>setTitleDraft(e.target.value)}
+                onKeyDown={e=>{if(e.key==="Escape"){e.preventDefault();setEditingTitleId(null);setTitleDraft("");}if(e.key==="Enter"&&e.nativeEvent.isComposing)e.preventDefault();}}
+                style={{width:240,maxWidth:"100%",boxSizing:"border-box",background:C.surface,color:C.text,border:`1px solid ${col}`,borderRadius:4,padding:"5px 7px",fontSize:12,fontFamily:"inherit"}}/>
+              <button type="submit" disabled={!titleDraft.trim()} aria-label={lang==="fr"?"Enregistrer le titre":"Save report title"} title={lang==="fr"?"Enregistrer le titre":"Save report title"}
+                style={{position:"absolute",right:4,top:4,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",background:`${C.green}22`,border:`1px solid ${C.green}66`,borderRadius:5,cursor:titleDraft.trim()?"pointer":"not-allowed",opacity:titleDraft.trim()?1:0.4}}>
+                <Icon name="check" size={17} color={C.green}/>
+              </button>
+            </form>
+          ):(<button key={r.id} onClick={()=>{setSelId(r.id);setEditingTitleId(null);}} onDoubleClick={()=>startRenameReport(r)}
+            onKeyDown={e=>{if(e.key==="F2"&&canRenameReport){e.preventDefault();startRenameReport(r);}}}
+            title={canRenameReport?(lang==="fr"?"Double-cliquez pour modifier le titre (F2)":"Double-click to edit the title (F2)"):undefined}
+            style={{padding:"6px 12px",borderRadius:7,border:"none",background:active?col+"20":"transparent",color:active?col:C.muted,cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:active?700:400,borderLeft:active?`3px solid ${col}`:"3px solid transparent",transition:"all .15s",display:"flex",flexDirection:"column",gap:1}}>
             <span>{r.label}</span>
             {active&&<span style={{fontSize:9,color:col,fontWeight:600}}>{t.activity.profit}: +{fmtNum(lc.netProfit)} F</span>}
-          </button>
+          </button>)
         );})}
       </div>
     )}

@@ -92,6 +92,12 @@ Default section order:
 - The stored reports array defines period order for each investor. Reports are appended in order; editable labels and activity dates are not reliable month keys. Any future backdated insertion/reordering feature must define explicit period ordering first.
 - Keep investors isolated. Do not mutate the previous state or alter activities while reconciling capital.
 
+## Report Title Editing
+
+- Users with `create_report` permission can rename report tabs by double-clicking the title or pressing F2 on the focused tab, including closed reports.
+- Enter or the green check button saves the trimmed, nonempty title through root `setData` and records an audit entry. Escape cancels; selecting another tab discards the draft.
+- Renaming preserves report IDs, period order, investor ownership, and financial data; it does not change capital calculations.
+
 ## User Preferences and Work Guidance
 
 - Read the applicable DOX chain before editing; update it after behavior or workflow changes.
